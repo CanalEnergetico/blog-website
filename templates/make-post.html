@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {{ ckeditor.load() }}
+  {{ ckeditor.config(name='contenido') }}
+  <form method="POST">
+    {{ form.csrf_token }}
+    {{ form.titulo.label }}      {{ form.titulo(class="form-control") }}
+    {{ form.descripcion.label }} {{ form.descripcion(class="form-control") }}
+    {{ form.img_url.label }}     {{ form.img_url(class="form-control") }}
+    {{ form.img_fuente.label }}  {{ form.img_fuente(class="form-control") }}
+    {{ form.tag.label }}         {{ form.tag(class="form-control") }}
+    {{ form.autor.label }}       {{ form.autor(class="form-control") }}
+    {{ form.contenido.label }}   {{ form.contenido() }}
+    {{ form.submit(class="btn btn-primary mt-3") }}
+  </form>
+{% endblock %}
