@@ -4,12 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="First commit">
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="photos eliminated">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/blog.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/blog.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,6 +23,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "jackovic05"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/CanalEnergetico/blog.git",
+    "accountId": "a3c71650-eddb-43ac-bd4e-588944009157"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -103,11 +111,29 @@
       <option name="project" value="LOCAL" />
       <updated>1752846401927</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="comments">
+      <option name="closed" value="true" />
+      <created>1753112348989</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1753112348989</updated>
+    </task>
+    <task id="LOCAL-00003" summary="photos eliminated">
+      <option name="closed" value="true" />
+      <created>1753112426188</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1753112426188</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="First commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="First commit" />
+    <MESSAGE value="comments" />
+    <MESSAGE value="photos eliminated" />
+    <option name="LAST_COMMIT_MESSAGE" value="photos eliminated" />
   </component>
 </project>
