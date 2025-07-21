@@ -2,13 +2,11 @@ import os
 from flask import Flask, render_template, redirect, url_for, request
 from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Text
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, URL
 from flask_ckeditor import CKEditor, CKEditorField
-from datetime import date, datetime
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -17,6 +15,7 @@ app.config["SECRET_KEY"] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///articulos.db"    # solo local por ahora
 db = SQLAlchemy(app)
 ckeditor = CKEditor(app)
+
 # Modelo de datos: tabla articulos
 class Articulos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -64,31 +63,28 @@ def home():
     articulos = Articulos.query.order_by(Articulos.fecha.desc()).all()
     return render_template("index.html", articulos=articulos)
 
+# Pagina de sobre nosotros
 @app.route("/sobre-nosotros")
 def sobre_nosotros():
     return render_template("nosotros.html")
 
+# Todos los articulos
 @app.route("/articulos")
 def articulos_todos():
     articulos = Articulos.query \
         .order_by(Articulos.fecha.desc()) \
         .all()
-    # # lee parámetros: q, tag, autor, fecha_inicio, fecha_fin…
-    # q = request.args.get('q')
-    # tag_filter = request.args.get('tag')
-    # autor_filter = request.args.get('autor')
-    # fecha_desde = request.args.get('desde')
-    # fecha_hasta = request.args.get('hasta')
 
     return render_template("articulos.html", articulos=articulos)
 
-
+# Detalle de un articulo
 @app.route("/articulos/<int:id>")
 def detalle_articulo(id):
     articulo = Articulos.query.get_or_404(id)
     print(articulo.img_url)
     return render_template("post.html", articulo=articulo)
 
+# Formulario para crear un post
 @app.route('/new-post', methods=['GET', 'POST'])
 def make_new_post():
     form = PostForm()
