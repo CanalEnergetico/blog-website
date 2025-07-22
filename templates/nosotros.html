@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+  {% extends "base.html" %}
 
 {% block title %}Sobre Nosotros – Canal Energético{% endblock %}
 
@@ -12,7 +12,7 @@
 
 {% block content %}
   <div class="row gy-4m px-3">
-    <h1>¿Quienes estamos detrás?</h1>
+    <h1 class="mb-4">¿Quienes estamos detrás?</h1>
     <div class="col-md-6">
       <p class="text-primary mb-1">Co-fundador</p>
       <h3 class="mb-3">José D. Acevedo Villarreal
@@ -43,6 +43,15 @@
       </p>
     </div>
   </div>
+
+  <!-- Imagen de los cofundadores debajo de las dos columnas -->
+  <div class="row justify-content-center my-4">
+    <div class="col-md-8 text-center">
+      <img src="{{ url_for('static', filename='images/fundadores.png') }}" alt="Cofundadores de Canal Energético" class="img-fluid">
+      <p class="mt-2 text-muted">José Ignacio Arias Guardia y José D. Acevedo Villarreal</p>
+    </div>
+  </div>
+
 
 <div class="bg-light p-3 rounded my-4">
     <h1>Nuestro Objetivo</h1>
