@@ -3,3 +3,5 @@ Flask-Bootstrap~=3.3.7.1
 SQLAlchemy~=2.0.41
 WTForms~=3.2.1
 icecream~=2.1.5
+gunicorn==21.2.0
+psycopg2-binary==2.9.9
