@@ -3,7 +3,7 @@
 {% block title %}Sobre Nosotros – Canal Energético{% endblock %}
 
 {% block content_top %}
-  <div class="bg-light p-3 prounded mb-4">
+  <div class="bg-light p-3 rounded mb-4">
     <h1>Acerca de Canal Energético</h1>
     <p>Canal Energético es un medio digital independiente creado para compartir noticias de actualidad, análisis y opinión sobre el sector energético de Panamá, la región y el mundo. Nacemos con la visión de ser una herramienta abierta para el intercambio de ideas y puntos de vista entre expertos y profesionales del mundo de la energía.
     <br><br>La idea surgió de una pasión compartida: sentarnos a conversar sobre la energía en todas sus formas. Con el tiempo, notamos que faltaba un espacio especializado que reuniera noticias rigurosas, voces autorizadas y opinión imparcial para la región. Queremos cubrir ese vacío y ayudar a difundir información interesante y relevante.</p>
@@ -12,7 +12,7 @@
 
 {% block content %}
   <div class="row gy-4m px-3">
-    <h1 class="mb-4">¿Quienes estamos detrás?</h1>
+    <h1 class="mb-4">¿Quiénes estamos detrás?</h1>
     <div class="col-md-6">
       <p class="text-primary mb-1">Co-fundador</p>
       <h3 class="mb-3">José D. Acevedo Villarreal
@@ -23,9 +23,8 @@
 
       </h3>
       <p>
-        José David es ingeniero eléctrico e industrial con amplia experiencia en el desarrollo y la gestión de proyectos energéticos tanto en Panamá como en Europa.
-      <br><br>Inició su carrera profesional trabajando en la industria energética panameña y luego se especializó en proyectos de vanguardia, incluyendo su participación en la fusión nuclear en España.
-      <br><br>Graduado en Ingeniería Eléctrica por la Universidad de Navarra y con una maestría en Ingeniería Industrial en la misma institución, José David también ha colaborado en iniciativas de innovación tecnológica, eficiencia energética y optimización de procesos industriales.
+          José David es ingeniero eléctrico e industrial por la Universidad de Navarra, donde también obtuvo una maestría en Ingeniería Industrial.
+          <br><br>Ha trabajado en proyectos energéticos tanto en Panamá como en Europa, pasando por áreas como generación, automatización industrial y eficiencia energética. Comenzó su carrera en el sector eléctrico panameño y más adelante se unió a iniciativas tecnológicas en España, incluyendo proyectos avanzados como la fusión nuclear. Su enfoque combina lo técnico con la mejora continua de procesos industriales.
       </p>
     </div>
     <div class="col-md-6">
@@ -37,12 +36,19 @@
         </svg></a>
       </h3>
       <p>
-        José Ignacio es ingeniero eléctrico especializado en energía, con experiencia internacional en proyectos, mercados energéticos y transición energética.
-        <br><br>Su trayectoria profesional incluye trabajos en consultoría, proyectos renovables y mercados eléctricos en España y Panamá, lo que le ha permitido aportar una mirada amplia y práctica sobre la evolución del sector.
-        <br><br>Graduado en Ingeniería Eléctrica por la Universidad de Navarra y con un máster en Ingeniería de la Energía por la Universidad Politécnica de Madrid, José Ignacio combina el análisis técnico con su interés por la comunicación y la formación de comunidades abiertas para debatir el futuro energético de la región.
+        José Ignacio es ingeniero eléctrico por la Universidad de Navarra y tiene un máster en Ingeniería de la Energía por la Universidad Politécnica de Madrid.
+        <br><br>Ha trabajado en consultoría energética y en el desarrollo de proyectos vinculados a los mercados eléctricos, biocombustibles y biometano, con experiencia tanto en España como en Panamá. Ha participado en iniciativas enfocadas en energías renovables y descarbonización. Su enfoque combina el análisis técnico con la implementación de soluciones para una transición energética más eficiente y adaptada al contexto local.
       </p>
     </div>
   </div>
+<!-- Imagen de los cofundadores debajo de las dos columnas -->
+  <div class="row justify-content-center my-4">
+    <div class="col-md-8 text-center">
+      <img src="{{ url_for('static', filename='images/fundadores.png') }}" alt="Cofundadores de Canal Energético" class="img-fluid">
+      <p class="mt-2 text-muted">José Ignacio Arias Guardia y José D. Acevedo Villarreal</p>
+    </div>
+  </div>
+
 
   <!-- Imagen de los cofundadores debajo de las dos columnas -->
   <div class="row justify-content-center my-4">
