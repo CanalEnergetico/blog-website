@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="merge branch, fundadore.ong">
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="update requirements.txt">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,9 +51,9 @@
     "DefaultHtmlFileTemplate": "HTML File",
     "Python.main.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "datos-curiosos-list",
     "last_opened_file_path": "C:/Users/josea/PycharmProjects/blog-energetico/static/images",
-    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
+    "settings.editor.selected.configurable": "proofread"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -160,7 +162,31 @@
       <option name="project" value="LOCAL" />
       <updated>1753373041463</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="gunicorn, create Procfile">
+      <option name="closed" value="true" />
+      <created>1753373449887</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1753373449887</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Procfile">
+      <option name="closed" value="true" />
+      <created>1753373511296</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1753373511296</updated>
+    </task>
+    <task id="LOCAL-00010" summary="update requirements.txt">
+      <option name="closed" value="true" />
+      <created>1753374303004</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1753374303004</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -171,6 +197,9 @@
     <MESSAGE value="Properly eliminate photos" />
     <MESSAGE value="Unnecesseray modules eliminates" />
     <MESSAGE value="merge branch, fundadore.ong" />
-    <option name="LAST_COMMIT_MESSAGE" value="merge branch, fundadore.ong" />
+    <MESSAGE value="gunicorn, create Procfile" />
+    <MESSAGE value="Procfile" />
+    <MESSAGE value="update requirements.txt" />
+    <option name="LAST_COMMIT_MESSAGE" value="update requirements.txt" />
   </component>
 </project>
