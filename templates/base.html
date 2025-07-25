@@ -72,79 +72,25 @@
         <aside class="col-md-3 blog-sidebar">
 
        <!-- CARRUSEL DE DATOS -->
-    <div id="carouselExampleSlidesOnly"
-         class="carousel slide bg-light rounded"
-         data-bs-ride="carousel"
-         data-bs-interval="8000">
+      <div id="carouselExampleSlidesOnly"
+           class="carousel slide bg-light rounded"
+           data-bs-ride="carousel"
+           data-bs-interval="8000">
 
-      <!-- Título fuera del carousel-inner -->
-      <h4 class="fts-italic p-2">¡Datos curiosos!</h4>
-      <div class="carousel-inner">
-        <div class="carousel-item active rounded p-2">
-          <h6 class="fst-italic text-dark-emphasis">Más del 75% de la electricidad de Panamá proviene de fuentes renovables.</h6>
-          <p class="mb-0">
-            Esto se debe principalmente a la hidroenergía, que históricamente ha representado la mayor parte de la generación eléctrica del país, seguida por la energía solar y eólica en crecimiento.<br><br>
-            <em>Fuente: Secretaría Nacional de Energía de Panamá, Informe Energético Nacional 2022.</em>
-          </p>
-        </div>
-
-        <div class="carousel-item p-2">
-          <h6 class="fst-italic text-dark-emphasis">Panamá fue el primer país de Centroamérica en tener una planta de gas natural licuado (GNL).</h6>
-          <p class="mb-0">
-            La planta de AES Colón, inaugurada en 2018, introdujo el GNL en la región con el objetivo de diversificar la matriz energética y mejorar la seguridad del suministro.<br><br>
-            <em>Fuente: AES Panamá - aespanama.com</em>
-          </p>
-        </div>
-
-        <div class="carousel-item p-2">
-          <h6 class="fst-italic text-dark-emphasis">El Canal de Panamá genera su propia energía a través de plantas hidroeléctricas internas.</h6>
-          <p class="mb-0">
-            La Autoridad del Canal de Panamá opera las plantas de Gatún y Madden, que abastecen parte del consumo energético del propio canal y sus operaciones.<br><br>
-            <em>Fuente: Autoridad del Canal de Panamá (ACP), Informe Anual 2023.</em>
-          </p>
-        </div>
-
-        <div class="carousel-item p-2">
-          <h6 class="fst-italic text-dark-emphasis">Panamá importa el 100% de los combustibles fósiles que consume.</h6>
-          <p class="mb-0">
-            El país no cuenta con reservas propias de petróleo, gas o carbón, por lo que depende totalmente de las importaciones para suplir la demanda de derivados del petróleo, especialmente en el sector transporte.<br><br>
-            <em>Fuente: Secretaría Nacional de Energía de Panamá, Balance Energético Nacional 2022.</em>
-          </p>
-        </div>
-
-        <div class="carousel-item p-2">
-          <h6 class="fst-italic text-dark-emphasis">El sector transporte es el mayor consumidor de energía en Panamá.</h6>
-          <p class="mb-0">
-            Representa más del 40% del consumo energético final del país, superando ampliamente al sector residencial e industrial. Esta tendencia ha impulsado políticas públicas hacia la electromovilidad y la eficiencia en transporte público.<br><br>
-            <em>Fuente: Secretaría Nacional de Energía de Panamá, Política Energética 2020–2050.</em>
-          </p>
-        </div>
-
-        <div class="carousel-item p-2">
-          <h6 class="fst-italic text-dark-emphasis">Panamá tiene uno de los niveles más altos de electrificación en América Latina.</h6>
-          <p class="mb-0">
-            Cerca del 95% de la población panameña tiene acceso a electricidad, gracias a los esfuerzos de expansión de redes y proyectos de electrificación rural.<br><br>
-            <em>Fuente: Banco Interamericano de Desarrollo (BID), Informe de Acceso Energético 2023.</em>
-          </p>
-        </div>
-
-        <div class="carousel-item p-2">
-          <h6 class="fst-italic text-dark-emphasis">La energía solar ha crecido más de 10 veces en capacidad instalada desde 2015.</h6>
-          <p class="mb-0">
-            Gracias a políticas de incentivos y reducción de costos tecnológicos, Panamá ha incrementado considerablemente su capacidad solar, alcanzando más de 250 MW instalados en 2023.<br><br>
-            <em>Fuente: ASEP Panamá, Estadísticas Energéticas 2023.</em>
-          </p>
-        </div>
-
-        <div class="carousel-item p-2">
-          <h6 class="fst-italic text-dark-emphasis">Panamá busca ser un hub energético regional para Centroamérica y el Caribe.</h6>
-          <p class="mb-0">
-            Con su posición geográfica y la infraestructura del Canal, el país apuesta por convertirse en un centro de distribución de energías limpias, incluyendo hidrógeno verde y gas natural licuado.<br><br>
-            <em>Fuente: Secretaría Nacional de Energía, Estrategia Nacional de Transición Energética 2020–2050.</em>
-          </p>
+        <!-- Título fuera del carousel-inner -->
+        <h4 class="fts-italic p-2">¡Datos curiosos!</h4>
+        <div class="carousel-inner">
+          {% for dato in datos_curiosos %}
+            <div class="carousel-item {% if loop.first %}active{% endif %} p-2">
+              <h6 class="fst-italic text-dark-emphasis">{{ dato.titulo }}</h6>
+              <p class="mb-0">
+                {{ dato.contenido }}<br><br>
+                <em>Fuente: {{ dato.fuente }}</em>
+              </p>
+            </div>
+          {% endfor %}
         </div>
       </div>
-    </div>
 
           <!-- DIVISION DE ENCUENTRANOS -->
 <!--          <div class="p-4">-->
