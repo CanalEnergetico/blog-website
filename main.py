@@ -129,12 +129,12 @@ def articulos_todos():
 # Detalle de un artículo
 @app.route("/articulos/<int:id>")
 def detalle_articulo(id):
-    articulo = Articulos.query.get_or_404(id)
-    print(articulo.img_url)
-    return render_template("post.html", articulo=articulo)
+    post = Articulos.query.get_or_404(id)
+    # print(articulo.img_url)
+    return render_template("post.html", articulo=post)
 
 # Formulario para crear un post
-@app.route('/new-post', methods=['GET', 'POST'])
+@app.route("/new-post", methods=["GET", "POST"])
 def make_new_post():
     form = PostForm()
     if form.validate_on_submit():
@@ -154,6 +154,39 @@ def make_new_post():
         return redirect(url_for('detalle_articulo', id=nuevo.id))
     return render_template('make-post.html', form=form)
 
+# Formulario para editar un post
+@app.route("/edit-post/<int:id>", methods=["GET", "POST"])
+def editar_articulo(id):
+    post = Articulos.query.get_or_404(id)
+    edit_form = PostForm(
+        titulo=post.titulo,
+        descripcion=post.descripcion,
+        img_url=post.img_url,
+        img_fuente=post.img_fuente,
+        tag=post.tag,
+        autor=post.autor,
+        contenido=post.contenido,
+    )
+    if edit_form.validate_on_submit():
+        # Crear instancia del modelo
+        post.titulo     = edit_form.titulo.data
+        post.descripcion= edit_form.descripcion.data
+        post.img_url    = edit_form.img_url.data
+        post.img_fuente = edit_form.img_fuente.data
+        post.tag        = edit_form.tag.data
+        post.autor      = edit_form.autor.data
+        post.contenido  = edit_form.contenido.data
+        db.session.commit()
+        return redirect(url_for("detalle_articulo", id=post.id))
+    return render_template("make-post.html", form=edit_form, is_edit=True)
+
+# Borrar un post. Cuidado porque no pregunta dos veces
+@app.route("/delete-post/<int:id>")
+def delete_post(id):
+    post_to_delete = Articulos.query.get_or_404(id)
+    db.session.delete(post_to_delete)
+    db.session.commit()
+    return redirect(url_for('articulos_todos'))
 
 # Ejecutar en local
 if __name__ == "__main__":
