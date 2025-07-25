@@ -155,9 +155,9 @@ def make_new_post():
     return render_template('make-post.html', form=form)
 
 # Formulario para editar un post
-@app.route("/edit-post/<int:post_id>", methods=["GET", "POST"])
-def editar_articulo(post_id):
-    post = Articulos.query.get_or_404(post_id)
+@app.route("/edit-post/<int:id>", methods=["GET", "POST"])
+def editar_articulo(id):
+    post = Articulos.query.get_or_404(id)
     edit_form = PostForm(
         titulo=post.titulo,
         descripcion=post.descripcion,
@@ -177,9 +177,16 @@ def editar_articulo(post_id):
         post.autor      = edit_form.autor.data
         post.contenido  = edit_form.contenido.data
         db.session.commit()
-        return redirect(url_for("show_post", post_id=post.id))
+        return redirect(url_for("detalle_articulo", id=post.id))
     return render_template("make-post.html", form=edit_form, is_edit=True)
 
+# Borrar un post
+@app.route("/delete-post/<int:id>")
+def delete_post(id):
+    post_to_delete = Articulos.query.get_or_404(id)
+    db.session.delete(post_to_delete)
+    db.session.commit()
+    return redirect(url_for('articulos_todos'))
 
 # Ejecutar en local
 if __name__ == "__main__":
