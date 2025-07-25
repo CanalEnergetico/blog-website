@@ -180,7 +180,7 @@ def editar_articulo(id):
         return redirect(url_for("detalle_articulo", id=post.id))
     return render_template("make-post.html", form=edit_form, is_edit=True)
 
-# Borrar un post
+# Borrar un post. Cuidado porque no pregunta dos veces
 @app.route("/delete-post/<int:id>")
 def delete_post(id):
     post_to_delete = Articulos.query.get_or_404(id)
