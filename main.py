@@ -1,5 +1,5 @@
 import os
-#from flask_bootstrap import Bootstrap5 # Comentario Linea 3 error bootstrap
+# from flask_bootstrap import Bootstrap5 # Comentario Linea 3 error bootstrap
 from flask import Flask, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
@@ -105,7 +105,7 @@ def inject_datos_curiosos():
     ]
     return dict(datos_curiosos=datos_curiosos)
 
-### RUTAS PRINCIPALES ###
+### RUTAS PRINCIPALES: WWW.CANALENERGETICO.COM ###
 # Inicio
 @app.route("/")
 def home():
@@ -123,14 +123,12 @@ def articulos_todos():
     articulos = Articulos.query \
         .order_by(Articulos.fecha.desc()) \
         .all()
-
     return render_template("articulos.html", articulos=articulos)
 
 # Detalle de un artículo
 @app.route("/articulos/<int:id>")
 def detalle_articulo(id):
     post = Articulos.query.get_or_404(id)
-    # print(articulo.img_url)
     return render_template("post.html", articulo=post)
 
 # Formulario para crear un post
@@ -180,7 +178,7 @@ def editar_articulo(id):
         return redirect(url_for("detalle_articulo", id=post.id))
     return render_template("make-post.html", form=edit_form, is_edit=True)
 
-# Borrar un post. Cuidado porque no pregunta dos veces
+# Borrar un post. CUIDADO: NO PREGUNTA DOS VECES!
 @app.route("/delete-post/<int:id>")
 def delete_post(id):
     post_to_delete = Articulos.query.get_or_404(id)
