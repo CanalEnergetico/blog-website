@@ -3,6 +3,13 @@
 
 {% block content %}
 <div class="container">
+  <!-- Breadcrumbs -->
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Inicio</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Artículos</li>
+    </ol>
+  </nav>
   {% if articulos %}
     <!-- Dos destacados al principio -->
     <div class="row mb-4">

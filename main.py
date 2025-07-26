@@ -43,21 +43,6 @@ class PostForm(FlaskForm):
 with app.app_context():
     db.create_all()
 
-#  Me invento un par de artículos para probar
-with app.app_context():
-    art2 = Articulos(
-        id=2,
-        titulo="Colombia lidera ranking latinoamericano en eficiencia energética 2025",
-        descripcion="Un informe internacional posiciona a Colombia como referente en ahorro energético en la región.",
-        img_url="https://i.imgur.com/ABCEficienciaColombia.jpg",
-        contenido="Según el más reciente informe del Energy Progress Index, Colombia ha logrado avances significativos en eficiencia energética...",
-        autor="Rodrigo Pérez",
-        fecha="2025-07-10"
-    )
-    db.session.add(art2)
-    # db.session.commit()
-
-
 # Esta función alimenta, por medio de una lista, los datos curiosos a todas las plantillas
 @app.context_processor
 def inject_datos_curiosos():
@@ -188,4 +173,4 @@ def delete_post(id):
 
 # Ejecutar en local
 if __name__ == "__main__":
-    app.run(debug=False, port=5002)
+    app.run(debug=True, port=5002)
