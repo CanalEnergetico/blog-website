@@ -40,7 +40,7 @@
         <h4 class="mb-0">{{ articulo.titulo }}</h4>
         <div class="mb-1 text-body-secondary">{{ articulo.fecha }} | {{ articulo.autor }}</div>
         <p class="card-text mb-auto">{{ articulo.descripcion }}</p>
-        <a href="{{ url_for('detalle_articulo', id=articulo.id) }}" class="icon-link gap-1 icon-link-hover stretched-link">Seguir leyendo
+        <a href="{{ url_for('detalle_articulo', slug=articulo.slug) }}" class="icon-link gap-1 icon-link-hover stretched-link">Seguir leyendo
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
             <use xlink:href="#chevron-right"></use>

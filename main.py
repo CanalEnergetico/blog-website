@@ -7,6 +7,7 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask_ckeditor import CKEditor, CKEditorField
 from datetime import datetime
+from slugify import slugify
 
 app = Flask(__name__)
 
@@ -20,9 +21,10 @@ ckeditor = CKEditor(app)
 class Articulos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(150), unique=True, nullable=False)
+    slug = db.Column(db.String(160), unique=True, nullable=False)
     descripcion = db.Column(db.String(300), nullable=False)
     img_url = db.Column(db.String(300), nullable=True)
-    img_fuente = db.Column(db.String(300), nullable=True)  # ← Fuente de la imagen
+    img_fuente = db.Column(db.String(300), nullable=True)
     contenido = db.Column(db.Text, nullable=False)
     autor = db.Column(db.String(300), nullable=False)
     fecha = db.Column(db.String(60))
@@ -90,6 +92,17 @@ def inject_datos_curiosos():
     ]
     return dict(datos_curiosos=datos_curiosos)
 
+# Genera los slugs de los títulos de los artículos para los URLs
+def generar_slug(titulo):
+    base = slugify(titulo)
+    slug = base
+    n = 2
+    while Articulos.query.filter_by(slug=slug).first():
+        slug = f"{base}-{n}"
+        n += 1
+    return slug
+
+
 ### RUTAS PRINCIPALES: WWW.CANALENERGETICO.COM ###
 # Inicio
 @app.route("/")
@@ -111,9 +124,9 @@ def articulos_todos():
     return render_template("articulos.html", articulos=articulos)
 
 # Detalle de un artículo
-@app.route("/articulos/<int:id>")
-def detalle_articulo(id):
-    post = Articulos.query.get_or_404(id)
+@app.route("/articulos/<slug>")
+def detalle_articulo(slug):
+    post = Articulos.query.filter_by(slug=slug).first_or_404()
     return render_template("post.html", articulo=post)
 
 # Formulario para crear un post
@@ -124,6 +137,7 @@ def make_new_post():
         # Crear instancia del modelo
         nuevo = Articulos(
             titulo     = form.titulo.data,
+            slug       = generar_slug(form.titulo.data),
             descripcion= form.descripcion.data,
             img_url    = form.img_url.data,
             img_fuente = form.img_fuente.data,
@@ -134,12 +148,12 @@ def make_new_post():
         )
         db.session.add(nuevo)
         db.session.commit()
-        return redirect(url_for('detalle_articulo', id=nuevo.id))
+        return redirect(url_for('detalle_articulo', slug=nuevo.slug))
     return render_template('make-post.html', form=form)
 
 # Formulario para editar un post
 @app.route("/edit-post/<int:id>", methods=["GET", "POST"])
-def editar_articulo(id):
+def editar_articulo(slug):
     post = Articulos.query.get_or_404(id)
     edit_form = PostForm(
         titulo=post.titulo,
@@ -151,6 +165,8 @@ def editar_articulo(id):
         contenido=post.contenido,
     )
     if edit_form.validate_on_submit():
+        if edit_form.titulo.data != post.titulo:
+            post.slug = generar_slug(edit_form.titulo.data)
         # Crear instancia del modelo
         post.titulo     = edit_form.titulo.data
         post.descripcion= edit_form.descripcion.data
@@ -160,7 +176,7 @@ def editar_articulo(id):
         post.autor      = edit_form.autor.data
         post.contenido  = edit_form.contenido.data
         db.session.commit()
-        return redirect(url_for("detalle_articulo", id=post.id))
+        return redirect(url_for("detalle_articulo", slug=post.slug))
     return render_template("make-post.html", form=edit_form, is_edit=True)
 
 # Borrar un post. CUIDADO: NO PREGUNTA DOS VECES!
