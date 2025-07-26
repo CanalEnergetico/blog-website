@@ -1,3 +1,7 @@
+<!--base.html es la plantilla base principal del blog. Define la estructura común del sitio web (cabecera, -->
+<!--navegación, pie de página) y utiliza bloques {% block %} para que otras páginas hereden y personalicen su -->
+<!--contenido dentro de esta plantilla. Esto permite mantener un diseño coherente en todo el blog.-->
+
 <!DOCTYPE html>
 <html lang="es">
   <head>
@@ -13,7 +17,6 @@
       <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:wght@700&display=swap"
         rel="stylesheet">
-
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -33,6 +36,7 @@
     <!-- HEADER -->
     <header class="blog-header py-2">
       <div class="container">
+        <!-- PARTE SUPERIOR CON EL LOGO-->
         <div class="row flex-nowrap justify-content-between align-items-center">
           <div class="col-12 text-center">
             <a href="{{ url_for('home') }}">
@@ -44,10 +48,10 @@
                 style="object-fit: cover; cursor: pointer;"
               >
             </a>
-
           </div>
         </div>
         <hr>
+        <!-- NAVIGATION BAR -->
         <div class="nav-scroller mb-2">
           <nav class="nav d-flex justify-content-around">
             <a class="p-1 link-secondary" href="{{ url_for('home') }}">Inicio</a>
@@ -62,36 +66,31 @@
     <!-- CONTENIDO -->
     <main class="container py-2">
       {% block content_top %}{% endblock %}
-
       <div class="row">
+        <!-- ÁREA DEL CONTENIDO PRINCIPAL -->
         <div class="col-md-9">
           {% block content %}{% endblock %}
         </div>
-
         <!-- PARTE LATERAL -->
         <aside class="col-md-3 blog-sidebar">
-
-       <!-- CARRUSEL DE DATOS -->
-      <div id="carouselExampleSlidesOnly"
-           class="carousel slide bg-light rounded"
-           data-bs-ride="carousel"
-           data-bs-interval="8000">
-
-        <!-- Título fuera del carousel-inner -->
-        <h4 class="fts-italic p-2">¡Datos curiosos!</h4>
-        <div class="carousel-inner">
-          {% for dato in datos_curiosos %}
-            <div class="carousel-item {% if loop.first %}active{% endif %} p-2">
-              <h6 class="fst-italic text-dark-emphasis">{{ dato.titulo }}</h6>
-              <p class="mb-0">
-                {{ dato.contenido }}<br><br>
-                <em>Fuente: {{ dato.fuente }}</em>
-              </p>
+          <!-- CARRUSEL DE DATOS -->
+          <div id="carouselExampleSlidesOnly"
+               class="carousel slide bg-light rounded"
+               data-bs-ride="carousel"
+               data-bs-interval="8000">
+            <h4 class="fts-italic p-2">¡Datos curiosos!</h4>
+            <div class="carousel-inner">
+              {% for dato in datos_curiosos %}
+                <div class="carousel-item {% if loop.first %}active{% endif %} p-2">
+                  <h6 class="fst-italic text-dark-emphasis">{{ dato.titulo }}</h6>
+                  <p class="mb-0">
+                    {{ dato.contenido }}<br><br>
+                    <em>Fuente: {{ dato.fuente }}</em>
+                  </p>
+                </div>
+              {% endfor %}
             </div>
-          {% endfor %}
-        </div>
-      </div>
-
+          </div>
           <!-- DIVISION DE ENCUENTRANOS -->
 <!--          <div class="p-4">-->
 <!--            <h4 class="fst-italic">Encuéntranos</h4>-->
@@ -101,7 +100,6 @@
 <!--              <li><a href="#">Instagram</a></li>-->
 <!--            </ol>-->
 <!--          </div>-->
-
         </aside>
       </div>
     </main>
