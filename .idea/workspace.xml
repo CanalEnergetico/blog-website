@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="Comment main.py">
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-    </list>
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="Comment index.html" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -240,7 +238,23 @@
       <option name="project" value="LOCAL" />
       <updated>1753539661277</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Comment base.html">
+      <option name="closed" value="true" />
+      <created>1753540235651</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1753540235651</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Comment index.html">
+      <option name="closed" value="true" />
+      <created>1753540474955</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1753540474956</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -262,6 +276,8 @@
     <MESSAGE value="create local env variables" />
     <MESSAGE value="link local env variables" />
     <MESSAGE value="Comment main.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="Comment main.py" />
+    <MESSAGE value="Comment base.html" />
+    <MESSAGE value="Comment index.html" />
+    <option name="LAST_COMMIT_MESSAGE" value="Comment index.html" />
   </component>
 </project>
