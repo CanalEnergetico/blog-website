@@ -11,8 +11,8 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Configuración de la base de datos
-app.config["SECRET_KEY"] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///articulos.db"    # solo local por ahora
+app.config["SECRET_KEY"] = os.environ.get("CANAL_KEY")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_CANAL_URI")    # solo local por ahora
 db = SQLAlchemy(app)
 ckeditor = CKEditor(app)
 

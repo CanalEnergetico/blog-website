@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="add edit-post feature">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instance/articulos.db" beforeDir="false" afterPath="$PROJECT_DIR$/instance/articulos.db" afterDir="false" />
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="comment out href de autor">
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -51,7 +49,7 @@
     &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/edit-delete-post&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;config/env-and-procfile&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/josea/PycharmProjects/blog-energetico/static/images&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;proofread&quot;
   }
@@ -202,7 +200,23 @@
       <option name="project" value="LOCAL" />
       <updated>1753457526239</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="merge feature/edit-delete-post">
+      <option name="closed" value="true" />
+      <created>1753458852260</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1753458852260</updated>
+    </task>
+    <task id="LOCAL-00014" summary="comment out href de autor">
+      <option name="closed" value="true" />
+      <created>1753459446936</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1753459446936</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -218,6 +232,9 @@
     <MESSAGE value="update requirements.txt" />
     <MESSAGE value="Datos curiosos list and base.html update" />
     <MESSAGE value="add edit-post feature" />
-    <option name="LAST_COMMIT_MESSAGE" value="add edit-post feature" />
+    <MESSAGE value="comment delete-post" />
+    <MESSAGE value="merge feature/edit-delete-post" />
+    <MESSAGE value="comment out href de autor" />
+    <option name="LAST_COMMIT_MESSAGE" value="comment out href de autor" />
   </component>
 </project>
