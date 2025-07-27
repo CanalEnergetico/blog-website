@@ -2,11 +2,13 @@ import os
 # from flask_bootstrap import Bootstrap5 # Comentario Linea 3 error bootstrap
 from flask import Flask, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm  import Mapped, mapped_column
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask_ckeditor import CKEditor, CKEditorField
-from datetime import datetime
+from typing import Optional
+from datetime import date
 from slugify import slugify
 
 app = Flask(__name__)
@@ -19,16 +21,17 @@ ckeditor = CKEditor(app)
 
 # Modelo de datos: tabla artículos
 class Articulos(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    titulo = db.Column(db.String(150), unique=True, nullable=False)
-    slug = db.Column(db.String(160), unique=True, nullable=False)
-    descripcion = db.Column(db.String(300), nullable=False)
-    img_url = db.Column(db.String(300), nullable=True)
-    img_fuente = db.Column(db.String(300), nullable=True)
-    contenido = db.Column(db.Text, nullable=False)
-    autor = db.Column(db.String(300), nullable=False)
-    fecha = db.Column(db.String(60))
-    tag = db.Column(db.String(50), nullable=True)  # ← Etiqueta
+    __tablename__ = "articulos"
+    id:          Mapped[int]  = mapped_column(primary_key=True)
+    titulo:      Mapped[str]  = mapped_column(db.String(150), unique=True, nullable=False)
+    slug:        Mapped[str]  = mapped_column(db.String(160), unique=True, nullable=False)
+    descripcion: Mapped[str]  = mapped_column(db.String(300), nullable=False)
+    img_url:     Mapped[Optional[str]] = mapped_column(db.String(300))
+    img_fuente:  Mapped[Optional[str]] = mapped_column(db.String(300))
+    contenido:   Mapped[str]  = mapped_column(db.Text, nullable=False)
+    autor:       Mapped[str]  = mapped_column(db.String(300), nullable=False)
+    fecha:       Mapped[str] = mapped_column(db.String(250), nullable=False)
+    tag:         Mapped[Optional[str]] = mapped_column(db.String(50))
 
 # Para el formulario
 class PostForm(FlaskForm):
@@ -144,7 +147,7 @@ def make_new_post():
             tag        = form.tag.data,
             autor      = form.autor.data,
             contenido  = form.contenido.data,
-            fecha      = datetime.utcnow().strftime('%Y-%m-%d')
+            fecha      = date.today().strftime("%d/%m/%Y")
         )
         db.session.add(nuevo)
         db.session.commit()
@@ -152,9 +155,9 @@ def make_new_post():
     return render_template('make-post.html', form=form)
 
 # Formulario para editar un post
-@app.route("/edit-post/<int:id>", methods=["GET", "POST"])
+@app.route("/edit-post/<slug>", methods=["GET", "POST"])
 def editar_articulo(slug):
-    post = Articulos.query.get_or_404(id)
+    post = Articulos.query.filter_by(slug=slug).first_or_404()
     edit_form = PostForm(
         titulo=post.titulo,
         descripcion=post.descripcion,
@@ -180,9 +183,9 @@ def editar_articulo(slug):
     return render_template("make-post.html", form=edit_form, is_edit=True)
 
 # Borrar un post. CUIDADO: NO PREGUNTA DOS VECES!
-@app.route("/delete-post/<int:id>")
-def delete_post(id):
-    post_to_delete = Articulos.query.get_or_404(id)
+@app.route("/delete-post/<slug>")
+def delete_post(slug):
+    post_to_delete = Articulos.query.filter_by(slug=slug).first_or_404()
     db.session.delete(post_to_delete)
     db.session.commit()
     return redirect(url_for('articulos_todos'))
