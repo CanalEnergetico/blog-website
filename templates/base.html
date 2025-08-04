@@ -31,34 +31,41 @@
   </head>
   <body>
     <!-- HEADER -->
-    <header class="blog-header py-2">
-      <div class="container">
-        <!-- PARTE SUPERIOR CON EL LOGO-->
-        <div class="row flex-nowrap justify-content-between align-items-center">
-          <div class="col-12 text-center">
-            <a href="{{ url_for('home') }}">
-              <img
-                src="{{ url_for('static', filename='images/logo_canal_en.png') }}"
-                alt="Logo Canal Energético"
-                height="90"
-                class="bd-placeholder-img rounded"
-                style="object-fit: cover; cursor: pointer;"
-              >
-            </a>
+    <div class="container">
+      <header class="blog-header py-3 border-bottom">
+          <!-- PARTE SUPERIOR CON EL LOGO-->
+          <div class="row flex-nowrap justify-content-between align-items-center">
+            <div class="col-12 text-center">
+              <a href="{{ url_for('home') }}">
+                <img
+                  src="{{ url_for('static', filename='images/logo_canal_en.png') }}"
+                  alt="Logo Canal Energético"
+                  height="90"
+                  class="bd-placeholder-img rounded"
+                  style="object-fit: cover; cursor: pointer;"
+                >
+              </a>
+            </div>
           </div>
-        </div>
-        <hr>
-        <!-- NAVIGATION BAR -->
-        <div class="nav-scroller mb-2">
-          <nav class="nav d-flex justify-content-around">
-            <a class="p-1 link-secondary" href="{{ url_for('home') }}">Inicio</a>
-            <a class="p-1 link-secondary" href="{{ url_for('articulos_todos') }}">Artículos</a>
-            <a class="p-1 link-secondary" href="{{ url_for('sobre_nosotros') }}">Sobre Nosotros</a>
-          </nav>
-          <hr>
-        </div>
+      </header>
+      <!-- NAVIGATION BAR -->
+      <div class="nav-scroller py-1 mb-3 border-bottom">
+        <nav class="nav d-flex justify-content-around">
+          <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='home' %} fw-bold{% endif %}"
+             href="{{ url_for('home') }}">
+            Inicio
+          </a>
+          <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='articulos_todos' %} fw-bold{% endif %}"
+             href="{{ url_for('articulos_todos') }}">
+            Artículos
+          </a>
+          <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='sobre_nosotros' %} fw-bold{% endif %}"
+             href="{{ url_for('sobre_nosotros') }}">
+            Sobre Nosotros
+          </a>
+        </nav>
       </div>
-    </header>
+    </div>
 
     <!-- CONTENIDO -->
     <main class="container py-2">
@@ -89,11 +96,11 @@
             </div>
             <!-- Controles: flecha izquierda/derecha -->
             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleSlidesOnly" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="carousel-control-prev-icon bg-dark bg-opacity-10 p-3 rounded-circle" aria-hidden="true"></span>
               <span class="visually-hidden">Anterior</span>
             </button>
             <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleSlidesOnly" data-bs-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="carousel-control-next-icon bg-dark bg-opacity-10 p-3 rounded-circle" aria-hidden="true"></span>
               <span class="visually-hidden">Siguiente</span>
             </button>
           </div>
