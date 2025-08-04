@@ -1,6 +1,6 @@
 import os
 # from flask_bootstrap import Bootstrap5 # Comentario Linea 3 error bootstrap
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for,request, send_from_directory, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm  import Mapped, mapped_column
 from flask_wtf import FlaskForm
@@ -8,8 +8,13 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask_ckeditor import CKEditor, CKEditorField
 from typing import Optional
-from datetime import date
+from datetime import date,datetime, timedelta
 from slugify import slugify
+import pytz
+import requests
+
+
+
 
 app = Flask(__name__)
 
@@ -112,6 +117,78 @@ def generar_slug(titulo):
 def home():
     articulos = Articulos.query.order_by(Articulos.fecha.desc()).all()
     return render_template("index.html", articulos=articulos)
+
+
+# Variables globales para cachear precios con API
+cache_precios = None
+cache_timestamp = None
+cache_duracion = timedelta(minutes=15)  # Refrescar cada 15 minutos
+
+
+### API LLAMADA ###
+@app.context_processor
+def inject_precios():
+    global cache_precios, cache_timestamp
+
+    API_KEY = "9JHKJS3C9DDK76LK"
+    simbolos = {
+        "Brent": "BRENT",
+        "WTI": "WTI",
+        "Gas Natural": "NATURAL_GAS"
+    }
+    unidades = {
+        "Brent": "USD/Bbl",
+        "WTI": "USD/Bbl",
+        "Gas Natural": "USD/MMBtu"
+    }
+
+    precios = {}
+    ultima_actualizacion = None
+
+    from datetime import datetime
+    import pytz
+    import requests
+
+    # Si no hay cache o ya expiró
+    if cache_precios is None or cache_timestamp is None or datetime.utcnow() - cache_timestamp > cache_duracion:
+        try:
+            for nombre, funcion in simbolos.items():
+                response = requests.get(
+                    "https://www.alphavantage.co/query",
+                    params={
+                        "function": funcion,
+                        "interval": "daily",
+                        "apikey": API_KEY
+                    },
+                    timeout=10
+                )
+                data = response.json()
+                if "data" in data and len(data["data"]) > 0:
+                    precio = data["data"][0]["value"]
+                    precios[nombre] = {
+                        "valor": round(float(precio), 2),
+                        "unidad": unidades[nombre]
+                    }
+                    if ultima_actualizacion is None:
+                        panama_tz = pytz.timezone("America/Panama")
+                        ultima_actualizacion = datetime.now(panama_tz).strftime("%Y-%m-%d %H:%M")
+                else:
+                    precios[nombre] = {"valor": "No disponible", "unidad": unidades[nombre]}
+
+            cache_precios = (precios, ultima_actualizacion)
+            cache_timestamp = datetime.utcnow()
+
+        except Exception as e:
+            precios = {k: {"valor": f"Error: {str(e)}", "unidad": unidades[k]} for k in simbolos}
+            ultima_actualizacion = None
+            cache_precios = (precios, ultima_actualizacion)
+            cache_timestamp = datetime.utcnow()
+
+    else:
+        precios, ultima_actualizacion = cache_precios
+
+    return dict(precios=precios, ultima_actualizacion=ultima_actualizacion)
+
 
 # Sobre nosotros
 @app.route("/sobre-nosotros")

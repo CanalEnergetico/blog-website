@@ -97,6 +97,26 @@
               <span class="visually-hidden">Siguiente</span>
             </button>
           </div>
+
+         <!-- RECUADRO DE PRECIOS DE ENERGÍA -->
+              <div class="mt-4 p-3 bg-light border rounded">
+        <h5 class="fst-italic">Precios de Energía</h5>
+
+        {% if precios %}
+          <ul class="list-unstyled mb-0">
+            <li>WTI: {{ precios['WTI']['valor'] }} {{ precios['WTI']['unidad'] }}</li>
+            <li>Brent: {{ precios['Brent']['valor'] }} {{ precios['Brent']['unidad'] }}</li>
+            <li>Gas Natural: {{ precios['Gas Natural']['valor'] }} {{ precios['Gas Natural']['unidad'] }}</li>
+          </ul>
+          {% if ultima_actualizacion %}
+            <small class="text-muted">Última actualización: {{ ultima_actualizacion }} (hora Panamá)</small>
+          {% endif %}
+        {% else %}
+          <p class="text-danger">No disponible</p>
+        {% endif %}
+      </div>
+
+
           <!-- DIVISION DE ENCUENTRANOS -->
 <!--          <div class="p-4">-->
 <!--            <h4 class="fst-italic">Encuéntranos</h4>-->
