@@ -95,6 +95,11 @@ def inject_datos_curiosos():
     ]
     return dict(datos_curiosos=datos_curiosos)
 
+@app.context_processor
+def inject_articulos():
+    articulos = Articulos.query.order_by(Articulos.fecha.desc()).all()
+    return dict(articulos=articulos)
+
 # Genera los slugs de los títulos de los artículos para los URLs
 def generar_slug(titulo):
     base = slugify(titulo)
@@ -116,7 +121,8 @@ def home():
 # Sobre nosotros
 @app.route("/sobre-nosotros")
 def sobre_nosotros():
-    return render_template("nosotros.html")
+    articulos = Articulos.query.order_by(Articulos.fecha.desc()).all()
+    return render_template("nosotros.html", articulos=articulos)
 
 # Artículos
 @app.route("/articulos")

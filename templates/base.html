@@ -77,42 +77,83 @@
         </div>
         <!-- PARTE LATERAL -->
         <aside class="col-md-3 blog-sidebar">
-          <!-- CARRUSEL DE DATOS -->
-          <div id="carouselExampleSlidesOnly"
-               class="carousel slide bg-light rounded"
-               data-bs-ride="carousel"
-               data-bs-interval="8000">
-            <h4 class="fts-italic p-2">¡Datos curiosos!</h4>
-            <div class="carousel-inner">
-              {% for dato in datos_curiosos %}
-                <div class="carousel-item {% if loop.first %}active{% endif %} p-2">
-                  <h6 class="fst-italic text-dark-emphasis">{{ dato.titulo }}</h6>
-                  <p class="mb-0">
-                    {{ dato.contenido }}<br><br>
-                    <em>Fuente: {{ dato.fuente }}</em>
-                  </p>
-                </div>
-              {% endfor %}
+          <div class="position-sticky" style="top: 2rem;">
+            <!-- CARRUSEL DE DATOS -->
+            <div id="carouselExampleSlidesOnly"
+                 class="carousel slide bg-light p-3 my-2 rounded"
+                 data-bs-ride="carousel"
+                 data-bs-interval="8000">
+              <h4 class="fts-italic p-2">¡Datos curiosos!</h4>
+              <div class="carousel-inner">
+                {% for dato in datos_curiosos %}
+                  <div class="carousel-item {% if loop.first %}active{% endif %} p-2">
+                    <h6 class="fst-italic text-dark-emphasis">{{ dato.titulo }}</h6>
+                    <p class="mb-0">
+                      {{ dato.contenido }}<br><br>
+                      <em>Fuente: {{ dato.fuente }}</em>
+                    </p>
+                  </div>
+                {% endfor %}
+              </div>
+              <!-- Controles: flecha izquierda/derecha -->
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleSlidesOnly" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon bg-dark bg-opacity-10 p-3 rounded-circle" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleSlidesOnly" data-bs-slide="next">
+                <span class="carousel-control-next-icon bg-dark bg-opacity-10 p-3 rounded-circle" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+              </button>
             </div>
-            <!-- Controles: flecha izquierda/derecha -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleSlidesOnly" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon bg-dark bg-opacity-10 p-3 rounded-circle" aria-hidden="true"></span>
-              <span class="visually-hidden">Anterior</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleSlidesOnly" data-bs-slide="next">
-              <span class="carousel-control-next-icon bg-dark bg-opacity-10 p-3 rounded-circle" aria-hidden="true"></span>
-              <span class="visually-hidden">Siguiente</span>
-            </button>
+            <!-- ÚLTIMAS PUBLICACIONES -->
+            <div class="p-3 my-2">
+                <h4 class="fst-italic">Publicaciones Recientes</h4>
+                <ul class="list-unstyled">
+                  {% for articulo in articulos[-3:]|reverse %}
+                  <li>
+                    <a
+                      class="d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center
+                             py-3 link-body-emphasis text-decoration-none border-top"
+                      href="{{ url_for('detalle_articulo', slug=articulo.slug) }}"
+                    >
+                      {% if articulo.img_url %}
+                        <img
+                          src="{{ articulo.img_url }}"
+                          alt="{{ articulo.titulo }}"
+                          class="bd-placeholder-img rounded"
+                          style="width:100px; height:96px; object-fit: cover;"
+                        >
+                      {% else %}
+                        <img
+                          src="{{ url_for('static', filename='imagen/logo_canal_en.png') }}"
+                          alt="Logo Canal Energético"
+                          class="bd-placeholder-img rounded"
+                          style="object-fit: cover; width:200px; height:250px;"
+                        >
+                      {% endif %}
+                      <div class="col-lg-8">
+                        <h6 class="mb-0 truncate-2">{{ articulo.titulo }}</h6>
+                        <small class="text-body-secondary">{{ articulo.fecha }} | {{ articulo.autor }}</small>
+                      </div>
+                    </a>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            <!-- DIVISION DE ENCUENTRANOS -->
+            <div class="bg-light p-3 my-2 rounded">
+              <h4 class="fst-italic">Encuéntranos</h4>
+              <ol class="list-unstyled">
+                <li><a href="https://www.linkedin.com/company/canalenerg%C3%A9tico/posts/?feedView=all">LinkedIn</a></li>
+                <li><a href="https://www.instagram.com/canal_energetico/">Instagram</a></li>
+                <li><a href="https://github.com/CanalEnergetico">GitHub</a></li>
+                <li><a href="mailto:info.canalenergetico@gmail.com"
+                   title="Envíame un correo a info.canalenergetico@gmail.com">
+                  info.canalenergetico@gmail.com
+                </a></li>
+              </ol>
+            </div>
           </div>
-          <!-- DIVISION DE ENCUENTRANOS -->
-<!--          <div class="p-4">-->
-<!--            <h4 class="fst-italic">Encuéntranos</h4>-->
-<!--            <ol class="list-unstyled">-->
-<!--              <li><a href="#">LinkedIn</a></li>-->
-<!--              <li><a href="#">GitHub</a></li>-->
-<!--              <li><a href="#">Instagram</a></li>-->
-<!--            </ol>-->
-<!--          </div>-->
         </aside>
       </div>
     </main>
