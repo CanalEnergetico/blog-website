@@ -36,10 +36,10 @@
   {% for articulo in articulos[-1:-3:-1] %}
   <div class="col-md-6">
     <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-      <div class="col p-4 d-flex flex-column position-static"> <strong class="d-inline-block mb-2 {{ 'text-primary' if loop.index==1 else 'text-success' }}">{{ articulo.tag }}</strong>
-        <h4 class="mb-0">{{ articulo.titulo }}</h4>
+      <div class="col p-4 d-flex flex-column position-static truncate-1"> <strong class="d-inline-block mb-2 {{ 'text-primary' if loop.index==1 else 'text-success' }}">{{ articulo.tag }}</strong>
+        <h4 class="mb-0 truncate-2">{{ articulo.titulo }}</h4>
         <div class="mb-1 text-body-secondary">{{ articulo.fecha }} | {{ articulo.autor }}</div>
-        <p class="card-text mb-auto">{{ articulo.descripcion }}</p>
+        <p class="mb-auto truncate-2">{{ articulo.descripcion }}</p>
         <a href="{{ url_for('detalle_articulo', slug=articulo.slug) }}" class="icon-link gap-1 icon-link-hover stretched-link">Seguir leyendo
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
@@ -53,19 +53,15 @@
             src="{{ articulo.img_url }}"
             alt="{{ articulo.titulo }}"
             class="bd-placeholder-img rounded"
-            style="object-fit: cover; height: 200px; width: 200px;"
+            style="object-fit: cover; height: 250px; width: 200px;"
           >
         {% else %}
-          <svg aria-label="Placeholder: Thumbnail"
-               class="bd-placeholder-img"
-               width="200" height="250"
-               preserveAspectRatio="xMidYMid slice"
-               role="img"
-               xmlns="http://www.w3.org/2000/svg">
-            <title>Placeholder</title>
-            <rect width="100%" height="100%" fill="#55595c"></rect>
-            <text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text>
-          </svg>
+          <img
+            src="{{ url_for('static', filename='imagen/logo_canal_en.png') }}"
+            alt="Logo Canal Energético"
+            class="bd-placeholder-img rounded"
+            style="object-fit: cover; width:200px; height:250px;"
+          >
         {% endif %}
       </div>
     </div>

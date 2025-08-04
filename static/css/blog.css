@@ -37,11 +37,20 @@ margin-bottom: 4rem;
     color: #727272;
 }
 
-.card-text {
-    display: -webkit-box;           /* actívalo como caja flexible */
-    -webkit-box-orient: vertical;   /* orientación vertical */
-    -webkit-line-clamp: 2;          /* número de líneas máximo */
-    overflow: hidden;               /* oculta el resto */
-    text-overflow: ellipsis;        /* añade “…” al final */
+/* Limita a 2 líneas, añade “…” al final si sobra texto */
+.truncate-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
+
+/* Limita a 1 líneas, añade “…” al final si sobra texto */
+.truncate-1 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
   
