@@ -39,4 +39,53 @@
     </div>
   </article>
 </div>
+
+<!-- FORMULARIO DE COMENTARIOS -->
+<section class="mb-5 mt-4">
+  <h3 class="mb-3">💬 Deja un comentario</h3>
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+          {{ form.nombre.label(class="form-label") }}
+          {{ form.nombre(class="form-control", placeholder="Tu nombre") }}
+        </div>
+        <div class="mb-3">
+          {{ form.correo.label(class="form-label") }}
+          {{ form.correo(class="form-control", placeholder="Tu correo electrónico") }}
+        </div>
+        <div class="mb-3">
+          {{ form.comentario.label(class="form-label") }}
+          {{ form.comentario(class="form-control", rows=3, placeholder="Escribe tu comentario aquí...") }}
+        </div>
+        {{ form.submit(class="btn btn-primary px-4") }}
+      </form>
+    </div>
+  </div>
+</section>
+
+<hr class="my-4">
+
+<!-- LISTA DE COMENTARIOS -->
+<section>
+  <h3 class="mb-3">🗨️ Comentarios</h3>
+  {% if comentarios %}
+    <div class="list-group">
+      {% for c in comentarios %}
+        <div class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-between">
+            <h6 class="mb-1">{{ c.nombre }}</h6>
+            <small class="text-muted">{{ c.fecha }}</small>
+          </div>
+          <p class="mb-1">{{ c.comentario }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted fst-italic">No hay comentarios aún. ¡Sé el primero en opinar!</p>
+  {% endif %}
+</section>
+
+
 {% endblock %}

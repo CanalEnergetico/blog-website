@@ -13,9 +13,9 @@ from slugify import slugify
 
 app = Flask(__name__)
 
-# Configuración de la base de datos
+# Configuración de la base de datos (Articulos + comentarios)
 app.config["SECRET_KEY"] = os.environ.get("CANAL_KEY")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_CANAL_URI")    # solo local por ahora
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_CANAL_URI")
 db = SQLAlchemy(app)
 ckeditor = CKEditor(app)
 
@@ -33,6 +33,18 @@ class Articulos(db.Model):
     fecha:       Mapped[str] = mapped_column(db.String(250), nullable=False)
     tag:         Mapped[Optional[str]] = mapped_column(db.String(50))
 
+# Modelo de datos: Comentarios
+class Comentarios(db.Model):
+    __tablename__ = "comentarios"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    articulo_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey("articulos.id"), nullable=False)
+    nombre: Mapped[str] = mapped_column(db.String(100), nullable=False)
+    correo: Mapped[str] = mapped_column(db.String(150), nullable=False)
+    comentario: Mapped[str] = mapped_column(db.Text, nullable=False)
+    fecha: Mapped[str] = mapped_column(db.String(250), nullable=False)
+
+    articulo = db.relationship("Articulos", backref="comentarios")
+
 # Para el formulario
 class PostForm(FlaskForm):
     titulo      = StringField('Título', validators=[DataRequired()])
@@ -43,6 +55,14 @@ class PostForm(FlaskForm):
     autor       = StringField('Autor', validators=[DataRequired()])
     contenido   = CKEditorField('Contenido', validators=[DataRequired()])
     submit      = SubmitField('Publicar')
+
+# Formulario para comentarios
+class CommentForm(FlaskForm):
+    nombre = StringField('Nombre', validators=[DataRequired()])
+    correo = StringField('Correo electrónico', validators=[DataRequired()])
+    comentario = StringField('Comentario', validators=[DataRequired()])
+    submit = SubmitField('Enviar comentario')
+
 
 # Crear la tabla por primera vez
 with app.app_context():
@@ -132,11 +152,27 @@ def articulos_todos():
         .all()
     return render_template("articulos.html", articulos=articulos)
 
-# Detalle de un artículo
-@app.route("/articulos/<slug>")
+# Ruta para detalle de artículo + comentarios
+@app.route("/articulos/<slug>", methods=["GET", "POST"])
 def detalle_articulo(slug):
     post = Articulos.query.filter_by(slug=slug).first_or_404()
-    return render_template("post.html", articulo=post)
+    form = CommentForm()
+
+    if form.validate_on_submit():
+        nuevo_comentario = Comentarios(
+            articulo_id=post.id,
+            nombre=form.nombre.data,
+            correo=form.correo.data,
+            comentario=form.comentario.data,
+            fecha=date.today().strftime("%d/%m/%Y")
+        )
+        db.session.add(nuevo_comentario)
+        db.session.commit()
+        return redirect(url_for("detalle_articulo", slug=slug))
+
+    comentarios = Comentarios.query.filter_by(articulo_id=post.id).order_by(Comentarios.id.desc()).all()
+    return render_template("post.html", articulo=post, form=form, comentarios=comentarios)
+
 
 # Formulario para crear un post
 @app.route("/new-post", methods=["GET", "POST"])
@@ -195,6 +231,14 @@ def delete_post(slug):
     db.session.delete(post_to_delete)
     db.session.commit()
     return redirect(url_for('articulos_todos'))
+
+# Borrar un comentario. CUIDADO: NO PREGUNTA DOS VECES!
+@app.route("/delete-comment/<int:id>")
+def delete_comment(id):
+    comentario_to_delete = Comentarios.query.get_or_404(id)
+    db.session.delete(comentario_to_delete)
+    db.session.commit()
+    return redirect(url_for('home'))  # o redirige donde quieras
 
 # Ejecutar en local
 if __name__ == "__main__":
