@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="Cambio about us fundadores">
-      <change beforePath="$PROJECT_DIR$/.idea/blog-energetico.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/blog-energetico.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instance/articulos.db" beforeDir="false" afterPath="$PROJECT_DIR$/instance/articulos.db" afterDir="false" />
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="new branch">
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,18 +43,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;update-articulos&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/josea/PycharmProjects/blog-energetico/static/images&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;proofread&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Python.main.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/josea/PycharmProjects/blog-energetico/static/images",
+    "settings.editor.selected.configurable": "proofread"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\josea\PycharmProjects\blog-energetico\static\images" />
@@ -269,7 +266,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753540905293</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="new branch">
+      <option name="closed" value="true" />
+      <created>1754352937912</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1754352937912</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -294,6 +299,7 @@
     <MESSAGE value="Comment base.html" />
     <MESSAGE value="Comment index.html" />
     <MESSAGE value="debug=False" />
-    <option name="LAST_COMMIT_MESSAGE" value="debug=False" />
+    <MESSAGE value="new branch" />
+    <option name="LAST_COMMIT_MESSAGE" value="new branch" />
   </component>
 </project>
