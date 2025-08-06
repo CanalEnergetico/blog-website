@@ -28,13 +28,13 @@
         style="max-height: 500px; object-fit: cover;">
       {% if articulo.img_fuente %}
         <figcaption class="figure-caption text-end fst-italic">
-          Fuente: {{ articulo.img_fuente }}
+          Foto: {{ articulo.img_fuente }}
+          <p></p>
         </figcaption>
       {% endif %}
     {% endif %}
 
-    <div class="article-content"
-         style="text-align: justify; ">
+    <div class="article-content border-bottom">
       {{ articulo.contenido | safe }}
     </div>
   </article>

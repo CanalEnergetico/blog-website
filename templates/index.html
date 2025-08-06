@@ -90,8 +90,9 @@
             style="max-height: 500px; object-fit: cover;">
           {% if articulos[-1].img_fuente %}
             <figcaption class="figure-caption text-end fst-italic">
-              Fuente: {{ articulos[-1].img_fuente }}
-            </figcaption>
+              Foto: {{ articulos[-1].img_fuente }}
+              <p></p>
+           </figcaption>
           {% endif %}
         {% else %}
           <img
@@ -102,8 +103,7 @@
           >
         {% endif %}
 
-        <div class="article-content"
-             style="text-align: justify; ">
+        <div class="article-content">
           {{ articulos[-1].contenido | safe }}
         </div>
     </article>
