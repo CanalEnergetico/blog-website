@@ -1,2 +1,1 @@
-#Forzar a Render a usar esta version de Python
 python-3.12.3
