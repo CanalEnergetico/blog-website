@@ -59,14 +59,15 @@
           {{ form.comentario.label(class="form-label") }}
           {{ form.comentario(class="form-control", rows=3, placeholder="Escribe tu comentario aquí...") }}
         </div>
-                <!-- Botón de enviar -->
+
+        <!-- Botón de enviar -->
         {{ form.submit(class="btn btn-primary px-4") }}
 
-                <!-- Disclaimer de privacidad -->
+        <!-- Disclaimer con enlace al modal -->
         <p class="text-muted small mt-3 mb-0">
-          Al enviar un comentario, aceptas que tu nombre y correo electrónico sean almacenados únicamente con fines de identificación y moderación. No compartiremos esta información con terceros. Se aplica la <a href="https://policies.google.com/privacy" target="_blank">Política de Privacidad</a> de Google.
+          Al enviar un comentario, aceptas nuestra
+          <a href="#" data-bs-toggle="modal" data-bs-target="#modalPrivacidad">Política de Privacidad</a>.
         </p>
-
       </form>
     </div>
   </div>
@@ -93,6 +94,24 @@
     <p class="text-muted fst-italic">No hay comentarios aún. ¡Sé el primero en opinar!</p>
   {% endif %}
 </section>
+
+<!-- MODAL POLÍTICA DE PRIVACIDAD -->
+<div class="modal fade" id="modalPrivacidad" tabindex="-1" aria-labelledby="modalPrivacidadLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalPrivacidadLabel">Política de Privacidad</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p>En Canal Energético, valoramos tu privacidad. Los datos personales que compartas con nosotros a través del formulario (nombre y correo electrónico) serán utilizados únicamente con el propósito de mostrar tu comentario y facilitar su moderación.</p>
+        <p>No compartimos tu información con terceros, ni la utilizamos con fines comerciales. Tampoco utilizamos cookies ni tecnologías de seguimiento propias.</p>
+        <p>Este sitio web está protegido por reCAPTCHA y se aplican la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidad</a> y los <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Términos de Servicio</a> de Google.</p>
+        <p class="mb-0">Canal Energético – Panamá</p>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 {% endblock %}

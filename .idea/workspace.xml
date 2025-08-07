@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="Disclaimer en comentarios">
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="Encuentranos cambios, logos">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -299,11 +298,18 @@
       <option name="project" value="LOCAL" />
       <updated>1754570667661</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="Encuentranos cambios, logos">
+      <option name="closed" value="true" />
+      <created>1754573023221</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1754573023221</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="First commit" />
     <MESSAGE value="comments" />
     <MESSAGE value="photos eliminated" />
     <MESSAGE value="Add gitignore, eliminate photos" />
@@ -328,6 +334,7 @@
     <MESSAGE value="delete post + debug false" />
     <MESSAGE value="Actualizacion base de datos articulos y comentarios" />
     <MESSAGE value="Disclaimer en comentarios" />
-    <option name="LAST_COMMIT_MESSAGE" value="Disclaimer en comentarios" />
+    <MESSAGE value="Encuentranos cambios, logos" />
+    <option name="LAST_COMMIT_MESSAGE" value="Encuentranos cambios, logos" />
   </component>
 </project>
