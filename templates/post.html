@@ -59,7 +59,14 @@
           {{ form.comentario.label(class="form-label") }}
           {{ form.comentario(class="form-control", rows=3, placeholder="Escribe tu comentario aquí...") }}
         </div>
+                <!-- Botón de enviar -->
         {{ form.submit(class="btn btn-primary px-4") }}
+
+                <!-- Disclaimer de privacidad -->
+        <p class="text-muted small mt-3 mb-0">
+          Al enviar un comentario, aceptas que tu nombre y correo electrónico sean almacenados únicamente con fines de identificación y moderación. No compartiremos esta información con terceros. Se aplica la <a href="https://policies.google.com/privacy" target="_blank">Política de Privacidad</a> de Google.
+        </p>
+
       </form>
     </div>
   </div>
