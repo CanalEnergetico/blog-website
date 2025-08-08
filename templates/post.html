@@ -82,9 +82,16 @@
     <div class="list-group">
       {% for c in comentarios %}
         <div class="list-group-item list-group-item-action flex-column align-items-start">
-          <div class="d-flex w-100 justify-content-between">
+          <div class="d-flex w-100 justify-content-between align-items-center">
             <h6 class="mb-1">{{ c.nombre }}</h6>
-            <small class="text-muted">{{ c.fecha }}</small>
+            <small class="text-muted">
+              <!-- ID oculto pero seleccionable -->
+              <span class="user-select-all"
+                    style="color:transparent; text-shadow: 0 0 0 #ffffff; margin-right: .25rem;">
+                #{{ c.id }}
+              </span>
+              {{ c.fecha }}
+            </small>
           </div>
           <p class="mb-1">{{ c.comentario }}</p>
         </div>
