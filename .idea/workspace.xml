@@ -39,6 +39,7 @@
   &quot;associatedIndex&quot;: 8
 }</component>
   <component name="ProjectId" id="2z322f8OP4n5uRtr4ATuTrcx94x" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -50,7 +51,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "optimizacion/infra-base",
     "last_opened_file_path": "C:/Users/josea/PycharmProjects/blog-energetico/static/images",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
@@ -314,11 +315,18 @@
       <option name="project" value="LOCAL" />
       <updated>1754574418954</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Politica de privacidad mejorada con pop up">
+      <option name="closed" value="true" />
+      <created>1754849701848</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1754849701848</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="photos eliminated" />
     <MESSAGE value="Add gitignore, eliminate photos" />
     <MESSAGE value="Properly eliminate photos" />
     <MESSAGE value="Unnecesseray modules eliminates" />
@@ -342,6 +350,7 @@
     <MESSAGE value="Actualizacion base de datos articulos y comentarios" />
     <MESSAGE value="Disclaimer en comentarios" />
     <MESSAGE value="Encuentranos cambios, logos" />
+    <MESSAGE value="mer" />
     <MESSAGE value="Politica de privacidad mejorada con pop up" />
     <option name="LAST_COMMIT_MESSAGE" value="Politica de privacidad mejorada con pop up" />
   </component>
