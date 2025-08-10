@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="reestructuracion completa de la pagina" />
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="update workspace">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -398,12 +400,26 @@
       <option name="project" value="LOCAL" />
       <updated>1754856219773</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="incluir forms.py">
+      <option name="closed" value="true" />
+      <created>1754856328762</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1754856328762</updated>
+    </task>
+    <task id="LOCAL-00035" summary="update workspace">
+      <option name="closed" value="true" />
+      <created>1754856380868</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1754856380868</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="update requirements.txt" />
-    <MESSAGE value="Datos curiosos list and base.html update" />
     <MESSAGE value="add edit-post feature" />
     <MESSAGE value="comment delete-post" />
     <MESSAGE value="merge feature/edit-delete-post" />
@@ -427,6 +443,8 @@
     <MESSAGE value="crear sitemap.xlm" />
     <MESSAGE value="anadir SEO" />
     <MESSAGE value="reestructuracion completa de la pagina" />
-    <option name="LAST_COMMIT_MESSAGE" value="reestructuracion completa de la pagina" />
+    <MESSAGE value="incluir forms.py" />
+    <MESSAGE value="update workspace" />
+    <option name="LAST_COMMIT_MESSAGE" value="update workspace" />
   </component>
 </project>
