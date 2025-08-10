@@ -10,12 +10,16 @@ from flask_ckeditor import CKEditor, CKEditorField
 from typing import Optional
 from datetime import date
 from slugify import slugify
+from dotenv import load_dotenv
+
+# Carga las variables de entorno desde .env en local
+load_dotenv()
 
 app = Flask(__name__)
 
 # Configuración de la base de datos (Articulos + comentarios)
-app.config["SECRET_KEY"] = os.environ.get("CANAL_KEY")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_CANAL_URI")
+app.config["SECRET_KEY"] = os.getenv("CANAL_KEY", "dev-secret")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DB_CANAL_URI", "sqlite:///instance/dev.db")
 db = SQLAlchemy(app)
 ckeditor = CKEditor(app)
 
@@ -242,4 +246,4 @@ def delete_comment(id):
 
 # Ejecutar en local
 if __name__ == "__main__":
-    app.run(debug=False, port=5002)
+    app.run(debug=True, port=5002)

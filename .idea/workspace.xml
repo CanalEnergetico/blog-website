@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="Politica de privacidad mejorada con pop up">
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="actualizar gitignore">
+      <change afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -323,11 +325,18 @@
       <option name="project" value="LOCAL" />
       <updated>1754849701848</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="actualizar gitignore">
+      <option name="closed" value="true" />
+      <created>1754850492675</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1754850492675</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add gitignore, eliminate photos" />
     <MESSAGE value="Properly eliminate photos" />
     <MESSAGE value="Unnecesseray modules eliminates" />
     <MESSAGE value="merge branch, fundadore.ong" />
@@ -352,6 +361,7 @@
     <MESSAGE value="Encuentranos cambios, logos" />
     <MESSAGE value="mer" />
     <MESSAGE value="Politica de privacidad mejorada con pop up" />
-    <option name="LAST_COMMIT_MESSAGE" value="Politica de privacidad mejorada con pop up" />
+    <MESSAGE value="actualizar gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="actualizar gitignore" />
   </component>
 </project>
