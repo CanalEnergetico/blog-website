@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Página no encontrada — Canal Energético{% endblock %}
+{% block meta_description %}La página que buscas no existe o fue movida.{% endblock %}
+
+{% block content %}
+<section class="py-5 text-center">
+  <div class="container">
+    <div class="mx-auto mb-4" style="width:96px;height:96px;">
+      <img src="{{ url_for('static', filename='images/lightning-fill.svg') }}" alt="" class="img-fluid opacity-50">
+    </div>
+    <h1 class="display-5 fw-bold">404</h1>
+    <p class="lead text-body-secondary mb-4">
+      Ups… no encontramos lo que buscabas.<br>
+      Puede que el enlace esté roto o que el artículo haya cambiado de dirección.
+    </p>
+    <div class="d-flex gap-2 justify-content-center">
+      <a class="btn btn-primary" href="{{ url_for('main.home') }}">Ir al inicio</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('main.articulos_todos') }}">Ver artículos</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
