@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="crear .env para mejor manejo de las variables de entorno y actualizar requirements">
-      <change afterPath="$PROJECT_DIR$/static/robots.txt" afterDir="false" />
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="crear robots.txt">
+      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -61,6 +61,9 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\josea\PycharmProjects\blog-energetico\static\images" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\josea\PycharmProjects\blog-energetico\static" />
     </key>
   </component>
   <component name="RunManager">
@@ -341,11 +344,18 @@
       <option name="project" value="LOCAL" />
       <updated>1754851241093</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="crear robots.txt">
+      <option name="closed" value="true" />
+      <created>1754851657737</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1754851657737</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Unnecesseray modules eliminates" />
     <MESSAGE value="merge branch, fundadore.ong" />
     <MESSAGE value="gunicorn, create Procfile" />
     <MESSAGE value="Procfile" />
@@ -370,6 +380,7 @@
     <MESSAGE value="Politica de privacidad mejorada con pop up" />
     <MESSAGE value="actualizar gitignore" />
     <MESSAGE value="crear .env para mejor manejo de las variables de entorno y actualizar requirements" />
-    <option name="LAST_COMMIT_MESSAGE" value="crear .env para mejor manejo de las variables de entorno y actualizar requirements" />
+    <MESSAGE value="crear robots.txt" />
+    <option name="LAST_COMMIT_MESSAGE" value="crear robots.txt" />
   </component>
 </project>

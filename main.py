@@ -1,6 +1,6 @@
 import os
 # from flask_bootstrap import Bootstrap5 # Comentario Linea 3 error bootstrap
-from flask import Flask, render_template, redirect, url_for, send_from_directory
+from flask import Flask, render_template, redirect, url_for, send_from_directory, Response, Request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm  import Mapped, mapped_column
 from flask_wtf import FlaskForm
@@ -8,7 +8,7 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask_ckeditor import CKEditor, CKEditorField
 from typing import Optional
-from datetime import date
+from datetime import date, datetime
 from slugify import slugify
 from dotenv import load_dotenv
 
@@ -134,6 +134,13 @@ def generar_slug(titulo):
         n += 1
     return slug
 
+def _parse_fecha(fecha_str: str) -> date:
+    for fmt in ("%d/%m/%Y", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(fecha_str, fmt).date()
+        except Exception:
+            pass
+    return date.today()
 
 ### RUTAS PRINCIPALES: WWW.CANALENERGETICO.COM ###
 # Inicio
@@ -247,6 +254,48 @@ def delete_comment(id):
 @app.route("/robots.txt")
 def robots():
     return send_from_directory(app.static_folder, "robots.txt", mimetype="text/plain")
+
+@app.route("/sitemap.xml", methods=["GET"])
+def sitemap():
+    pages = []
+
+    # 1) Rutas estáticas públicas (GET sin parámetros)
+    excluir = {"static", "robots", "sitemap"}
+    for rule in app.url_map.iter_rules():
+        if "GET" in rule.methods and len(rule.arguments) == 0 and rule.endpoint not in excluir:
+            pages.append({
+                "loc": url_for(rule.endpoint, _external=True),
+                "lastmod": date.today().isoformat(),
+                "changefreq": "weekly",
+                "priority": "0.6",
+            })
+
+    # 2) Artículos desde la BBDD (usando tu modelo real)
+    posts = db.session.query(Articulos.slug, Articulos.fecha).all()
+    for slug, fecha_str in posts:
+        last = _parse_fecha(fecha_str) if fecha_str else date.today()
+        pages.append({
+            "loc": url_for("detalle_articulo", slug=slug, _external=True),
+            "lastmod": last.isoformat(),
+            "changefreq": "weekly",
+            "priority": "0.8",
+        })
+
+    # 3) Construir XML
+    xml_parts = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+    ]
+    for p in pages:
+        xml_parts.append("  <url>")
+        xml_parts.append(f"    <loc>{p['loc']}</loc>")
+        xml_parts.append(f"    <lastmod>{p['lastmod']}</lastmod>")
+        xml_parts.append(f"    <changefreq>{p['changefreq']}</changefreq>")
+        xml_parts.append(f"    <priority>{p['priority']}</priority>")
+        xml_parts.append("  </url>")
+    xml_parts.append("</urlset>")
+    return Response("\n".join(xml_parts), mimetype="application/xml")
+
 
 # Ejecutar en local
 if __name__ == "__main__":
