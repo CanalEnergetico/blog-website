@@ -1,6 +1,6 @@
 import os
 # from flask_bootstrap import Bootstrap5 # Comentario Linea 3 error bootstrap
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm  import Mapped, mapped_column
 from flask_wtf import FlaskForm
@@ -243,6 +243,10 @@ def delete_comment(id):
     db.session.delete(comentario_to_delete)
     db.session.commit()
     return redirect(url_for('home'))  # o redirige donde quieras
+
+@app.route("/robots.txt")
+def robots():
+    return send_from_directory(app.static_folder, "robots.txt", mimetype="text/plain")
 
 # Ejecutar en local
 if __name__ == "__main__":
