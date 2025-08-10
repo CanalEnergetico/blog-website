@@ -4,24 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="anadir SEO">
-      <change afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/context.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/extensions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/routes.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/run.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Procfile" beforeDir="false" afterPath="$PROJECT_DIR$/Procfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/articulos.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/articulos.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/post.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/post.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/registrarse.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/registrarse.html" afterDir="false" />
-    </list>
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="reestructuracion completa de la pagina" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -44,12 +27,12 @@
     &quot;assignee&quot;: &quot;jackovic05&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/CanalEnergetico/blog-website.git&quot;,
-    &quot;accountId&quot;: &quot;94ec6d12-d3bc-49ce-a561-661a44d79722&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/CanalEnergetico/blog-website.git",
+    "accountId": "a3c71650-eddb-43ac-bd4e-588944009157"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -77,8 +60,8 @@
       <recent name="C:\Users\josea\PycharmProjects\blog-energetico\static\images" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\josea\PycharmProjects\blog-energetico\app" />
       <recent name="C:\Users\josea\PycharmProjects\blog-energetico" />
+      <recent name="C:\Users\josea\PycharmProjects\blog-energetico\app" />
       <recent name="C:\Users\josea\PycharmProjects\blog-energetico\static" />
     </key>
   </component>
@@ -138,7 +121,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-41e8cd69c857-64d779b69b7a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26927.90" />
+        <option value="bundled-python-sdk-d7ad00fb9fc3-c546a90a8094-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-242.23726.102" />
       </set>
     </attachedChunks>
   </component>
@@ -407,11 +390,18 @@
       <option name="project" value="LOCAL" />
       <updated>1754852415335</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="reestructuracion completa de la pagina">
+      <option name="closed" value="true" />
+      <created>1754856219773</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1754856219773</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Procfile" />
     <MESSAGE value="update requirements.txt" />
     <MESSAGE value="Datos curiosos list and base.html update" />
     <MESSAGE value="add edit-post feature" />
@@ -436,6 +426,7 @@
     <MESSAGE value="crear robots.txt" />
     <MESSAGE value="crear sitemap.xlm" />
     <MESSAGE value="anadir SEO" />
-    <option name="LAST_COMMIT_MESSAGE" value="anadir SEO" />
+    <MESSAGE value="reestructuracion completa de la pagina" />
+    <option name="LAST_COMMIT_MESSAGE" value="reestructuracion completa de la pagina" />
   </component>
 </project>
