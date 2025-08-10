@@ -5,6 +5,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Canal Energético{% endblock %}</title>
+    <!-- SEO básico -->
+    <meta name="description" content="{% block meta_description %}Blog sobre energía en Panamá, la región y el mundo.{% endblock %}">
+    <link rel="canonical" href="{{ request.base_url }}">
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:title" content="{% block og_title %}{% block title %}Canal Energético{% endblock %}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Análisis, datos y novedades del sector energético.{% endblock %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{{ request.base_url }}">
+    {% if og_image %}<meta property="og:image" content="{{ og_image }}">{% endif %}
+    <meta name="twitter:card" content="summary_large_image">
+
     {% block styles %}
       <!-- Bootstrap CSS -->
       <link
@@ -125,7 +137,7 @@
                         >
                       {% else %}
                         <img
-                          src="{{ url_for('static', filename='imagen/logo_canal_en.png') }}"
+                          src="{{ url_for('static', filename='images/logo_canal_en.png') }}"
                           alt="Logo Canal Energético"
                           class="bd-placeholder-img rounded"
                           style="object-fit: cover; width:200px; height:250px;"
