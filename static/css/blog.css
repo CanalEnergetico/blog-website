@@ -9,8 +9,6 @@
 text-decoration: none;
 }
 
-
-
 h1, h2, h3, h4, h5, h6 {
     font-family: "Playfair Display", Georgia, "Times New Roman", sans-serif;
     letter-spacing: 0.01em;
@@ -55,4 +53,10 @@ margin-bottom: 4rem;
   overflow: hidden;
 }
 
-  
+/* Suaviza los estados vacíos/errores */
+section.text-center .display-5 { letter-spacing: .3px; }
+.opacity-50 { opacity: .5; }
+
+/* Botones suaves coherentes con Bootstrap 5 */
+.btn-primary { border-radius: 12px; }
+.btn-outline-secondary { border-radius: 12px; }

@@ -65,6 +65,10 @@ db.sqlite3-journal
 instance/
 .webassets-cache
 
+# Mantener carpeta instance pero ignorar su contenido
+instance/*
+!instance/.gitkeep
+
 # Scrapy stuff:
 .scrapy
 
@@ -135,6 +139,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+# Archivos de configuración local / secretos
+.env.*
+!.env.example
 
 # Spyder project settings
 .spyderproject

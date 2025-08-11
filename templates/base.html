@@ -1,10 +1,22 @@
 <!DOCTYPE html>
-
 <html lang="es">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Canal Energético{% endblock %}</title>
+
+    <!-- SEO básico -->
+    <meta name="description" content="{% block meta_description %}Blog sobre energía en Panamá, la región y el mundo.{% endblock %}">
+    <link rel="canonical" href="{{ request.base_url }}">
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Análisis, datos y novedades del sector energético.{% endblock %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{{ request.base_url }}">
+    {% if og_image %}<meta property="og:image" content="{{ og_image }}">{% endif %}
+    <meta name="twitter:card" content="summary_large_image">
+
     {% block styles %}
       <!-- Bootstrap CSS -->
       <link
@@ -36,7 +48,7 @@
           <!-- PARTE SUPERIOR CON EL LOGO-->
           <div class="row flex-nowrap justify-content-between align-items-center">
             <div class="col-12 text-center">
-              <a href="{{ url_for('home') }}">
+              <a href="{{ url_for('main.home') }}">
                 <img
                   src="{{ url_for('static', filename='images/logo_canal_en.png') }}"
                   alt="Logo Canal Energético"
@@ -51,16 +63,16 @@
       <!-- NAVIGATION BAR -->
       <div class="nav-scroller py-1 mb-3 border-bottom">
         <nav class="nav d-flex justify-content-around">
-          <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='home' %} fw-bold{% endif %}"
-             href="{{ url_for('home') }}">
+          <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='main.home' %} fw-bold{% endif %}"
+             href="{{ url_for('main.home') }}">
             Inicio
           </a>
-          <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='articulos_todos' %} fw-bold{% endif %}"
-             href="{{ url_for('articulos_todos') }}">
+          <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='main.articulos_todos' %} fw-bold{% endif %}"
+             href="{{ url_for('main.articulos_todos') }}">
             Artículos
           </a>
-          <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='sobre_nosotros' %} fw-bold{% endif %}"
-             href="{{ url_for('sobre_nosotros') }}">
+          <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='main.sobre_nosotros' %} fw-bold{% endif %}"
+             href="{{ url_for('main.sobre_nosotros') }}">
             Sobre Nosotros
           </a>
         </nav>
@@ -114,7 +126,7 @@
                     <a
                       class="d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center
                              py-3 link-body-emphasis text-decoration-none border-top"
-                      href="{{ url_for('detalle_articulo', slug=articulo.slug) }}"
+                      href="{{ url_for('main.detalle_articulo', slug=articulo.slug) }}"
                     >
                       {% if articulo.img_url %}
                         <img
@@ -125,7 +137,7 @@
                         >
                       {% else %}
                         <img
-                          src="{{ url_for('static', filename='imagen/logo_canal_en.png') }}"
+                          src="{{ url_for('static', filename='images/logo_canal_en.png') }}"
                           alt="Logo Canal Energético"
                           class="bd-placeholder-img rounded"
                           style="object-fit: cover; width:200px; height:250px;"
@@ -144,7 +156,6 @@
       <div class="bg-light p-3 my-2 rounded redes-box">
         <h4 class="fst-italic">Encuéntranos</h4>
         <ul class="list-unstyled d-grid gap-2">
-
           <li>
             <a href="https://www.linkedin.com/company/canalenerg%C3%A9tico/posts/?feedView=all"
                class="d-flex align-items-center text-decoration-none"
@@ -167,7 +178,6 @@
               LinkedIn
             </a>
           </li>
-
           <li>
             <a href="https://www.instagram.com/canal_energetico/"
                class="d-flex align-items-center text-decoration-none"
@@ -207,7 +217,6 @@
               Instagram
             </a>
           </li>
-
           <li>
             <a href="https://github.com/CanalEnergetico"
                class="d-flex align-items-center text-decoration-none"
@@ -231,7 +240,6 @@
               GitHub
             </a>
           </li>
-
           <li>
             <a href="mailto:info.canalenergetico@gmail.com"
                class="text-decoration-none"
@@ -243,9 +251,6 @@
         </ul>
       </div>
 
-
-
-
           </div>
         </aside>
       </div>
@@ -256,7 +261,7 @@
       <div class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
         <p class="col-md-4 mb-0 text-body-secondary">© 2025 Blog Energético</p>
         <a
-          href="{{ url_for('home') }}"
+          href="{{ url_for('main.home') }}"
           class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"
           aria-label="Bootstrap">
           <svg class="bi me-2" width="40" height="32" aria-hidden="true">
@@ -264,9 +269,9 @@
           </svg>
         </a>
         <ul class="nav col-md-4 justify-content-end">
-          <li class="nav-item"><a href="{{ url_for('home') }}" class="nav-link px-2 text-body-secondary">Inicio</a></li>
-          <li class="nav-item"><a href="{{ url_for('articulos_todos') }}" class="nav-link px-2 text-body-secondary">Artículos</a></li>
-          <li class="nav-item"><a href="{{ url_for('sobre_nosotros') }}" class="nav-link px-2 text-body-secondary">Sobre Nosotros</a></li>
+          <li class="nav-item"><a href="{{ url_for('main.home') }}" class="nav-link px-2 text-body-secondary">Inicio</a></li>
+          <li class="nav-item"><a href="{{ url_for('main.articulos_todos') }}" class="nav-link px-2 text-body-secondary">Artículos</a></li>
+          <li class="nav-item"><a href="{{ url_for('main.sobre_nosotros') }}" class="nav-link px-2 text-body-secondary">Sobre Nosotros</a></li>
         </ul>
       </div>
     </footer>

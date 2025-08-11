@@ -7,8 +7,8 @@
 <!-- Breadcrumbs -->
   <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
     <ol class="breadcrumb small">
-      <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Inicio</a></li>
-      <li class="breadcrumb-item"><a href="{{ url_for('articulos_todos') }}">Artículos</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('main.home') }}">Inicio</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('main.articulos_todos') }}">Artículos</a></li>
       <li class="breadcrumb-item active" aria-current="page">{{ articulo.titulo }}</li>
     </ol>
   </nav>

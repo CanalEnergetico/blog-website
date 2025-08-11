@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Error del servidor — Canal Energético{% endblock %}
+{% block meta_description %}Ocurrió un problema inesperado en el servidor.{% endblock %}
+
+{% block content %}
+<section class="py-5 text-center">
+  <div class="container">
+    <div class="mx-auto mb-4" style="width:96px;height:96px;">
+      <img src="{{ url_for('static', filename='images/lightning-fill.svg') }}" alt="" class="img-fluid opacity-50">
+    </div>
+    <h1 class="display-5 fw-bold">Algo salió mal</h1>
+    <p class="lead text-body-secondary mb-4">
+      Estamos trabajando para solucionarlo. Por favor, vuelve a intentar en unos minutos.
+    </p>
+    <div class="d-flex gap-2 justify-content-center">
+      <a class="btn btn-primary" href="{{ url_for('main.home') }}">Volver al inicio</a>
+      <a class="btn btn-outline-secondary" href="mailto:info.canalenergetico@gmail.com">Reportar el problema</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
