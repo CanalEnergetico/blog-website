@@ -11,20 +11,17 @@ bp = Blueprint("main", __name__)
 # Inicio
 @bp.route("/", endpoint="home")
 def home():
-    articulos = Articulos.query.order_by(Articulos.fecha.desc()).all()
-    return render_template("index.html", articulos=articulos)
+    return render_template("index.html")
 
 # Sobre nosotros
 @bp.route("/sobre-nosotros", endpoint="sobre_nosotros")
 def sobre_nosotros():
-    articulos = Articulos.query.order_by(Articulos.fecha.desc()).all()
-    return render_template("nosotros.html", articulos=articulos)
+    return render_template("nosotros.html")
 
 # Artículos
 @bp.route("/articulos", endpoint="articulos_todos")
 def articulos_todos():
-    articulos = Articulos.query.order_by(Articulos.fecha.desc()).all()
-    return render_template("articulos.html", articulos=articulos)
+    return render_template("articulos.html")
 
 # Detalle + comentarios
 @bp.route("/articulos/<slug>", methods=["GET", "POST"], endpoint="detalle_articulo")

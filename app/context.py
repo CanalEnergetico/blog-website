@@ -49,5 +49,5 @@ def register_context(app):
 
     @app.context_processor
     def inject_articulos():
-        articulos = Articulos.query.order_by(Articulos.fecha.desc()).all()
+        articulos = Articulos.query.order_by(Articulos.id.asc()).all()
         return dict(articulos=articulos)
