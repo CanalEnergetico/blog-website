@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="debug false">
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="commit workspace">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -355,11 +355,18 @@
       <option name="project" value="LOCAL" />
       <updated>1754942632422</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="commit workspace">
+      <option name="closed" value="true" />
+      <created>1755024426999</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1755024426999</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Unnecesseray modules eliminates" />
     <MESSAGE value="merge branch, fundadore.ong" />
     <MESSAGE value="gunicorn, create Procfile" />
     <MESSAGE value="Procfile" />
@@ -384,6 +391,7 @@
     <MESSAGE value="workspace" />
     <MESSAGE value="merge commit" />
     <MESSAGE value="debug false" />
-    <option name="LAST_COMMIT_MESSAGE" value="debug false" />
+    <MESSAGE value="commit workspace" />
+    <option name="LAST_COMMIT_MESSAGE" value="commit workspace" />
   </component>
 </project>
