@@ -30,12 +30,12 @@
     &quot;assignee&quot;: &quot;jackovic05&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/CanalEnergetico/blog-website.git",
-    "accountId": "94ec6d12-d3bc-49ce-a561-661a44d79722"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/CanalEnergetico/blog-website.git&quot;,
+    &quot;accountId&quot;: &quot;94ec6d12-d3bc-49ce-a561-661a44d79722&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -379,7 +379,23 @@
       <option name="project" value="LOCAL" />
       <updated>1755035751602</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="merge commit">
+      <option name="closed" value="true" />
+      <created>1755713148891</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1755713148891</updated>
+    </task>
+    <task id="LOCAL-00033" summary="merge commit">
+      <option name="closed" value="true" />
+      <created>1755713160289</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1755713160289</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -404,10 +420,10 @@
     <MESSAGE value="Disclaimer en comentarios" />
     <MESSAGE value="Encuentranos cambios, logos" />
     <MESSAGE value="Politica de privacidad mejorada con pop up" />
-    <MESSAGE value="merge commit" />
     <MESSAGE value="debug false" />
     <MESSAGE value="commit workspace" />
     <MESSAGE value="workspace" />
-    <option name="LAST_COMMIT_MESSAGE" value="workspace" />
+    <MESSAGE value="merge commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="merge commit" />
   </component>
 </project>
