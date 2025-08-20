@@ -71,13 +71,13 @@
              href="{{ url_for('main.articulos_todos') }}">
             Artículos
           </a>
+          <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='main.Proximamente' %} fw-bold{% endif %}"
+             href="{{ url_for('main.Proximamente') }}">
+            Próximamente
+          </a>
           <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='main.sobre_nosotros' %} fw-bold{% endif %}"
              href="{{ url_for('main.sobre_nosotros') }}">
             Sobre Nosotros
-          </a>
-           <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='main.novedades' %} fw-bold{% endif %}"
-             href="{{ url_for('main.novedades') }}">
-            Novedades
           </a>
         </nav>
       </div>

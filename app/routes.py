@@ -23,10 +23,10 @@ def sobre_nosotros():
 def articulos_todos():
     return render_template("articulos.html")
 
-# Novedades
-@bp.route("/novedades", endpoint="novedades")
-def novedades():
-    return render_template("novedades.html")
+# Proximamente
+@bp.route("/Proximamente", endpoint="Proximamente")
+def Proximamente():
+    return render_template("Proximamente.html")
 
 # Detalle + comentarios
 @bp.route("/articulos/<slug>", methods=["GET", "POST"], endpoint="detalle_articulo")
