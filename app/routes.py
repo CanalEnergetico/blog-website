@@ -24,9 +24,9 @@ def articulos_todos():
     return render_template("articulos.html")
 
 # Proximamente
-@bp.route("/Proximamente", endpoint="Proximamente")
-def Proximamente():
-    return render_template("Proximamente.html")
+@bp.route("/proximamente", endpoint="proximamente")
+def proximamente():
+    return render_template("proximamente.html")
 
 # Detalle + comentarios
 @bp.route("/articulos/<slug>", methods=["GET", "POST"], endpoint="detalle_articulo")
