@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="merge commit">
-      <change afterPath="$PROJECT_DIR$/templates/novedades.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-    </list>
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="merge commit" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -381,7 +376,23 @@
       <option name="project" value="LOCAL" />
       <updated>1755035751602</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="merge commit">
+      <option name="closed" value="true" />
+      <created>1755700398746</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1755700398746</updated>
+    </task>
+    <task id="LOCAL-00033" summary="merge commit">
+      <option name="closed" value="true" />
+      <created>1755700409801</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1755700409801</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -406,10 +417,10 @@
     <MESSAGE value="Disclaimer en comentarios" />
     <MESSAGE value="Encuentranos cambios, logos" />
     <MESSAGE value="Politica de privacidad mejorada con pop up" />
-    <MESSAGE value="merge commit" />
     <MESSAGE value="debug false" />
     <MESSAGE value="commit workspace" />
     <MESSAGE value="workspace" />
-    <option name="LAST_COMMIT_MESSAGE" value="workspace" />
+    <MESSAGE value="merge commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="merge commit" />
   </component>
 </project>
