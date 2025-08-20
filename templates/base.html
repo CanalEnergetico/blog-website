@@ -75,6 +75,10 @@
              href="{{ url_for('main.sobre_nosotros') }}">
             Sobre Nosotros
           </a>
+           <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='main.novedades' %} fw-bold{% endif %}"
+             href="{{ url_for('main.novedades') }}">
+            Novedades
+          </a>
         </nav>
       </div>
     </div>
