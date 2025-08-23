@@ -31,19 +31,29 @@
     <h3 class="pb-4 mb-2 fst-italic border-bottom">Últimos artículos</h3>
   </div>
 </div>
-<!-- ahora las dos tarjetas -->
+
+<!-- ahora las dos tarjetas (excluye el destacado) -->
 <div class="row mb-2">
-  {% for articulo in articulos[-1:-3:-1] %}
+  {% for articulo in (otros[:2] if otros else []) %}
   <div class="col-md-6">
     <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-      <div class="col p-4 d-flex flex-column position-static truncate-1"> <strong class="d-inline-block mb-2 {{ 'text-primary' if loop.index==1 else 'text-success' }}">{{ articulo.tag }}</strong>
+      <div class="col p-4 d-flex flex-column position-static truncate-1">
+        <strong class="d-inline-block mb-2 {{ 'text-primary' if loop.index==1 else 'text-success' }}">
+          {# Muestra el primer tag (M2M) o el legacy 'tag' #}
+          {% if articulo.tags and articulo.tags|length > 0 %}
+            {{ articulo.tags[0].nombre }}
+          {% else %}
+            {{ articulo.tag }}
+          {% endif %}
+        </strong>
         <h4 class="mb-0 truncate-2">{{ articulo.titulo }}</h4>
         <div class="mb-1 text-body-secondary">{{ articulo.fecha }} | {{ articulo.autor }}</div>
         <p class="mb-auto truncate-2">{{ articulo.descripcion }}</p>
-        <a href="{{ url_for('main.detalle_articulo', slug=articulo.slug) }}" class="icon-link gap-1 icon-link-hover stretched-link">Seguir leyendo
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+        <a href="{{ url_for('main.detalle_articulo', slug=articulo.slug) }}" class="icon-link gap-1 icon-link-hover stretched-link">
+          Seguir leyendo
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+               class="bi bi-chevron-right" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
-            <use xlink:href="#chevron-right"></use>
           </svg>
         </a>
       </div>
@@ -53,60 +63,62 @@
             src="{{ articulo.img_url }}"
             alt="{{ articulo.titulo }}"
             class="bd-placeholder-img rounded"
-            style="object-fit: cover; height: 250px; width: 200px;"
-          >
+            style="object-fit: cover; height: 250px; width: 200px;">
         {% else %}
           <img
             src="{{ url_for('static', filename='imagen/logo_canal_en.png') }}"
             alt="Logo Canal Energético"
             class="bd-placeholder-img rounded"
-            style="object-fit: cover; width:200px; height:250px;"
-          >
+            style="object-fit: cover; width:200px; height:250px;">
         {% endif %}
       </div>
     </div>
   </div>
-  {% endfor%}
+  {% endfor %}
+</div>
 {% endblock %}
 </div>
 
 {% block content %}
-<!-- Última publicación -->
+<!-- Directo al voltaje -->
 <div class="row g-5">
   <div class="col-md-12">
-      <h3 class="pb-4 mb-4 fst-italic border-bottom">Directo al voltaje</h3>
-      <article class="blog-post">
-        <h1 class="blog-post-title">{{ articulos[-1].titulo }}</h1>
-        <p class="blog-post-meta">
-          {{ articulos[-1].fecha }} por
-          <a>{{ articulos[-1].autor }}</a>
-        </p>
+    <h3 class="pb-4 mb-4 fst-italic border-bottom">Directo al voltaje</h3>
 
-        {% if articulos[-1].img_url %}
-          <img
-            src="{{ articulos[-1].img_url }}"
-            alt="{{ articulos[-1].titulo }}"
-            class="img-fluid rounded mb-3 mx-auto d-block"
-            style="max-height: 500px; object-fit: cover;">
-          {% if articulos[-1].img_fuente %}
-            <figcaption class="figure-caption text-end fst-italic">
-              Foto: {{ articulos[-1].img_fuente }}
-              <p></p>
-           </figcaption>
-          {% endif %}
-        {% else %}
-          <img
-            src="{{ url_for('static', filename='imagen/logo_canal_en.png') }}"
-            alt="Logo Canal Energético"
-            class="bd-placeholder-img rounded"
-            style="object-fit: cover; width:200px; height:250px;"
-          >
+    {% if destacado %}
+    <article class="blog-post">
+      <h1 class="blog-post-title">{{ destacado.titulo }}</h1>
+      <p class="blog-post-meta">
+        {{ destacado.fecha }} por <a>{{ destacado.autor }}</a>
+      </p>
+
+      {% if destacado.img_url %}
+        <img
+          src="{{ destacado.img_url }}"
+          alt="{{ destacado.titulo }}"
+          class="img-fluid rounded mb-3 mx-auto d-block"
+          style="max-height: 500px; object-fit: cover;">
+        {% if destacado.img_fuente %}
+          <figcaption class="figure-caption text-end fst-italic">
+            Foto: {{ destacado.img_fuente }}
+            <p></p>
+          </figcaption>
         {% endif %}
+      {% else %}
+        <img
+          src="{{ url_for('static', filename='imagen/logo_canal_en.png') }}"
+          alt="Logo Canal Energético"
+          class="bd-placeholder-img rounded"
+          style="object-fit: cover; width:200px; height:250px;">
+      {% endif %}
 
-        <div class="article-content">
-          {{ articulos[-1].contenido | safe }}
-        </div>
+      <div class="article-content">
+        {{ destacado.contenido | safe }}
+      </div>
     </article>
+    {% else %}
+      <p class="text-muted">Aún no hay artículos publicados.</p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

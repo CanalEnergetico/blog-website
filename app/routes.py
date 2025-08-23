@@ -13,7 +13,31 @@ bp = Blueprint("main", __name__)
 # Inicio
 @bp.route("/", endpoint="home")
 def home():
-    return render_template("index.html")
+    # 1) Intentamos encontrar un Tag "main" (M2M). Si no existe, caemos a la columna legacy Articulos.tag
+    main_tag = Tag.query.filter((Tag.slug == "main") | (Tag.nombre.ilike("main"))).first()
+    if main_tag:
+        destacado = (Articulos.query
+                     .join(Articulos.tags)
+                     .filter(Tag.id == main_tag.id)
+                     .order_by(Articulos.id.desc())
+                     .first())
+    else:
+        destacado = (Articulos.query
+                     .filter(Articulos.tag.ilike("main"))
+                     .order_by(Articulos.id.desc())
+                     .first())
+
+    # 2) Lista completa del más nuevo al más viejo
+    ultimos = Articulos.query.order_by(Articulos.id.desc()).all()
+
+    # 3) Fallback: si no hay "main" aún, usa el más reciente como destacado
+    if destacado is None and ultimos:
+        destacado = ultimos[0]
+
+    # 4) Evitar duplicados en las tarjetas superiores
+    otros = [a for a in ultimos if not destacado or a.id != destacado.id]
+
+    return render_template("index.html", destacado=destacado, otros=otros)
 
 # Sobre nosotros
 @bp.route("/sobre-nosotros", endpoint="sobre_nosotros")
