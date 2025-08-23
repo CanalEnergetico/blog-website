@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="Cambios en .py y make-post.html para que se pueda poner mas de un tag por post.">
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="Añadir a seccion de opinion y meter mas de un autor">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -412,11 +411,18 @@
       <option name="project" value="LOCAL" />
       <updated>1755960039624</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="Añadir a seccion de opinion y meter mas de un autor">
+      <option name="closed" value="true" />
+      <created>1755965170961</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1755965170961</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="gunicorn, create Procfile" />
     <MESSAGE value="Procfile" />
     <MESSAGE value="update requirements.txt" />
     <MESSAGE value="Datos curiosos list and base.html update" />
@@ -441,6 +447,7 @@
     <MESSAGE value="workspace" />
     <MESSAGE value="merge commit" />
     <MESSAGE value="Cambios en .py y make-post.html para que se pueda poner mas de un tag por post." />
-    <option name="LAST_COMMIT_MESSAGE" value="Cambios en .py y make-post.html para que se pueda poner mas de un tag por post." />
+    <MESSAGE value="Añadir a seccion de opinion y meter mas de un autor" />
+    <option name="LAST_COMMIT_MESSAGE" value="Añadir a seccion de opinion y meter mas de un autor" />
   </component>
 </project>
