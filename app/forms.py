@@ -9,7 +9,10 @@ class PostForm(FlaskForm):
     descripcion = StringField('Descripción breve', validators=[DataRequired()])
     img_url     = StringField('URL de la imagen')
     img_fuente  = StringField('Fuente de la imagen')
-    tag         = StringField('Etiqueta principal')
+
+    # NUEVO
+    tags        = StringField('Etiquetas (separadas por comas)')
+
     autor       = StringField('Autor', validators=[DataRequired()])
     contenido   = CKEditorField('Contenido', validators=[DataRequired()])
     submit      = SubmitField('Publicar')

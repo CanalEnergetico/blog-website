@@ -1,6 +1,7 @@
 # app/utils.py
 import re
 from datetime import date, datetime
+from typing import List
 from slugify import slugify
 from .models import Articulos
 
@@ -23,3 +24,30 @@ def _parse_fecha(fecha_str: str) -> date:
 
 def plain_text(html: str) -> str:
     return re.sub(r"<[^>]+>", "", html or "")
+
+# ---------------------------
+# NUEVO: helpers de etiquetas
+# ---------------------------
+def parse_tags(cadena: str | None) -> List[str]:
+    """
+    Convierte 'python, flask; AI  #web' -> ['python', 'flask', 'AI', 'web']
+    - separa por comas o punto y coma
+    - quita espacios y '#'
+    - dedup case-insensitive preservando el primero
+    """
+    if not cadena:
+        return []
+    partes = re.split(r"[;,]", cadena)
+    limpio, vistos = [], set()
+    for p in (x.strip().lstrip("#") for x in partes):
+        if not p:
+            continue
+        k = p.lower()
+        if k not in vistos:
+            vistos.add(k)
+            limpio.append(p)
+    return limpio
+
+def tag_slug(nombre: str) -> str:
+    # Puedes usar la misma lib que ya usas para slugs de artículos
+    return slugify(nombre)

@@ -3,15 +3,58 @@
 {% block content %}
   {{ ckeditor.load() }}
   {{ ckeditor.config(name='contenido') }}
-  <form method="POST">
+
+  <h1 class="mb-4">
+    {% if is_edit %}Editar artículo{% else %}Nuevo artículo{% endif %}
+  </h1>
+
+  <form method="POST" novalidate>
     {{ form.csrf_token }}
-    {{ form.titulo.label }}      {{ form.titulo(class="form-control") }}
-    {{ form.descripcion.label }} {{ form.descripcion(class="form-control") }}
-    {{ form.img_url.label }}     {{ form.img_url(class="form-control") }}
-    {{ form.img_fuente.label }}  {{ form.img_fuente(class="form-control") }}
-    {{ form.tag.label }}         {{ form.tag(class="form-control") }}
-    {{ form.autor.label }}       {{ form.autor(class="form-control") }}
-    {{ form.contenido.label }}   {{ form.contenido() }}
-    {{ form.submit(class="btn btn-primary mt-3") }}
+
+    <div class="mb-3">
+      {{ form.titulo.label(class="form-label") }}
+      {{ form.titulo(class="form-control") }}
+      {% for err in form.titulo.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.descripcion.label(class="form-label") }}
+      {{ form.descripcion(class="form-control") }}
+      {% for err in form.descripcion.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.img_url.label(class="form-label") }}
+      {{ form.img_url(class="form-control") }}
+      {% for err in form.img_url.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.img_fuente.label(class="form-label") }}
+      {{ form.img_fuente(class="form-control") }}
+      {% for err in form.img_fuente.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+
+    {# ⇩⇩ CAMBIO: antes form.tag, ahora form.tags (múltiples etiquetas) #}
+    <div class="mb-3">
+      {{ form.tags.label(class="form-label") }}
+      {{ form.tags(class="form-control", placeholder="python, flask, web") }}
+      <div class="form-text">Escribe varias etiquetas separadas por comas.</div>
+      {% for err in form.tags.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.autor.label(class="form-label") }}
+      {{ form.autor(class="form-control") }}
+      {% for err in form.autor.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.contenido.label(class="form-label") }}
+      {{ form.contenido() }}
+      {% for err in form.contenido.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+
+    {{ form.submit(class="btn btn-primary mt-3", value=("Guardar cambios" if is_edit else "Publicar")) }}
   </form>
 {% endblock %}
