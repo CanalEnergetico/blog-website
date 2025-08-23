@@ -13,28 +13,33 @@ bp = Blueprint("main", __name__)
 # Inicio
 @bp.route("/", endpoint="home")
 def home():
-    # 1) Intentamos encontrar un Tag "main" (M2M). Si no existe, caemos a la columna legacy Articulos.tag
+    # 1) DESTACADO: último artículo etiquetado como "main"
     main_tag = Tag.query.filter((Tag.slug == "main") | (Tag.nombre.ilike("main"))).first()
     if main_tag:
-        destacado = (Articulos.query
-                     .join(Articulos.tags)
-                     .filter(Tag.id == main_tag.id)
-                     .order_by(Articulos.id.desc())
-                     .first())
+        destacado = (
+            Articulos.query
+            .join(Articulos.tags)
+            .filter(Tag.id == main_tag.id)
+            .order_by(Articulos.id.desc())
+            .first()
+        )
     else:
-        destacado = (Articulos.query
-                     .filter(Articulos.tag.ilike("main"))
-                     .order_by(Articulos.id.desc())
-                     .first())
+        # Fallback legacy (mientras exista Articulos.tag)
+        destacado = (
+            Articulos.query
+            .filter(Articulos.tag.ilike("main"))
+            .order_by(Articulos.id.desc())
+            .first()
+        )
 
-    # 2) Lista completa del más nuevo al más viejo
+    # 2) Lista completa (más nuevo primero)
     ultimos = Articulos.query.order_by(Articulos.id.desc()).all()
 
-    # 3) Fallback: si no hay "main" aún, usa el más reciente como destacado
+    # 3) Fallback si no hay "main": usa el más reciente
     if destacado is None and ultimos:
         destacado = ultimos[0]
 
-    # 4) Evitar duplicados en las tarjetas superiores
+    # 4) Evita duplicados en tarjetas superiores
     otros = [a for a in ultimos if not destacado or a.id != destacado.id]
 
     return render_template("index.html", destacado=destacado, otros=otros)
@@ -166,11 +171,13 @@ def delete_comment(id):
 @bp.route("/tags/<tag_slug>", endpoint="articulos_por_tag")
 def articulos_por_tag(tag_slug):
     tag = Tag.query.filter_by(slug=tag_slug).first_or_404()
-    posts = (Articulos.query
-             .join(Articulos.tags)
-             .filter(Tag.id == tag.id)
-             .order_by(Articulos.id.desc())
-             .all())
+    posts = (
+        Articulos.query
+        .join(Articulos.tags)
+        .filter(Tag.id == tag.id)
+        .order_by(Articulos.id.desc())
+        .all()
+    )
     return render_template("articulos_por_tag.html", tag=tag, articulos=posts)
 
 # Buscar por múltiples etiquetas: ?tags=python,flask&modo=and|or
@@ -217,15 +224,6 @@ def sitemap():
             "changefreq": "weekly",
             "priority": "0.8",
         })
-
-    # (Opcional) incluir páginas de tags:
-    # for t in Tag.query.with_entities(Tag.slug).all():
-    #     pages.append({
-    #         "loc": url_for("main.articulos_por_tag", tag_slug=t.slug, _external=True),
-    #         "lastmod": date.today().isoformat(),
-    #         "changefreq": "weekly",
-    #         "priority": "0.5",
-    #     })
 
     xml = [
         '<?xml version="1.0" encoding="UTF-8"?>',

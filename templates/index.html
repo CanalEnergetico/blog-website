@@ -25,21 +25,20 @@
 </div>
 
 <!-- CARDS -->
-<!-- Título en su propia fila -->
 <div class="row mb-4">
   <div class="col-12">
     <h3 class="pb-4 mb-2 fst-italic border-bottom">Últimos artículos</h3>
   </div>
 </div>
 
-<!-- ahora las dos tarjetas (excluye el destacado) -->
+<!-- Dos tarjetas (excluye el destacado) -->
 <div class="row mb-2">
   {% for articulo in (otros[:2] if otros else []) %}
   <div class="col-md-6">
     <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
       <div class="col p-4 d-flex flex-column position-static truncate-1">
         <strong class="d-inline-block mb-2 {{ 'text-primary' if loop.index==1 else 'text-success' }}">
-          {# Muestra el primer tag (M2M) o el legacy 'tag' #}
+          {# Mostrar tag M2M si existe; si no, legacy 'tag' #}
           {% if articulo.tags and articulo.tags|length > 0 %}
             {{ articulo.tags[0].nombre }}
           {% else %}
@@ -76,8 +75,60 @@
   </div>
   {% endfor %}
 </div>
-{% endblock %}
+
+{# ===================== OPINIÓN DE EXPERTOS ===================== #}
+{% macro opinion_card(nombre, avatar_path) %}
+  {# Posts disponibles en esta vista: destacado + otros (ordenados de nuevo a antiguo) #}
+  {% set posts = (([destacado] if destacado else []) + (otros or [])) %}
+
+  {# Buscar el post de opinión más reciente del autor #}
+  {% set ns = namespace(post=None) %}
+  {% for a in posts %}
+    {% set tags_str = '' %}
+    {% if a.tags %}
+      {% set tag_names = a.tags | map(attribute='nombre') | list %}
+      {% set tag_slugs = a.tags | map(attribute='slug') | list %}
+      {% set tags_str = (tag_names|join(',') ~ ',' ~ tag_slugs|join(',')) | lower %}
+    {% endif %}
+    {% set legacy_opinion = (a.tag and ('opin' in (a.tag|lower))) %}
+    {% set is_opinion = ('opinion' in tags_str) or ('opinión' in tags_str) or legacy_opinion %}
+    {% if ns.post is none and a.autor == nombre and is_opinion %}
+      {% set ns.post = a %}
+    {% endif %}
+  {% endfor %}
+
+  <div class="col text-center">
+    <img src="{{ url_for('static', filename=avatar_path) }}"
+         alt="{{ nombre }}"
+         class="rounded-circle mb-2"
+         style="width: 120px; height: 120px; object-fit: cover; border: 2px solid #ccc;">
+    <h5 class="text-primary mt-2">{{ nombre }}</h5>
+
+    {% if ns.post %}
+      <p class="text-muted small">{{ ns.post.fecha }}</p>
+      <h6 class="fst-italic mb-3" style="min-height: 72px;">{{ ns.post.titulo }}</h6>
+      <a href="{{ url_for('main.detalle_articulo', slug=ns.post.slug) }}" class="btn btn-outline-primary btn-sm">Leer más</a>
+    {% else %}
+      <p class="text-muted small">No hay columnas disponibles.</p>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+<div class="row mb-4">
+  <div class="col-12">
+    <h3 class="pb-4 mb-2 fst-italic border-bottom">Opinión de expertos</h3>
+  </div>
 </div>
+
+{# Auto grid: 2 columnas en móvil, 4 en md+, con gap #}
+<div class="row row-cols-2 row-cols-md-4 g-4 mb-5">
+  {{ opinion_card('Irving Henry', 'images/irving.png') }}
+  {{ opinion_card('Rafael Jaén Williamson', 'images/rafael-jaen.png') }}
+  {# añade más autores repitiendo la línea de arriba #}
+</div>
+
+
+{% endblock %}
 
 {% block content %}
 <!-- Directo al voltaje -->
