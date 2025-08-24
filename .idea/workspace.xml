@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="workspace">
-      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="env example same">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,12 +29,12 @@
     &quot;assignee&quot;: &quot;jackovic05&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/CanalEnergetico/blog-website.git",
-    "accountId": "a3c71650-eddb-43ac-bd4e-588944009157"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/CanalEnergetico/blog-website.git&quot;,
+    &quot;accountId&quot;: &quot;a3c71650-eddb-43ac-bd4e-588944009157&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -52,7 +52,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Merging main",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "C:/Users/josea/PycharmProjects/blog-energetico/static/images",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
@@ -451,11 +451,18 @@
       <option name="project" value="LOCAL" />
       <updated>1756075154512</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="env example same">
+      <option name="closed" value="true" />
+      <created>1756075553208</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1756075553208</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="comment delete-post" />
     <MESSAGE value="merge feature/edit-delete-post" />
     <MESSAGE value="comment out href de autor" />
     <MESSAGE value="create local env variables" />
@@ -480,6 +487,7 @@
     <MESSAGE value="fix opinion" />
     <MESSAGE value="debug False" />
     <MESSAGE value="workspace" />
-    <option name="LAST_COMMIT_MESSAGE" value="workspace" />
+    <MESSAGE value="env example same" />
+    <option name="LAST_COMMIT_MESSAGE" value="env example same" />
   </component>
 </project>
