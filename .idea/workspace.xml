@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="workspace">
-      <change beforePath="$PROJECT_DIR$/app/context.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/context.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes.py" afterDir="false" />
-    </list>
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="actualizar orden articulos" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -30,12 +27,12 @@
     &quot;assignee&quot;: &quot;jackovic05&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/CanalEnergetico/blog-website.git",
-    "accountId": "a3c71650-eddb-43ac-bd4e-588944009157"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/CanalEnergetico/blog-website.git&quot;,
+    &quot;accountId&quot;: &quot;a3c71650-eddb-43ac-bd4e-588944009157&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -380,11 +377,18 @@
       <option name="project" value="LOCAL" />
       <updated>1755035751602</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="actualizar orden articulos">
+      <option name="closed" value="true" />
+      <created>1755036002518</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1755036002518</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="merge branch, fundadore.ong" />
     <MESSAGE value="gunicorn, create Procfile" />
     <MESSAGE value="Procfile" />
     <MESSAGE value="update requirements.txt" />
@@ -409,6 +413,7 @@
     <MESSAGE value="debug false" />
     <MESSAGE value="commit workspace" />
     <MESSAGE value="workspace" />
-    <option name="LAST_COMMIT_MESSAGE" value="workspace" />
+    <MESSAGE value="actualizar orden articulos" />
+    <option name="LAST_COMMIT_MESSAGE" value="actualizar orden articulos" />
   </component>
 </project>
