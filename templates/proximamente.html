@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Próximamente – Canal Energético{% endblock %}
+
+{% block content_top %}
+<div class="bg-light p-3 rounded mb-4">
+  <h1>Próximas herramientas y secciones</h1>
+  <p>Estamos trabajando en nuevas funcionalidades para ofrecerte una mejor experiencia y más contenido de valor sobre el sector energético.</p>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<!-- Newsletter -->
+<div class="row align-items-center my-5">
+  <div class="col-md-7">
+    <h3 class="mb-3">📬 Newsletter personalizado con IA</h3>
+    <p>
+      Muy pronto podrás suscribirte a un boletín energético único en su clase. Nuestro newsletter te permitirá seleccionar tus temáticas de interés —como energía solar, precios de electricidad, regulación o combustibles— y recibir un resumen <strong>personalizado mediante inteligencia artificial</strong>.
+    </p>
+    <p>
+      También ofreceremos una segunda opción con análisis de datos del mercado eléctrico panameño y de las principales commodities internacionales.
+    </p>
+  </div>
+  <div class="col-md-5 text-center">
+    <img src="{{ url_for('static', filename='images/newsletter-preview.png') }}"
+         alt="Preview del newsletter personalizado"
+         class="img-fluid"
+         style="width: 350px; height: 250px; object-fit: contain;">
+  </div>
+</div>
+
+<!-- Sección de Opinión -->
+<div class="row align-items-center my-5">
+  <div class="col-md-7 order-md-2">
+    <h3 class="mb-3">💬 Espacio de opinión con expertos</h3>
+    <p>
+      Estamos preparando una nueva sección dedicada a voces expertas del sector energético. Aquí compartiremos análisis, reflexiones y propuestas de profesionales que están impulsando la transición energética en Panamá y la región.
+    </p>
+    <p>
+      Este espacio estará abierto a colaboraciones y artículos de opinión que aporten a la discusión energética desde distintas perspectivas.
+    </p>
+  </div>
+  <div class="col-md-5 order-md-1 text-center">
+    <img src="{{ url_for('static', filename='images/opinion-card.png') }}"
+         alt="Opinión de expertos"
+         class="img-fluid"
+         style="width: 350px; height: 250px; object-fit: contain;">
+  </div>
+</div>
+
+<!-- Entrevistas y Podcast -->
+<div class="row align-items-center my-5">
+  <div class="col-md-7">
+    <h3 class="mb-3">🎙️ Entrevistas y podcast</h3>
+    <p>
+      Pronto lanzaremos un espacio donde podrás escuchar entrevistas en profundidad con actores clave del sector energético. Conversaciones extensas, cercanas y relevantes con expertos, reguladores, empresarios, académicos y líderes de opinión.
+    </p>
+    <p>
+      Estas entrevistas estarán disponibles en formato escrito y también como <strong>podcast</strong> para que puedas escucharlas cuando y donde quieras.
+    </p>
+  </div>
+  <div class="col-md-5 text-center">
+    <img src="{{ url_for('static', filename='images/entrevistas-podcast.png') }}"
+         alt="Ilustración de entrevistas y podcast"
+         class="img-fluid"
+         style="width: 350px; height: 250px; object-fit: contain;">
+  </div>
+</div>
+
+
+{% endblock %}
