@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="env example same">
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="bbdd supabase">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -459,11 +459,18 @@
       <option name="project" value="LOCAL" />
       <updated>1756075553208</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="bbdd supabase">
+      <option name="closed" value="true" />
+      <created>1756078049945</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1756078049945</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="merge feature/edit-delete-post" />
     <MESSAGE value="comment out href de autor" />
     <MESSAGE value="create local env variables" />
     <MESSAGE value="link local env variables" />
@@ -488,6 +495,7 @@
     <MESSAGE value="debug False" />
     <MESSAGE value="workspace" />
     <MESSAGE value="env example same" />
-    <option name="LAST_COMMIT_MESSAGE" value="env example same" />
+    <MESSAGE value="bbdd supabase" />
+    <option name="LAST_COMMIT_MESSAGE" value="bbdd supabase" />
   </component>
 </project>
