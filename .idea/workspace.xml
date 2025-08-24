@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="cambios josei">
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="Correccion a database">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +39,6 @@
   &quot;associatedIndex&quot;: 8
 }</component>
   <component name="ProjectId" id="2z322f8OP4n5uRtr4ATuTrcx94x" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -428,11 +426,26 @@
       <option name="project" value="LOCAL" />
       <updated>1755966109353</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="Correccion a database">
+      <option name="closed" value="true" />
+      <created>1756074430572</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1756074430572</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Correccion a database">
+      <option name="closed" value="true" />
+      <created>1756074465802</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1756074465802</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Datos curiosos list and base.html update" />
     <MESSAGE value="add edit-post feature" />
     <MESSAGE value="comment delete-post" />
     <MESSAGE value="merge feature/edit-delete-post" />
@@ -457,6 +470,7 @@
     <MESSAGE value="Añadir a seccion de opinion y meter mas de un autor" />
     <MESSAGE value="Añade linkedln del autor" />
     <MESSAGE value="cambios josei" />
-    <option name="LAST_COMMIT_MESSAGE" value="cambios josei" />
+    <MESSAGE value="Correccion a database" />
+    <option name="LAST_COMMIT_MESSAGE" value="Correccion a database" />
   </component>
 </project>
