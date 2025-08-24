@@ -18,6 +18,14 @@ def create_app():
     )
     app.config.from_object(Config)
 
+    @app.after_request
+    def _force_utf8(resp):
+        if resp.mimetype == "text/html":
+            ct = resp.headers.get("Content-Type", "")
+            if "charset=" not in ct:
+                resp.headers["Content-Type"] = f"{resp.mimetype}; charset=utf-8"
+        return resp
+
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
     handler = logging.StreamHandler(sys.stdout)
