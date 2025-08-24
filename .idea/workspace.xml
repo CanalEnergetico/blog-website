@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="Añadir a seccion de opinion y meter mas de un autor">
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="Añade linkedln del autor">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
     </list>
@@ -419,11 +419,18 @@
       <option name="project" value="LOCAL" />
       <updated>1755965170961</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="Añade linkedln del autor">
+      <option name="closed" value="true" />
+      <created>1755966109353</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1755966109353</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Procfile" />
     <MESSAGE value="update requirements.txt" />
     <MESSAGE value="Datos curiosos list and base.html update" />
     <MESSAGE value="add edit-post feature" />
@@ -448,6 +455,7 @@
     <MESSAGE value="merge commit" />
     <MESSAGE value="Cambios en .py y make-post.html para que se pueda poner mas de un tag por post." />
     <MESSAGE value="Añadir a seccion de opinion y meter mas de un autor" />
-    <option name="LAST_COMMIT_MESSAGE" value="Añadir a seccion de opinion y meter mas de un autor" />
+    <MESSAGE value="Añade linkedln del autor" />
+    <option name="LAST_COMMIT_MESSAGE" value="Añade linkedln del autor" />
   </component>
 </project>
