@@ -68,7 +68,6 @@
 {% endblock %}
 
 {% block content %}
-{# ===== Macro de tarjetas de Opinión ===== #}
 {% macro opinion_card(nombre, avatar_path, linkedin_url=None) %}
   {% set posts = (([destacado] if destacado else []) + (otros or [])) %}
   {% set nombre_norm = (nombre | lower | replace(' ', '') | trim) %}
@@ -103,6 +102,7 @@
     <img src="{{ url_for('static', filename=avatar_path) }}"
          alt="{{ nombre }}" class="rounded-circle mb-2"
          style="width: 120px; height: 120px; object-fit: cover; border: 2px solid #ccc;">
+
     <h5 class="mt-2 d-inline-flex align-items-center justify-content-center text-primary" style="gap:.35rem;">
       <span>{{ nombre }}</span>
       {% if linkedin_url %}
@@ -121,8 +121,14 @@
     </h5>
 
     {% if ns.post %}
-      <p class="text-muted small">{{ ns.post.fecha }}</p>
-      <h6 class="fst-italic mb-3" style="min-height: 72px;">{{ ns.post.titulo }}</h6>
+      <p class="text-muted small mb-1">{{ ns.post.fecha }}</p>
+
+      <h6 class="fst-italic mb-1">{{ ns.post.titulo }}</h6>
+
+      {% set _desc = ns.post.descripcion if ns.post.descripcion else (ns.post.contenido | striptags) %}
+      {% set _desc = _desc[:220] ~ ('…' if (_desc|length) > 220 else '') %}
+      <p class="text-muted small fst-italic mb-3">{{ _desc }}</p>
+
       <a href="{{ url_for('main.detalle_articulo', slug=ns.post.slug) }}" class="btn btn-outline-primary btn-sm">Leer más</a>
     {% else %}
       <p class="text-muted small">No hay columnas disponibles.</p>
@@ -130,22 +136,11 @@
   </div>
 {% endmacro %}
 
-{# ===== Fila 1: Opinión (ancha) + Sidebar (estrecho) ===== #}
-<!--<div class="row align-items-start g-4">-->
-<!--  <div class="col-lg-9 col-xl-10">-->
-    <h3 class="pb-4 mb-4 fst-italic border-bottom">Opinión de expertos</h3>
-    <div class="row justify-content-center gx-2 gy-3 mb-5">
-      {{ opinion_card('Rafael Jaén Williamson', 'images/rafael-jaen.png', 'https://www.linkedin.com/in/rafael-ja%C3%A9n-williamson-338288b8/') }}
-      {# añade más autores si quieres #}
-    </div>
-<!--  </div>-->
+<h3 class="pb-4 mb-4 fst-italic border-bottom">Opinión de expertos</h3>
+<div class="row justify-content-center gx-2 gy-3 mb-5">
+  {{ opinion_card('Rafael Jaén Williamson', 'images/rafael-jaen.png', 'https://www.linkedin.com/in/rafael-ja%C3%A9n-williamson-338288b8/') }}
+</div>
 
-<!--  <aside class="col-lg-3 col-xl-2">-->
-<!--    {% include 'partials/datos_curiosos.html' ignore missing %}-->
-<!--  </aside>-->
-<!--</div>-->
-
-{# ===== Fila 2: Directo al voltaje a ancho completo ===== #}
 <h3 class="pb-4 mb-4 fst-italic border-bottom">Directo al voltaje</h3>
 <article class="blog-post">
   {% if destacado %}
