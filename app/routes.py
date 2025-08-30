@@ -66,7 +66,7 @@ def articulos_todos():
             Articulos.contenido.ilike(like)
         ))
 
-    q = Articulos.query.order_by(Articulos.fecha.desc(), Articulos.id.desc())
+    q = q.order_by(Articulos.fecha.desc())
     pagination = db.paginate(q, page=page, per_page=12, error_out=False)
 
     return render_template(
