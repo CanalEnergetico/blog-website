@@ -1,7 +1,7 @@
 # app/models.py
 from typing import Optional
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Table, Column, Integer, ForeignKey, UniqueConstraint, Index
+from sqlalchemy import Table, Column, Integer, ForeignKey, UniqueConstraint, Index, Date
 from .extensions import db
 
 
@@ -24,7 +24,7 @@ class Articulos(db.Model):
     img_fuente:  Mapped[Optional[str]] = mapped_column(db.String(300))
     contenido:   Mapped[str]  = mapped_column(db.Text, nullable=False)
     autor:       Mapped[str]  = mapped_column(db.String(300), nullable=False)
-    fecha:       Mapped[str]  = mapped_column(db.String(250), nullable=False)
+    fecha:       Mapped[str]  = mapped_column(db.Date, nullable=False)
 
     # LEGACY (opcional, la puedes eliminar tras migrar):
     tag:         Mapped[Optional[str]] = mapped_column(db.String(50))

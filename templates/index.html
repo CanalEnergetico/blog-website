@@ -3,6 +3,7 @@
 {% block title %}Inicio – Canal Energético{% endblock %}
 
 {% block content_top %}
+<!-- HERO -->
 <div class="p-4 p-md-5 mb-4 text-white rounded bg-dark">
   <div class="row align-items-center">
     <div class="col-md-7">
@@ -23,6 +24,7 @@
   </div>
 </div>
 
+<!--TARJETAS DE ARTÍCULOS DESTACADOS-->
 <div class="row mb-4">
   <div class="col-12">
     <h3 class="pb-4 mb-2 fst-italic border-bottom">Últimos artículos</h3>
@@ -136,13 +138,15 @@
   </div>
 {% endmacro %}
 
+<!--OPINIÓN DE EXPERTOS-->
 <h3 class="pb-4 mb-4 fst-italic border-bottom">Opinión de expertos</h3>
 <div class="row justify-content-center gx-2 gy-3 mb-5">
   {{ opinion_card('Rafael Jaén Williamson', 'images/rafael-jaen.png', 'https://www.linkedin.com/in/rafael-ja%C3%A9n-williamson-338288b8/') }}
 </div>
 
+<!--ARTÍCULO DE DIRECTO AL VOLTAJE-->
 <h3 class="pb-4 mb-4 fst-italic border-bottom">Directo al voltaje</h3>
-<article class="blog-post">
+<article class="blog-post px-3">
   {% if destacado %}
     <h1 class="blog-post-title">{{ destacado.titulo }}</h1>
     <p class="blog-post-meta">{{ destacado.fecha }} por <a>{{ destacado.autor }}</a></p>

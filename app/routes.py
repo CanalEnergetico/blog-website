@@ -1,7 +1,7 @@
 # app/routes.py
 from datetime import date
 from flask import Blueprint, render_template, redirect, url_for, send_from_directory, Response, current_app, request
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.exc import IntegrityError
 from .extensions import db
 from .models import Articulos, Comentarios, Tag
@@ -52,9 +52,32 @@ def sobre_nosotros():
 # Artículos
 @bp.route("/articulos", endpoint="articulos_todos")
 def articulos_todos():
-    return render_template("articulos.html")
+    page = request.args.get("page", 1, type=int)
+    qtxt = (request.args.get("q") or "").strip()
 
-# Proximamente
+    q = Articulos.query
+
+    # Filtro por texto en título, descripción o contenido
+    if qtxt:
+        like = f"%{qtxt}%"
+        q = q.filter(or_(
+            Articulos.titulo.ilike(like),
+            Articulos.descripcion.ilike(like),
+            Articulos.contenido.ilike(like)
+        ))
+
+    q = Articulos.query.order_by(Articulos.fecha.desc(), Articulos.id.desc())
+    pagination = db.paginate(q, page=page, per_page=12, error_out=False)
+
+    return render_template(
+        "articulos.html",
+        articulos=pagination.items,
+        pagination=pagination,
+        total=pagination.total,
+        qtxt=qtxt,  # <- para mantener el valor en el input y en los enlaces
+    )
+
+# Próximamente
 @bp.route("/proximamente", endpoint="proximamente")
 def proximamente():
     return render_template("proximamente.html")
