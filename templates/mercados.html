@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Mercados – Canal Energético{% endblock %}
+
+{% block content_top %}
+<div class="bg-light p-3 rounded mb-3">
+  <h1 class="mb-1">Mercados Energéticos</h1>
+  <small class="text-muted" id="updatedAt">Actualizado: —</small>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <!-- Brent -->
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">Brent</h5>
+        <div class="d-flex align-items-baseline gap-2">
+          <span class="display-6" id="brentValue">—</span>
+          <span class="text-muted" id="brentUnit">USD/bbl</span>
+          <span class="badge bg-secondary" id="brentStale" style="display:none;">Dato no reciente</span>
+        </div>
+        <div class="small text-muted mt-1">
+          10d: <span id="brent10d">—</span> · 30d: <span id="brent30d">—</span>
+        </div>
+        <canvas id="chartBrent" height="70" class="mt-3"></canvas>
+      </div>
+    </div>
+  </div>
+  <!-- WTI -->
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">WTI</h5>
+        <div class="d-flex align-items-baseline gap-2">
+          <span class="display-6" id="wtiValue">—</span>
+          <span class="text-muted" id="wtiUnit">USD/bbl</span>
+          <span class="badge bg-secondary" id="wtiStale" style="display:none;">Dato no reciente</span>
+        </div>
+        <div class="small text-muted mt-1">
+          10d: <span id="wti10d">—</span> · 30d: <span id="wti30d">—</span>
+        </div>
+        <canvas id="chartWti" height="70" class="mt-3"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    async function loadDashboard(){
+      const res = await fetch("{{ url_for('main.mercados_json') }}", {cache: 'no-store'});
+      const data = await res.json();
+      document.getElementById('updatedAt').textContent = "Actualizado: " + new Date(data.updated_at).toLocaleString();
+
+      const byId = {};
+      for (const m of data.markets){ byId[m.id] = m; }
+
+      // Helper para pintar una tarjeta
+      function setCard(idPrefix, m){
+        document.getElementById(idPrefix+'Value').textContent = (m.value ?? '—');
+        document.getElementById(idPrefix+'Unit').textContent  = m.unit || '';
+        document.getElementById(idPrefix+'10d').textContent   =
+          (m.chg_10d_pct==null) ? '—' : (m.chg_10d_pct.toFixed(2) + '%');
+        document.getElementById(idPrefix+'30d').textContent   =
+          (m.chg_30d_pct==null) ? '—' : (m.chg_30d_pct.toFixed(2) + '%');
+        document.getElementById(idPrefix+'Stale').style.display = m.stale ? 'inline-block' : 'none';
+      }
+
+      // Brent
+      setCard('brent', byId['brent'] || {});
+      // WTI
+      setCard('wti', byId['wti'] || {});
+
+      // Charts (sparklines 30D)
+      function drawSpark(canvasId, series){
+        const ctx = document.getElementById(canvasId);
+        if (!ctx || !series) return;
+        new Chart(ctx, {
+          type: 'line',
+          data: { labels: series.map((_,i)=>i+1), datasets: [{ data: series }] },
+          options: {
+            responsive: true,
+            plugins: { legend: { display:false }, tooltip: { enabled:false }},
+            scales: { x: { display:false }, y: { display:false } },
+            elements: { line: { tension: 0.25 }, point: { radius: 0 } }
+          }
+        });
+      }
+
+      drawSpark('chartBrent', byId['brent']?.spark || []);
+      drawSpark('chartWti',   byId['wti']?.spark || []);
+    }
+
+    loadDashboard();
+    // (Opcional) refresco automático cada 15 minutos:
+    // setInterval(loadDashboard, 15*60*1000);
+  </script>
+{% endblock %}

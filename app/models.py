@@ -64,3 +64,26 @@ class Comentarios(db.Model):
     fecha: Mapped[str] = mapped_column(db.String(250), nullable=False)
 
     articulo = db.relationship("Articulos", backref="comentarios")
+
+#Para las API de mercados
+class MercadoUltimo(db.Model):
+    __tablename__ = "mercado_ultimo"
+
+    id = db.Column(db.Integer, primary_key=True)
+    symbol = db.Column(db.String(20), unique=True, nullable=False)  # 'brent' | 'wti'
+    value  = db.Column(db.Float, nullable=False)
+    unit   = db.Column(db.String(20), nullable=False)
+    asof   = db.Column(db.String(40), nullable=False)  # ISO UTC
+    stale  = db.Column(db.Boolean, nullable=False, default=False)
+
+class MercadoDaily(db.Model):
+    __tablename__ = "mercado_daily"
+
+    id     = db.Column(db.Integer, primary_key=True)
+    symbol = db.Column(db.String(20), nullable=False)          # 'brent' | 'wti'
+    date   = db.Column(db.String(10), nullable=False)          # 'YYYY-MM-DD'
+    close  = db.Column(db.Float, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("symbol", "date", name="uq_symbol_date"),
+    )
