@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="pagination feature star">
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="text filter">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run.py" beforeDir="false" afterPath="$PROJECT_DIR$/run.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/articulos.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/articulos.html" afterDir="false" />
     </list>
@@ -500,12 +502,26 @@
       <option name="project" value="LOCAL" />
       <updated>1756587710266</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="paginacion feature">
+      <option name="closed" value="true" />
+      <created>1756588326384</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1756588326384</updated>
+    </task>
+    <task id="LOCAL-00048" summary="text filter">
+      <option name="closed" value="true" />
+      <created>1756589189930</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1756589189930</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="create local env variables" />
-    <MESSAGE value="link local env variables" />
     <MESSAGE value="Comment main.py" />
     <MESSAGE value="Comment base.html" />
     <MESSAGE value="Comment index.html" />
@@ -529,6 +545,8 @@
     <MESSAGE value="bbdd supabase" />
     <MESSAGE value="workspace" />
     <MESSAGE value="pagination feature star" />
-    <option name="LAST_COMMIT_MESSAGE" value="pagination feature star" />
+    <MESSAGE value="paginacion feature" />
+    <MESSAGE value="text filter" />
+    <option name="LAST_COMMIT_MESSAGE" value="text filter" />
   </component>
 </project>

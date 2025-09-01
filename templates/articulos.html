@@ -12,25 +12,59 @@
     </ol>
   </nav>
 
-<!--  FILTRO DE TEXTO  -->
-  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-    <form method="get" class="d-flex align-items-center gap-2">
-      <input type="search" name="q" value="{{ qtxt or '' }}" class="form-control form-control-sm"
-             placeholder="Buscar en artículos…" style="max-width: 320px;">
-      <button class="btn btn-sm btn-primary">Buscar</button>
-      {% if qtxt %}
-        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('main.articulos_todos') }}">Limpiar</a>
+<!-- FILTROS (una fila, limpio) -->
+<div class="row align-items-center g-2 mb-3">
+
+  <!-- Izquierda: Categorías + buscador -->
+  <div class="col-md-8">
+    <form method="get" class="d-flex align-items-center flex-wrap flex-md-nowrap gap-2 mb-0">
+      <input type="hidden" name="page" value="1">
+
+      <!-- Categorías -->
+      <div class="d-flex align-items-center gap-2">
+        <label for="tag" class="small text-muted m-0">Categorías</label>
+        <select id="tag" name="tag"
+                class="form-select form-select-sm w-auto"
+                onchange="this.form.submit()">
+          <option value="">Todas</option>
+          {% if tags_main and tags_main|length %}
+            {% for t in tags_main %}
+              <option value="{{ t }}" {{ 'selected' if tag_sel == t else '' }}>
+              {{ t }}
+              </option>
+            {% endfor %}
+          {% else %}
+            <option value="" disabled>(Sin categorías)</option>
+          {% endif %}
+        </select>
+      </div>
+
+      <!-- Buscador -->
+      <div class="input-group input-group-sm" style="max-width: 360px; flex: 1 1 260px;">
+        <input type="search" name="q" value="{{ qtxt or '' }}" class="form-control"
+               placeholder="Buscar en artículos…">
+        <button class="btn btn-dark" type="submit">Buscar</button>
+      </div>
+
+      {% if qtxt or tag_sel %}
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('main.articulos_todos') }}">
+          Limpiar
+        </a>
       {% endif %}
     </form>
+  </div>
 
-    <p class="text-muted small m-0">
+  <!-- Derecha: contador -->
+  <div class="col-md-4 text-md-end">
+    <p class="text-muted small mb-0">
       {% if total %}
-        Mostrando {{ articulos|length }} de {{ total }} artículos{% if qtxt %} para “{{ qtxt }}”{% endif %}
+        Mostrando {{ articulos|length }} de {{ total }} artículos
       {% else %}
-        No hay artículos{% if qtxt %} para “{{ qtxt }}”{% endif %}.
+        No hay artículos
       {% endif %}
     </p>
   </div>
+</div>
 
 <!--  TODOS LOS ARTÍCULOS  -->
   {% if articulos %}
@@ -83,7 +117,7 @@
   {% endif %}
 
 <!--  PAGINACIÓN  -->
-  {% if pagination and pagination.pages > 1 %}
+  {% if pagination and pagination.pages >= 1 %}
   <nav class="blog-pagination d-flex justify-content-between align-items-center my-4"
        aria-label="Paginación de artículos">
 
@@ -91,7 +125,7 @@
     <div class="d-flex gap-2">
       {% if pagination.has_next %}
         <a class="btn rounded-pill btn-outline-primary" rel="next"
-           href="{{ url_for('main.articulos_todos', page=pagination.next_num, q=qtxt) }}">
+           href="{{ url_for('main.articulos_todos', page=pagination.next_num, q=qtxt, tag=tag_sel) }}">
           Más antiguos
         </a>
       {% else %}
@@ -102,7 +136,7 @@
 
       {% if pagination.has_prev %}
         <a class="btn rounded-pill btn-outline-primary" rel="prev"
-           href="{{ url_for('main.articulos_todos', page=pagination.prev_num, q=qtxt) }}">
+           href="{{ url_for('main.articulos_todos', page=pagination.prev_num, q=qtxt, tag=tag_sel) }}">
           Más recientes
         </a>
       {% else %}
