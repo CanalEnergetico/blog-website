@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="text filter">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run.py" beforeDir="false" afterPath="$PROJECT_DIR$/run.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/articulos.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/articulos.html" afterDir="false" />
-    </list>
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="tag filter" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -518,11 +513,18 @@
       <option name="project" value="LOCAL" />
       <updated>1756589189930</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="tag filter">
+      <option name="closed" value="true" />
+      <created>1756693849261</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1756693849261</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Comment main.py" />
     <MESSAGE value="Comment base.html" />
     <MESSAGE value="Comment index.html" />
     <MESSAGE value="debug=False" />
@@ -547,6 +549,7 @@
     <MESSAGE value="pagination feature star" />
     <MESSAGE value="paginacion feature" />
     <MESSAGE value="text filter" />
-    <option name="LAST_COMMIT_MESSAGE" value="text filter" />
+    <MESSAGE value="tag filter" />
+    <option name="LAST_COMMIT_MESSAGE" value="tag filter" />
   </component>
 </project>
