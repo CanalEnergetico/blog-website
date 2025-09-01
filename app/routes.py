@@ -1,5 +1,5 @@
 # app/routes.py
-from datetime import date
+from datetime import date,datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, send_from_directory, Response, current_app, request
 from sqlalchemy import func, or_
 from sqlalchemy.exc import IntegrityError
@@ -283,5 +283,62 @@ def sitemap():
             f"    <priority>{p['priority']}</priority>",
             "  </url>",
         ]
+    xml.append("</urlset>")
+    return Response("\n".join(xml), mimetype="application/xml")
+
+# sitemap para Google News
+@bp.route("/news-sitemap.xml", methods=["GET"], endpoint="news_sitemap")
+def news_sitemap():
+    from datetime import datetime, timedelta
+
+    now = datetime.utcnow()
+    cutoff = now - timedelta(days=2)
+
+    posts = Articulos.query.order_by(Articulos.id.desc()).all()
+
+    items = []
+    for p in posts:
+        d = _parse_fecha(p.fecha) if p.fecha else None
+        if not d:
+            continue
+        dt = datetime(d.year, d.month, d.day, 12, 0, 0)
+        if dt >= cutoff:
+            items.append({
+                "loc": url_for("main.detalle_articulo", slug=p.slug, _external=True),
+                "date": dt,
+                "title": p.titulo
+            })
+
+    # fallback: si no hay artículos recientes, mete el último
+    if not items and posts:
+        p = posts[0]
+        d = _parse_fecha(p.fecha) if p.fecha else None
+        dt = datetime(d.year, d.month, d.day, 12, 0, 0) if d else now
+        items.append({
+            "loc": url_for("main.detalle_articulo", slug=p.slug, _external=True),
+            "date": dt,
+            "title": p.titulo
+        })
+
+    xml = ['<?xml version="1.0" encoding="UTF-8"?>',
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+           'xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">']
+
+    for it in items:
+        pub_date_iso = it["date"].strftime("%Y-%m-%dT%H:%M:%SZ")
+        title = (it["title"] or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        xml.append(f"""
+  <url>
+    <loc>{it["loc"]}</loc>
+    <news:news>
+      <news:publication>
+        <news:name>Canal Energético</news:name>
+        <news:language>es</news:language>
+      </news:publication>
+      <news:publication_date>{pub_date_iso}</news:publication_date>
+      <news:title>{title}</news:title>
+    </news:news>
+  </url>""")
+
     xml.append("</urlset>")
     return Response("\n".join(xml), mimetype="application/xml")

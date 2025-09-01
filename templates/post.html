@@ -120,5 +120,58 @@
   </div>
 </div>
 
+{# --- Schema.org: NewsArticle (JSON-LD) --- #}
+{% set fecha_raw = articulo.fecha %}
+{% if fecha_raw is string %}
+  {# fecha como 'dd/mm/YYYY' #}
+  {% if '/' in fecha_raw %}
+    {% set p = fecha_raw.split('/') %}
+    {% set iso_fecha = p[2] ~ '-' ~ ("%02d"|format(p[1]|int)) ~ '-' ~ ("%02d"|format(p[0]|int)) %}
+  {% else %}
+    {# si ya viene como 'YYYY-mm-dd' o similar #}
+    {% set iso_fecha = fecha_raw %}
+  {% endif %}
+{% elif fecha_raw %}
+  {# fecha como datetime.date/datetime #}
+  {% set iso_fecha = fecha_raw.strftime('%Y-%m-%d') %}
+{% else %}
+  {% set iso_fecha = '' %}
+{% endif %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+  "headline": {{ (articulo.titulo or "")|tojson }},
+  "description": {{ (articulo.descripcion or "")|tojson }},
+  "datePublished": {{ (iso_fecha or "")|tojson }},
+  "dateModified": {{ (iso_fecha or "")|tojson }},
+  "author": {
+    "@type": "Person",
+    "name": {{ (articulo.autor or "Canal Energético")|tojson }}
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Canal Energético",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.canalenergetico.com/static/img/logo.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ url_for('main.detalle_articulo', slug=articulo.slug, _external=True) }}"
+  },
+  "image": [
+    {% if articulo.img_url %}
+      {{ articulo.img_url|tojson }}
+    {% else %}
+      "https://www.canalenergetico.com/static/img/default-article.jpg"
+    {% endif %}
+  ],
+  "inLanguage": "es",
+  "articleSection": {{ (articulo.tag or "Artículos")|tojson }}
+}
+</script>
 
 {% endblock %}
