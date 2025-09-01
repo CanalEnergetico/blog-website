@@ -3,7 +3,8 @@
 
 {% block content %}
 <div class="container">
-  <!-- Breadcrumbs -->
+
+<!-- BREADCRUMBS -->
   <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
     <ol class="breadcrumb small">
       <li class="breadcrumb-item"><a href="{{ url_for('main.home') }}">Inicio</a></li>
@@ -11,10 +12,65 @@
     </ol>
   </nav>
 
+<!-- FILTROS (una fila, limpio) -->
+<div class="row align-items-center g-2 mb-3">
+
+  <!-- Izquierda: Categorías + buscador -->
+  <div class="col-md-8">
+    <form method="get" class="d-flex align-items-center flex-wrap flex-md-nowrap gap-2 mb-0">
+      <input type="hidden" name="page" value="1">
+
+      <!-- Categorías -->
+      <div class="d-flex align-items-center gap-2">
+        <label for="tag" class="small text-muted m-0">Categorías</label>
+        <select id="tag" name="tag"
+                class="form-select form-select-sm w-auto"
+                onchange="this.form.submit()">
+          <option value="">Todas</option>
+          {% if tags_main and tags_main|length %}
+            {% for t in tags_main %}
+              <option value="{{ t }}" {{ 'selected' if tag_sel == t else '' }}>
+              {{ t }}
+              </option>
+            {% endfor %}
+          {% else %}
+            <option value="" disabled>(Sin categorías)</option>
+          {% endif %}
+        </select>
+      </div>
+
+      <!-- Buscador -->
+      <div class="input-group input-group-sm" style="max-width: 360px; flex: 1 1 260px;">
+        <input type="search" name="q" value="{{ qtxt or '' }}" class="form-control"
+               placeholder="Buscar en artículos…">
+        <button class="btn btn-dark" type="submit">Buscar</button>
+      </div>
+
+      {% if qtxt or tag_sel %}
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('main.articulos_todos') }}">
+          Limpiar
+        </a>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Derecha: contador -->
+  <div class="col-md-4 text-md-end">
+    <p class="text-muted small mb-0">
+      {% if total %}
+        Mostrando {{ articulos|length }} de {{ total }} artículos
+      {% else %}
+        No hay artículos
+      {% endif %}
+    </p>
+  </div>
+</div>
+
+<!--  TODOS LOS ARTÍCULOS  -->
   {% if articulos %}
     <!-- Cuatro destacados al principio -->
     <div class="row mb-4">
-      {% for articulo in articulos[-1:-5:-1] %}
+      {% for articulo in articulos[:4] %}
         <div class="col-md-6 mb-4">
           <div class="card h-100 shadow-sm">
             {% if articulo.img_url %}
@@ -43,7 +99,7 @@
 
     <!-- Resto de artículos en filas de tres -->
     <div class="row">
-      {% for articulo in articulos[-5::-1] %}
+      {% for articulo in articulos[4:] %}
         <div class="col-md-4 mb-4">
           <div class="card h-100 shadow-sm">
             <div class="card-body d-flex flex-column">
@@ -59,5 +115,41 @@
   {% else %}
     <p>No hay artículos para mostrar.</p>
   {% endif %}
+
+<!--  PAGINACIÓN  -->
+  {% if pagination and pagination.pages >= 1 %}
+  <nav class="blog-pagination d-flex justify-content-between align-items-center my-4"
+       aria-label="Paginación de artículos">
+
+    <!-- Izquierda: botones -->
+    <div class="d-flex gap-2">
+      {% if pagination.has_next %}
+        <a class="btn rounded-pill btn-outline-primary" rel="next"
+           href="{{ url_for('main.articulos_todos', page=pagination.next_num, q=qtxt, tag=tag_sel) }}">
+          Más antiguos
+        </a>
+      {% else %}
+        <span class="btn rounded-pill btn-outline-secondary disabled" aria-disabled="true" tabindex="-1">
+          Más antiguos
+        </span>
+      {% endif %}
+
+      {% if pagination.has_prev %}
+        <a class="btn rounded-pill btn-outline-primary" rel="prev"
+           href="{{ url_for('main.articulos_todos', page=pagination.prev_num, q=qtxt, tag=tag_sel) }}">
+          Más recientes
+        </a>
+      {% else %}
+        <span class="btn rounded-pill btn-outline-secondary disabled" aria-disabled="true" tabindex="-1">
+          Más recientes
+        </span>
+      {% endif %}
+    </div>
+
+    <!-- Derecha: texto de página -->
+    <span class="small text-muted">Página {{ pagination.page }} de {{ pagination.pages }}</span>
+  </nav>
+  {% endif %}
+
 </div>
 {% endblock %}

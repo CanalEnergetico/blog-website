@@ -54,28 +54,50 @@ def sobre_nosotros():
 def articulos_todos():
     page = request.args.get("page", 1, type=int)
     qtxt = (request.args.get("q") or "").strip()
+    tag_param = (request.args.get("tag") or "").strip()
 
     q = Articulos.query
 
-    # Filtro por texto en título, descripción o contenido
+    # Filtro de texto
     if qtxt:
         like = f"%{qtxt}%"
         q = q.filter(or_(
             Articulos.titulo.ilike(like),
             Articulos.descripcion.ilike(like),
-            Articulos.contenido.ilike(like)
+            Articulos.contenido.ilike(like),
+            Articulos.tag.ilike(like),
         ))
 
-    q = Articulos.query.order_by(Articulos.fecha.desc(), Articulos.id.desc())
+    # Filtro por categoría principal
+    if tag_param:
+        q = q.filter(func.lower(func.btrim(Articulos.tag)) == tag_param.lower())
+
+    # Orden + paginación
+    q = q.order_by(Articulos.fecha.desc())
     pagination = db.paginate(q, page=page, per_page=12, error_out=False)
 
-    return render_template(
-        "articulos.html",
-        articulos=pagination.items,
-        pagination=pagination,
-        total=pagination.total,
-        qtxt=qtxt,  # <- para mantener el valor en el input y en los enlaces
+    # Opciones del desplegable
+    tag_subq = (
+        db.session.query(func.btrim(Articulos.tag).label("tag"))
+        .filter(Articulos.tag.isnot(None), func.btrim(Articulos.tag) != "")
+        .distinct()
+        .subquery()
     )
+
+    # Orden insensible a mayúsculas
+    raw_tags = db.session.query(tag_subq.c.tag).order_by(func.lower(tag_subq.c.tag)).all()
+    tags_main = [row[0] for row in raw_tags]  # lista de strings
+
+
+    return render_template(
+            "articulos.html",
+            articulos=pagination.items,
+            pagination=pagination,
+            total=pagination.total,
+            qtxt=qtxt,
+            tag_sel=tag_param,
+            tags_main=tags_main,
+        )
 
 # Próximamente
 @bp.route("/proximamente", endpoint="proximamente")
