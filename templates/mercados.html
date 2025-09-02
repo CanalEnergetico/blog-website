@@ -8,38 +8,69 @@
 {% endblock %}
 
 {% block content %}
+
+<style>
+  .chg-wrap{ font-size:1.05rem; }
+  .chg-val{ font-weight:600; }
+</style>
+
 <div class="row g-3">
   <!-- Brent -->
   <div class="col-md-6">
     <div class="card shadow-sm h-100">
       <div class="card-body">
-        <h5 class="card-title">Brent</h5>
-        <div class="d-flex align-items-baseline gap-2">
-          <span class="display-6" id="brentValue">—</span>
-          <span class="text-muted" id="brentUnit">USD/bbl</span>
+        <div class="d-flex align-items-center justify-content-between">
+          <h5 class="card-title mb-0">Brent</h5>
           <span class="badge bg-secondary" id="brentStale" style="display:none;">Dato no reciente</span>
         </div>
-        <div class="small text-muted mt-1">
-          10d: <span id="brent10d">—</span> · 30d: <span id="brent30d">—</span>
+
+        <div class="d-flex align-items-baseline flex-wrap gap-3 mt-2">
+          <div class="d-flex align-items-baseline gap-2">
+            <span class="display-6 fw-semibold" id="brentValue">—</span>
+            <span class="text-muted" id="brentUnit">USD/bbl</span>
+          </div>
+          <div class="chg-wrap text-muted">
+            10d: <span id="brent10d" class="chg-val">—</span>
+            &nbsp;·&nbsp;
+            30d: <span id="brent30d" class="chg-val">—</span>
+          </div>
         </div>
-        <canvas id="chartBrent" height="70" class="mt-3"></canvas>
+
+        <div class="small text-muted mt-1">
+          Último dato (EIA): <span id="brentLastDate">—</span>
+        </div>
+
+        <canvas id="chartBrent" height="140" class="mt-3"></canvas>
       </div>
     </div>
   </div>
+
   <!-- WTI -->
   <div class="col-md-6">
     <div class="card shadow-sm h-100">
       <div class="card-body">
-        <h5 class="card-title">WTI</h5>
-        <div class="d-flex align-items-baseline gap-2">
-          <span class="display-6" id="wtiValue">—</span>
-          <span class="text-muted" id="wtiUnit">USD/bbl</span>
+        <div class="d-flex align-items-center justify-content-between">
+          <h5 class="card-title mb-0">WTI</h5>
           <span class="badge bg-secondary" id="wtiStale" style="display:none;">Dato no reciente</span>
         </div>
-        <div class="small text-muted mt-1">
-          10d: <span id="wti10d">—</span> · 30d: <span id="wti30d">—</span>
+
+        <div class="d-flex align-items-baseline flex-wrap gap-3 mt-2">
+          <div class="d-flex align-items-baseline gap-2">
+            <span class="display-6 fw-semibold" id="wtiValue">—</span>
+            <span class="text-muted" id="wtiUnit">USD/bbl</span>
+          </div>
+          <div class="chg-wrap text-muted">
+            10d: <span id="wti10d" class="chg-val">—</span>
+            &nbsp;·&nbsp;
+            30d: <span id="wti30d" class="chg-val">—</span>
+          </div>
         </div>
-        <canvas id="chartWti" height="70" class="mt-3"></canvas>
+
+        <div class="small text-muted mt-1">
+          Último dato (EIA): <span id="wtiLastDate">—</span>
+        </div>
+
+        <canvas id="chartWti" height="140" class="mt-3"></canvas>
       </div>
     </div>
   </div>
@@ -58,7 +89,7 @@
   </div>
 </div>
 
-<!-- Mapa estático de referencias -->
+<!-- Mapa estático -->
 <div class="card shadow-sm mt-3 mx-auto" style="max-width: 900px;">
   <div class="card-body text-center">
     <h5 class="card-title">Mapa de referencias</h5>
@@ -67,7 +98,7 @@
     </p>
     <figure class="mb-0">
       <img
-        src="{{ url_for('static', filename='images/map_benchmarks.png') }}"
+        src="{{ url_for('static', filename='images/map_benchmarks.jpg') }}"
         alt="Mapa de referencias de Brent, WTI, Dubai/Oman, Henry Hub, TTF y JKM"
         class="img-fluid rounded border d-block mx-auto"
         style="max-width: 100%; height: auto;"
@@ -75,8 +106,6 @@
     </figure>
   </div>
 </div>
-
-
 
 <!-- Sección educativa: Petróleo crudo -->
 <div class="card shadow-sm mt-3">
@@ -172,53 +201,108 @@
     </div>
   </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
   {{ super() }}
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
   <script>
+    function fmtPct(n){
+      if (n == null) return "—";
+      const s = (n >= 0 ? "+" : "") + n.toFixed(2) + "%";
+      return s;
+    }
+    function fmtDateISO(d){
+      if (!d) return "—";
+      const dt = new Date(d + "T00:00:00Z");
+      try { return dt.toLocaleDateString('es-ES', { year:'numeric', month:'short', day:'2-digit' }); }
+      catch { return d; }
+    }
+    function setChange(el, n){
+      el.textContent = fmtPct(n);
+      el.classList.remove('text-success','text-danger');
+      if (typeof n === 'number') el.classList.add(n >= 0 ? 'text-success' : 'text-danger');
+    }
+
     async function loadDashboard(){
       const res = await fetch("{{ url_for('main.mercados_json') }}", {cache: 'no-store'});
       const data = await res.json();
-
       const byId = {};
       for (const m of data.markets){ byId[m.id] = m; }
 
-      function setCard(idPrefix, m){
-        document.getElementById(idPrefix+'Value').textContent = (m.value ?? '—');
-        document.getElementById(idPrefix+'Unit').textContent  = m.unit || '';
-        document.getElementById(idPrefix+'10d').textContent   =
-          (m.chg_10d_pct==null) ? '—' : (m.chg_10d_pct.toFixed(2) + '%');
-        document.getElementById(idPrefix+'30d').textContent   =
-          (m.chg_30d_pct==null) ? '—' : (m.chg_30d_pct.toFixed(2) + '%');
-        document.getElementById(idPrefix+'Stale').style.display = m.stale ? 'inline-block' : 'none';
+      function setCard(prefix, m){
+        document.getElementById(prefix+'Value').textContent = (m.value ?? '—');
+        document.getElementById(prefix+'Unit').textContent  = m.unit || '';
+        setChange(document.getElementById(prefix+'10d'), m.chg_10d_pct);
+        setChange(document.getElementById(prefix+'30d'), m.chg_30d_pct);
+        document.getElementById(prefix+'Stale').style.display = m.stale ? 'inline-block' : 'none';
+        document.getElementById(prefix+'LastDate').textContent = fmtDateISO(m.last_date);
       }
 
       setCard('brent', byId['brent'] || {});
-      setCard('wti', byId['wti'] || {});
+      setCard('wti',   byId['wti']   || {});
 
-      function drawSpark(canvasId, series){
-        const ctx = document.getElementById(canvasId);
-        if (!ctx || !series) return;
-        new Chart(ctx, {
+      function drawLineWithDates(canvasId, dates, series){
+        const canvas = document.getElementById(canvasId);
+        if (!canvas || !Array.isArray(dates) || !Array.isArray(series) || dates.length !== series.length) return;
+
+        // Convertimos a timestamps (ms) para evitar problemas de parsing
+        const pts = dates.map((d, i) => ({ x: new Date(d + "T00:00:00Z").getTime(), y: series[i] }));
+
+        new Chart(canvas, {
           type: 'line',
-          data: { labels: series.map((_,i)=>i+1), datasets: [{ data: series }] },
+          data: {
+            datasets: [{
+              data: pts,
+              borderColor: 'rgba(33,37,41,0.9)',
+              fill: false,
+              tension: 0.25,
+              pointRadius: 2,
+              pointHoverRadius: 5,
+              pointBackgroundColor: 'rgba(33,37,41,0.85)'
+            }]
+          },
           options: {
             responsive: true,
-            plugins: { legend: { display:false }, tooltip: { enabled:false }},
-            scales: { x: { display:false }, y: { display:false } },
-            elements: { line: { tension: 0.25 }, point: { radius: 0 } }
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                mode: 'index',
+                intersect: false,
+                callbacks: {
+                  title: items => {
+                    const ts = items[0].parsed.x;
+                    const d  = new Date(ts);
+                    return d.toLocaleDateString('es-ES', { year:'numeric', month:'short', day:'2-digit' });
+                  }
+                }
+              }
+            },
+            parsing: false,
+            scales: {
+              x: {
+                type: 'time',
+                time: { unit: 'day' },
+                ticks: { maxTicksLimit: 8 },
+                grid: { display: false }
+              },
+              y: {
+                beginAtZero: false,
+                grid: { color: 'rgba(0,0,0,0.05)' }
+              }
+            },
+            elements: { line: { borderWidth: 2 } }
           }
         });
       }
 
-      drawSpark('chartBrent', byId['brent']?.spark || []);
-      drawSpark('chartWti',   byId['wti']?.spark || []);
+      drawLineWithDates('chartBrent', byId['brent']?.spark_dates || [], byId['brent']?.spark || []);
+      drawLineWithDates('chartWti',   byId['wti']?.spark_dates   || [], byId['wti']?.spark   || []);
     }
 
     loadDashboard();
-    // (Opcional) refresco automático cada 15 minutos:
-    // setInterval(loadDashboard, 15*60*1000);
+    // setInterval(loadDashboard, 15 * 60 * 1000);
   </script>
 {% endblock %}

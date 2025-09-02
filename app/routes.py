@@ -1,14 +1,14 @@
 # app/routes.py
 from datetime import date, datetime
 from flask import Blueprint, render_template, redirect, url_for, send_from_directory, Response, current_app, request, jsonify
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.exc import IntegrityError
 from .extensions import db
 from .models import Articulos, Comentarios, Tag, MercadoUltimo, MercadoDaily
 from .forms import PostForm, CommentForm
 from .utils import generar_slug, _parse_fecha, parse_tags, tag_slug, pct_change_n, rolling_insert_30
+# Importa las mismas funciones de siempre; tu app/markets.py está "disfrazada" para EIA
 from .markets import td_price_batch, td_timeseries_daily, parse_last_ts
-
 
 bp = Blueprint("main", __name__)
 
@@ -90,16 +90,15 @@ def articulos_todos():
     raw_tags = db.session.query(tag_subq.c.tag).order_by(func.lower(tag_subq.c.tag)).all()
     tags_main = [row[0] for row in raw_tags]  # lista de strings
 
-
     return render_template(
-            "articulos.html",
-            articulos=pagination.items,
-            pagination=pagination,
-            total=pagination.total,
-            qtxt=qtxt,
-            tag_sel=tag_param,
-            tags_main=tags_main,
-        )
+        "articulos.html",
+        articulos=pagination.items,
+        pagination=pagination,
+        total=pagination.total,
+        qtxt=qtxt,
+        tag_sel=tag_param,
+        tags_main=tags_main,
+    )
 
 # Próximamente
 @bp.route("/proximamente", endpoint="proximamente")
@@ -345,7 +344,7 @@ def news_sitemap():
     xml.append("</urlset>")
     return Response("\n".join(xml), mimetype="application/xml")
 
-#Para API Mercados
+# ========= Mercados =========
 @bp.route("/mercados", endpoint="mercados_home")
 def mercados_home():
     return render_template("mercados.html")
@@ -357,8 +356,20 @@ def mercados_json():
     nombres = {"brent": "Brent", "wti": "WTI"}
     for symbol in ("brent", "wti"):
         last = MercadoUltimo.query.filter_by(symbol=symbol).first()
-        hist = MercadoDaily.query.filter_by(symbol=symbol).order_by(MercadoDaily.date.asc()).all()
+        hist = (MercadoDaily.query
+                .filter_by(symbol=symbol)
+                .order_by(MercadoDaily.date.asc())
+                .all())
         series = [h.close for h in hist]
+
+        # <<< NUEVO: fechas para spark y fecha del último dato >>>
+        dates = [
+            h.date.isoformat() if hasattr(h.date, "isoformat") else str(h.date)
+            for h in hist
+        ]
+        last_date = dates[-1] if dates else None
+        # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
         items.append({
             "id": symbol,
             "name": nombres[symbol],
@@ -369,43 +380,65 @@ def mercados_json():
             "chg_10d_pct": pct_change_n(series, 10),
             "chg_30d_pct": pct_change_n(series, 30),
             "spark": series[-30:],
+            "spark_dates": dates[-30:],   # NUEVO
+            "last_date": last_date,       # NUEVO
         })
     return jsonify({"updated_at": datetime.utcnow().isoformat()+"Z", "markets": items})
 
 @bp.route("/tasks/refresh-mercados", methods=["POST"], endpoint="refresh_mercados")
 def refresh_mercados():
+    # Seguridad con token
     token = request.headers.get("X-Refresh-Token", "")
     if token != current_app.config.get("CANAL_KEY", ""):
         return {"error": "unauthorized"}, 401
+
+    # Símbolos configurados (ahora RBRTE/RWTC para EIA)
     symmap = current_app.config.get("TWELVEDATA_SYMBOLS", {})
-    symbols_csv = ",".join([symmap.get("brent"), symmap.get("wti")])
+    brent_sym = symmap.get("brent")
+    wti_sym   = symmap.get("wti")
+    symbols_csv = ",".join([brent_sym, wti_sym])
+
+    now_iso = datetime.utcnow().isoformat() + "Z"
+
+    # 1) Último valor (usa td_price_batch "disfrazado" a EIA)
     try:
-        prices = td_price_batch(symbols_csv)
-    except Exception:
+        prices = td_price_batch(symbols_csv)  # {"RBRTE":{"price":".."},"RWTC":{"price":".."}}
+    except Exception as e:
+        current_app.logger.exception("Error td_price_batch: %s", e)
         prices = {}
-    now_iso = datetime.utcnow().isoformat()+"Z"
-    for real, logical in [(symmap.get("brent"), "brent"), (symmap.get("wti"), "wti")]:
-        obj = prices.get(real) or {}
-        value = None
+
+    for real_sym, logical in [(brent_sym, "brent"), (wti_sym, "wti")]:
+        obj = prices.get(real_sym) or {}
+        val = None
         try:
-            value = float(obj.get("price"))
+            if obj.get("price") is not None:
+                val = float(obj.get("price"))
         except Exception:
             pass
-        row = MercadoUltimo.query.filter_by(symbol=logical).first() or MercadoUltimo(symbol=logical, unit="USD/bbl", value=0.0, asof=now_iso, stale=True)
-        if value is not None:
-            row.value, row.asof, row.stale = value, now_iso, False
+
+        row = (MercadoUltimo.query.filter_by(symbol=logical).first()
+               or MercadoUltimo(symbol=logical, unit="USD/bbl", value=0.0, asof=now_iso, stale=True))
+        if val is not None:
+            row.value, row.asof, row.stale = val, now_iso, False
         else:
             row.stale = True
             if not row.asof:
                 row.asof = now_iso
         db.session.add(row)
-    for logical, real in [("brent", symmap.get("brent")), ("wti", symmap.get("wti"))]:
+
+    # 2) Historial (hasta 30 puntos) para el spark
+    for logical, real_sym in [("brent", brent_sym), ("wti", wti_sym)]:
         try:
-            ts = td_timeseries_daily(real, outputsize=2)
-            d, c = parse_last_ts(ts)
-            if d and (c is not None):
-                rolling_insert_30(db.session, logical, d, c, MercadoDaily)
-        except Exception:
-            pass
+            ts = td_timeseries_daily(real_sym, outputsize=31)  # {"values":[{"datetime": "...","close": ...}, ...]}
+            values = ts.get("values") or []
+            # insertamos en orden ascendente para no romper la rotación
+            for v in reversed(values[:30]):  # aseguramos máximo 30
+                d = v.get("datetime", "")[:10]
+                c = v.get("close")
+                if d and (c is not None):
+                    rolling_insert_30(db.session, logical, d, float(c), MercadoDaily)
+        except Exception as e:
+            current_app.logger.exception("Error time_series %s: %s", real_sym, e)
+
     db.session.commit()
     return {"ok": True}
