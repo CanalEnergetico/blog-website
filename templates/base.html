@@ -71,6 +71,10 @@
              href="{{ url_for('main.articulos_todos') }}">
             Artículos
           </a>
+          <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='main.mercados_home' %} fw-bold{% endif %}"
+          href="{{ url_for('main.mercados_home') }}">
+           Mercados
+          </a>
           <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='main.proximamente' %} fw-bold{% endif %}"
              href="{{ url_for('main.proximamente') }}">
             Próximamente
