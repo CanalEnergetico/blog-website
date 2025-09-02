@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="ws" />
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="añadir descripcion articulo en seccion de opinion">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/robots.txt" beforeDir="false" afterPath="$PROJECT_DIR$/static/robots.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/post.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/post.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -19,11 +24,6 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="main" />
-      </map>
-    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -35,31 +35,30 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/CanalEnergetico/blog-website.git&quot;,
-    &quot;accountId&quot;: &quot;a3c71650-eddb-43ac-bd4e-588944009157&quot;
+    &quot;accountId&quot;: &quot;94ec6d12-d3bc-49ce-a561-661a44d79722&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
   <component name="ProjectId" id="2z322f8OP4n5uRtr4ATuTrcx94x" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "Python.main.executor": "Run",
-    "Python.run.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/josea/PycharmProjects/blog-energetico/static/images",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.run.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Merging main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/josea/PycharmProjects/blog-energetico/static/images&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\josea\PycharmProjects\blog-energetico\static\images" />
@@ -121,7 +120,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-d7ad00fb9fc3-c546a90a8094-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-242.23726.102" />
+        <option value="bundled-python-sdk-41e8cd69c857-64d779b69b7a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26927.90" />
       </set>
     </attachedChunks>
   </component>
@@ -133,6 +132,14 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1750945230178</updated>
+    </task>
+    <task id="LOCAL-00002" summary="comments">
+      <option name="closed" value="true" />
+      <created>1753112348989</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1753112348989</updated>
     </task>
     <task id="LOCAL-00003" summary="photos eliminated">
       <option name="closed" value="true" />
@@ -510,27 +517,18 @@
       <option name="project" value="LOCAL" />
       <updated>1756693849261</updated>
     </task>
-    <task id="LOCAL-00050" summary="ws">
+    <task id="LOCAL-00050" summary="Se incluyo en routes.py funcion para google news y tambien en post.html añadir un bloque">
       <option name="closed" value="true" />
-      <created>1756695161103</created>
+      <created>1756758897875</created>
       <option name="number" value="00050" />
       <option name="presentableId" value="LOCAL-00050" />
       <option name="project" value="LOCAL" />
-      <updated>1756695161103</updated>
+      <updated>1756758897875</updated>
     </task>
-    <task id="LOCAL-00051" summary="ws">
-      <option name="closed" value="true" />
-      <created>1756695189612</created>
-      <option name="number" value="00051" />
-      <option name="presentableId" value="LOCAL-00051" />
-      <option name="project" value="LOCAL" />
-      <updated>1756695189612</updated>
-    </task>
-    <option name="localTasksCounter" value="52" />
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Comment index.html" />
     <MESSAGE value="debug=False" />
     <MESSAGE value="new branch" />
     <MESSAGE value="delete post + debug false" />
@@ -555,6 +553,18 @@
     <MESSAGE value="text filter" />
     <MESSAGE value="tag filter" />
     <MESSAGE value="ws" />
-    <option name="LAST_COMMIT_MESSAGE" value="ws" />
+    <MESSAGE value="Se incluyo en routes.py funcion para google news y tambien en post.html añadir un bloque" />
+    <option name="LAST_COMMIT_MESSAGE" value="Se incluyo en routes.py funcion para google news y tambien en post.html añadir un bloque" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/app/routes.py</url>
+          <line>1</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
