@@ -1,0 +1,65 @@
+name: Refresh Mercados Hourly
+
+on:
+  schedule:
+    # Cada hora a los :05 (UTC) para evitar el minuto exacto :00 donde hay más tráfico
+    - cron: "5 * * * *"
+  workflow_dispatch: {}  # Permite lanzarlo manualmente desde la pestaña Actions
+
+permissions: {}
+concurrency:
+  group: refresh-mercados
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Warm-up (wake Render if sleeping)
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: |
+          # Un GET rapidito para “despertar” Render (si está en free y se duerme)
+          curl -fsS -H "User-Agent: canalenergetico-gha" "$SITE_URL/" >/dev/null || true
+
+      - name: Call /tasks/refresh-mercados (with retries)
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CANAL_KEY: ${{ secrets.CANAL_KEY }}
+        run: |
+          set -e
+          URL="$SITE_URL/tasks/refresh-mercados"
+
+          # Pequeño jitter aleatorio (0-20s) para repartir carga cuando hay muchos jobs en el :05
+          sleep $(( RANDOM % 20 ))
+
+          for attempt in 1 2 3 4 5; do
+            echo "Attempt $attempt to POST $URL"
+            http_code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" \
+              -X POST \
+              -H "X-Refresh-Token: $CANAL_KEY" \
+              -H "User-Agent: canalenergetico-gha" \
+              "$URL" || true)
+
+            echo "HTTP $http_code"
+            cat /tmp/resp.json || true
+            echo
+
+            if [ "$http_code" = "200" ]; then
+              echo "Refresh OK"
+              exit 0
+            fi
+
+            # Si Render aún despierta o hay red lenta, reintenta con backoff
+            sleep $((attempt * 10))
+          done
+
+          echo "Failed after retries"
+          exit 1
+
+      - name: Verify dashboard.json (optional)
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: |
+          curl -fsS -H "User-Agent: canalenergetico-gha" "$SITE_URL/mercados/dashboard.json" | head -c 800 && echo
