@@ -59,7 +59,7 @@
 </div>
 
 <!-- Mapa estático de referencias -->
-<div class="card shadow-sm mt-3">
+<div class="card shadow-sm mt-3 mx-auto" style="max-width: 900px;">
   <div class="card-body text-center">
     <h5 class="card-title">Mapa de referencias</h5>
     <p class="text-muted mb-2">
@@ -67,14 +67,15 @@
     </p>
     <figure class="mb-0">
       <img
-        src="{{ url_for('static', filename='img/map_benchmarks.png') }}"
+        src="{{ url_for('static', filename='images/map_benchmarks.png') }}"
         alt="Mapa de referencias de Brent, WTI, Dubai/Oman, Henry Hub, TTF y JKM"
-        class="img-fluid rounded border"
-        style="max-width: 900px; height: auto;"
+        class="img-fluid rounded border d-block mx-auto"
+        style="max-width: 100%; height: auto;"
       >
     </figure>
   </div>
 </div>
+
 
 
 <!-- Sección educativa: Petróleo crudo -->
