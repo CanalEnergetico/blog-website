@@ -23,3 +23,9 @@ class Config:
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
     SEND_FILE_MAX_AGE_DEFAULT = 86400  # 1 día
+
+    TWELVEDATA_API_KEY = os.getenv("TWELVEDATA_API_KEY", "")
+    TWELVEDATA_SYMBOLS = {
+        "brent": "XBR/USD",
+        "wti": "WTI/USD",
+    }

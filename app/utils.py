@@ -1,9 +1,10 @@
 # app/utils.py
 import re
 from datetime import date, datetime
-from typing import List
+from typing import List, Optional
 from slugify import slugify
 from .models import Articulos
+
 
 def generar_slug(titulo: str) -> str:
     base = slugify(titulo)
@@ -25,9 +26,7 @@ def _parse_fecha(fecha_str: str) -> date:
 def plain_text(html: str) -> str:
     return re.sub(r"<[^>]+>", "", html or "")
 
-# ---------------------------
 # NUEVO: helpers de etiquetas
-# ---------------------------
 def parse_tags(cadena: str | None) -> List[str]:
     """
     Convierte 'python, flask; AI  #web' -> ['python', 'flask', 'AI', 'web']
@@ -51,3 +50,28 @@ def parse_tags(cadena: str | None) -> List[str]:
 def tag_slug(nombre: str) -> str:
     # Puedes usar la misma lib que ya usas para slugs de artículos
     return slugify(nombre)
+
+
+#Para la API de mercados
+def rolling_insert_30(session, symbol: str, date_str: str, close: float, ModelDaily):
+    exists = session.query(ModelDaily).filter_by(symbol=symbol, date=date_str).first()
+    if exists:
+        return
+    row = ModelDaily(symbol=symbol, date=date_str, close=close)
+    session.add(row)
+    session.flush()
+    rows = (session.query(ModelDaily)
+                  .filter_by(symbol=symbol)
+                  .order_by(ModelDaily.date.asc())
+                  .all())
+    if len(rows) > 30:
+        for r in rows[:len(rows)-30]:
+            session.delete(r)
+
+def pct_change_n(series: list[float], n: int) -> Optional[float]:
+    if len(series) <= n:
+        return None
+    curr = series[-1]; prev = series[-1-n]
+    if prev == 0:
+        return None
+    return (curr - prev) / prev * 100.0

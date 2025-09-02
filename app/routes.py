@@ -1,12 +1,14 @@
 # app/routes.py
-from datetime import date,datetime, timedelta
-from flask import Blueprint, render_template, redirect, url_for, send_from_directory, Response, current_app, request
-from sqlalchemy import func, or_
+from datetime import date, datetime
+from flask import Blueprint, render_template, redirect, url_for, send_from_directory, Response, current_app, request, jsonify
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from .extensions import db
-from .models import Articulos, Comentarios, Tag
+from .models import Articulos, Comentarios, Tag, MercadoUltimo, MercadoDaily
 from .forms import PostForm, CommentForm
-from .utils import generar_slug, _parse_fecha, parse_tags, tag_slug
+from .utils import generar_slug, _parse_fecha, parse_tags, tag_slug, pct_change_n, rolling_insert_30
+from .markets import td_price_batch, td_timeseries_daily, parse_last_ts
+
 
 bp = Blueprint("main", __name__)
 
@@ -342,3 +344,68 @@ def news_sitemap():
 
     xml.append("</urlset>")
     return Response("\n".join(xml), mimetype="application/xml")
+
+#Para API Mercados
+@bp.route("/mercados", endpoint="mercados_home")
+def mercados_home():
+    return render_template("mercados.html")
+
+@bp.route("/mercados/dashboard.json", endpoint="mercados_json")
+def mercados_json():
+    items = []
+    unidades = {"brent": "USD/bbl", "wti": "USD/bbl"}
+    nombres = {"brent": "Brent", "wti": "WTI"}
+    for symbol in ("brent", "wti"):
+        last = MercadoUltimo.query.filter_by(symbol=symbol).first()
+        hist = MercadoDaily.query.filter_by(symbol=symbol).order_by(MercadoDaily.date.asc()).all()
+        series = [h.close for h in hist]
+        items.append({
+            "id": symbol,
+            "name": nombres[symbol],
+            "unit": unidades[symbol],
+            "value": last.value if last else None,
+            "asof": last.asof if last else None,
+            "stale": bool(last.stale) if last else True,
+            "chg_10d_pct": pct_change_n(series, 10),
+            "chg_30d_pct": pct_change_n(series, 30),
+            "spark": series[-30:],
+        })
+    return jsonify({"updated_at": datetime.utcnow().isoformat()+"Z", "markets": items})
+
+@bp.route("/tasks/refresh-mercados", methods=["POST"], endpoint="refresh_mercados")
+def refresh_mercados():
+    token = request.headers.get("X-Refresh-Token", "")
+    if token != current_app.config.get("CANAL_KEY", ""):
+        return {"error": "unauthorized"}, 401
+    symmap = current_app.config.get("TWELVEDATA_SYMBOLS", {})
+    symbols_csv = ",".join([symmap.get("brent"), symmap.get("wti")])
+    try:
+        prices = td_price_batch(symbols_csv)
+    except Exception:
+        prices = {}
+    now_iso = datetime.utcnow().isoformat()+"Z"
+    for real, logical in [(symmap.get("brent"), "brent"), (symmap.get("wti"), "wti")]:
+        obj = prices.get(real) or {}
+        value = None
+        try:
+            value = float(obj.get("price"))
+        except Exception:
+            pass
+        row = MercadoUltimo.query.filter_by(symbol=logical).first() or MercadoUltimo(symbol=logical, unit="USD/bbl", value=0.0, asof=now_iso, stale=True)
+        if value is not None:
+            row.value, row.asof, row.stale = value, now_iso, False
+        else:
+            row.stale = True
+            if not row.asof:
+                row.asof = now_iso
+        db.session.add(row)
+    for logical, real in [("brent", symmap.get("brent")), ("wti", symmap.get("wti"))]:
+        try:
+            ts = td_timeseries_daily(real, outputsize=2)
+            d, c = parse_last_ts(ts)
+            if d and (c is not None):
+                rolling_insert_30(db.session, logical, d, c, MercadoDaily)
+        except Exception:
+            pass
+    db.session.commit()
+    return {"ok": True}

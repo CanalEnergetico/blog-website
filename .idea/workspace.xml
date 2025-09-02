@@ -4,11 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="añadir descripcion articulo en seccion de opinion">
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="Merge remote-tracking branch 'origin/main' into mercados&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;app/routes.py">
+      <change afterPath="$PROJECT_DIR$/app/markets.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/mercados.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/robots.txt" beforeDir="false" afterPath="$PROJECT_DIR$/static/robots.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/post.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/post.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,19 +50,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.run.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Merging main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/josea/PycharmProjects/blog-energetico/static/images&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Python.main.executor": "Run",
+    "Python.run.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "mercados2",
+    "last_opened_file_path": "C:/Users/josea/PycharmProjects/blog-energetico/static/images",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\josea\PycharmProjects\blog-energetico\static\images" />
@@ -132,6 +136,14 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1750945230178</updated>
+    </task>
+    <task id="LOCAL-00001" summary="First commit">
+      <option name="closed" value="true" />
+      <created>1752846401927</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1752846401927</updated>
     </task>
     <task id="LOCAL-00002" summary="comments">
       <option name="closed" value="true" />
@@ -461,74 +473,16 @@
       <option name="project" value="LOCAL" />
       <updated>1756078049945</updated>
     </task>
-    <task id="LOCAL-00043" summary="workspace">
-      <option name="closed" value="true" />
-      <created>1756079721623</created>
-      <option name="number" value="00043" />
-      <option name="presentableId" value="LOCAL-00043" />
-      <option name="project" value="LOCAL" />
-      <updated>1756079721623</updated>
-    </task>
-    <task id="LOCAL-00044" summary="workspace">
-      <option name="closed" value="true" />
-      <created>1756577017141</created>
-      <option name="number" value="00044" />
-      <option name="presentableId" value="LOCAL-00044" />
-      <option name="project" value="LOCAL" />
-      <updated>1756577017141</updated>
-    </task>
-    <task id="LOCAL-00045" summary="workspace">
-      <option name="closed" value="true" />
-      <created>1756582691357</created>
-      <option name="number" value="00045" />
-      <option name="presentableId" value="LOCAL-00045" />
-      <option name="project" value="LOCAL" />
-      <updated>1756582691357</updated>
-    </task>
-    <task id="LOCAL-00046" summary="pagination feature star">
-      <option name="closed" value="true" />
-      <created>1756587710266</created>
-      <option name="number" value="00046" />
-      <option name="presentableId" value="LOCAL-00046" />
-      <option name="project" value="LOCAL" />
-      <updated>1756587710266</updated>
-    </task>
-    <task id="LOCAL-00047" summary="paginacion feature">
-      <option name="closed" value="true" />
-      <created>1756588326384</created>
-      <option name="number" value="00047" />
-      <option name="presentableId" value="LOCAL-00047" />
-      <option name="project" value="LOCAL" />
-      <updated>1756588326384</updated>
-    </task>
-    <task id="LOCAL-00048" summary="text filter">
-      <option name="closed" value="true" />
-      <created>1756589189930</created>
-      <option name="number" value="00048" />
-      <option name="presentableId" value="LOCAL-00048" />
-      <option name="project" value="LOCAL" />
-      <updated>1756589189930</updated>
-    </task>
-    <task id="LOCAL-00049" summary="tag filter">
-      <option name="closed" value="true" />
-      <created>1756693849261</created>
-      <option name="number" value="00049" />
-      <option name="presentableId" value="LOCAL-00049" />
-      <option name="project" value="LOCAL" />
-      <updated>1756693849261</updated>
-    </task>
-    <task id="LOCAL-00050" summary="Se incluyo en routes.py funcion para google news y tambien en post.html añadir un bloque">
-      <option name="closed" value="true" />
-      <created>1756758897875</created>
-      <option name="number" value="00050" />
-      <option name="presentableId" value="LOCAL-00050" />
-      <option name="project" value="LOCAL" />
-      <updated>1756758897875</updated>
-    </task>
-    <option name="localTasksCounter" value="51" />
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
+    <MESSAGE value="comment out href de autor" />
+    <MESSAGE value="create local env variables" />
+    <MESSAGE value="link local env variables" />
+    <MESSAGE value="Comment main.py" />
+    <MESSAGE value="Comment base.html" />
+    <MESSAGE value="Comment index.html" />
     <MESSAGE value="debug=False" />
     <MESSAGE value="new branch" />
     <MESSAGE value="delete post + debug false" />
@@ -545,26 +499,9 @@
     <MESSAGE value="cambios josei" />
     <MESSAGE value="fix opinion" />
     <MESSAGE value="debug False" />
+    <MESSAGE value="workspace" />
     <MESSAGE value="env example same" />
     <MESSAGE value="bbdd supabase" />
-    <MESSAGE value="workspace" />
-    <MESSAGE value="pagination feature star" />
-    <MESSAGE value="paginacion feature" />
-    <MESSAGE value="text filter" />
-    <MESSAGE value="tag filter" />
-    <MESSAGE value="ws" />
-    <MESSAGE value="Se incluyo en routes.py funcion para google news y tambien en post.html añadir un bloque" />
-    <option name="LAST_COMMIT_MESSAGE" value="Se incluyo en routes.py funcion para google news y tambien en post.html añadir un bloque" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/app/routes.py</url>
-          <line>1</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <option name="LAST_COMMIT_MESSAGE" value="bbdd supabase" />
   </component>
 </project>

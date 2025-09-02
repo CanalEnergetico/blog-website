@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block title %}Mercados – Canal Energético{% endblock %}
+
+{% block content_top %}
+<div class="bg-light p-3 rounded mb-3">
+  <h1 class="mb-1">Mercados Energéticos</h1>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <!-- Brent -->
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">Brent</h5>
+        <div class="d-flex align-items-baseline gap-2">
+          <span class="display-6" id="brentValue">—</span>
+          <span class="text-muted" id="brentUnit">USD/bbl</span>
+          <span class="badge bg-secondary" id="brentStale" style="display:none;">Dato no reciente</span>
+        </div>
+        <div class="small text-muted mt-1">
+          10d: <span id="brent10d">—</span> · 30d: <span id="brent30d">—</span>
+        </div>
+        <canvas id="chartBrent" height="70" class="mt-3"></canvas>
+      </div>
+    </div>
+  </div>
+  <!-- WTI -->
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title">WTI</h5>
+        <div class="d-flex align-items-baseline gap-2">
+          <span class="display-6" id="wtiValue">—</span>
+          <span class="text-muted" id="wtiUnit">USD/bbl</span>
+          <span class="badge bg-secondary" id="wtiStale" style="display:none;">Dato no reciente</span>
+        </div>
+        <div class="small text-muted mt-1">
+          10d: <span id="wti10d">—</span> · 30d: <span id="wti30d">—</span>
+        </div>
+        <canvas id="chartWti" height="70" class="mt-3"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Último comentario (placeholder) -->
+<div class="card shadow-sm mt-3">
+  <div class="card-body">
+    <div class="d-flex align-items-baseline justify-content-between">
+      <h5 class="card-title mb-0">Último comentario</h5>
+      <small class="text-muted">—</small>
+    </div>
+    <div class="mt-2 text-muted fst-italic">
+      Aquí irá tu comentario más reciente sobre el mercado.
+    </div>
+  </div>
+</div>
+
+<!-- Mapa estático de referencias -->
+<div class="card shadow-sm mt-3">
+  <div class="card-body text-center">
+    <h5 class="card-title">Mapa de referencias</h5>
+    <p class="text-muted mb-2">
+      Ubicación aproximada de las principales referencias de <strong>petróleo crudo</strong> y <strong>gas natural</strong>.
+    </p>
+    <figure class="mb-0">
+      <img
+        src="{{ url_for('static', filename='img/map_benchmarks.png') }}"
+        alt="Mapa de referencias de Brent, WTI, Dubai/Oman, Henry Hub, TTF y JKM"
+        class="img-fluid rounded border"
+        style="max-width: 900px; height: auto;"
+      >
+    </figure>
+  </div>
+</div>
+
+
+<!-- Sección educativa: Petróleo crudo -->
+<div class="card shadow-sm mt-3">
+  <div class="card-body">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <h5 class="card-title mb-0">Petróleo crudo: referencias clave</h5>
+      <span class="badge bg-primary-subtle text-primary-emphasis">Guía rápida</span>
+    </div>
+    <div class="row mt-3 g-3">
+      <div class="col-lg-7">
+        <p class="text-muted">
+          Los precios internacionales de crudo se guían por <em>benchmarks</em> (referencias) que representan calidades
+          y geografías distintas. Los más consultados son:
+        </p>
+        <ul class="text-muted">
+          <li><strong>Brent</strong> (Mar del Norte): referencia predominante en Europa, África y parte de Asia.</li>
+          <li><strong>WTI</strong> (West Texas Intermediate, EE.&nbsp;UU.): referencia dominante en Norteamérica.</li>
+          <li><strong>Dubai/Oman</strong> (Golfo Pérsico): referencia clave para crudos con destino Asia.</li>
+        </ul>
+        <p class="text-muted">
+          Que existan varias referencias significa que dos precios pueden moverse de forma similar, pero no idéntica:
+          influyen la calidad del crudo, la logística y las condiciones locales de oferta y demanda.
+        </p>
+      </div>
+      <div class="col-lg-5">
+        <div class="border rounded p-3 h-100">
+          <div class="small text-uppercase text-muted mb-2">Comparativo rápido</div>
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+                <tr><th>Referencia</th><th>Región</th><th>Uso típico</th></tr>
+              </thead>
+              <tbody class="text-muted">
+                <tr><td>Brent</td><td>Mar del Norte</td><td>Europa/África/Asia</td></tr>
+                <tr><td>WTI</td><td>EE.&nbsp;UU. (Texas)</td><td>Américas</td></tr>
+                <tr><td>Dubai/Oman</td><td>Golfo Pérsico</td><td>Asia</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="small text-muted mt-2">
+            Tip: los diferenciales entre referencias (spreads) dan señales sobre flujos comerciales y balances regionales.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sección educativa: Gas natural -->
+<div class="card shadow-sm mt-3">
+  <div class="card-body">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <h5 class="card-title mb-0">Gas natural: hubs e índices</h5>
+      <span class="badge bg-primary-subtle text-primary-emphasis">Guía rápida</span>
+    </div>
+    <div class="row mt-3 g-3">
+      <div class="col-lg-7">
+        <p class="text-muted">
+          A diferencia del crudo, el gas natural se comercializa con mayor dependencia de la infraestructura local
+          (gasoductos) o como GNL (LNG) mediante cargamentos. Por eso, los precios de referencia suelen ser <em>hubs</em>
+          físicos o índices regionales:
+        </p>
+        <ul class="text-muted">
+          <li><strong>Henry Hub</strong> (EE.&nbsp;UU., Louisiana): precio spot y base de contratos en Norteamérica.</li>
+          <li><strong>TTF</strong> (Países Bajos, Europa): principal referencia del gas europeo.</li>
+          <li><strong>JKM</strong> (Japón-Corea): índice para cargamentos de GNL en Asia-Pacífico.</li>
+        </ul>
+        <p class="text-muted">
+          El clima (frío/calor), inventarios, disponibilidad de GNL y restricciones de transporte pueden generar
+          diferencias notables entre regiones, aun en el mismo periodo.
+        </p>
+      </div>
+      <div class="col-lg-5">
+        <div class="border rounded p-3 h-100">
+          <div class="small text-uppercase text-muted mb-2">Comparativo rápido</div>
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+                <tr><th>Referencia</th><th>Región</th><th>Producto</th></tr>
+              </thead>
+              <tbody class="text-muted">
+                <tr><td>Henry Hub</td><td>EE.&nbsp;UU.</td><td>Gas natural</td></tr>
+                <tr><td>TTF</td><td>Europa</td><td>Gas natural</td></tr>
+                <tr><td>JKM</td><td>Asia-Pacífico</td><td>GNL (índice)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="small text-muted mt-2">
+            Tip: los “basis” (diferencias entre hubs) reflejan cuellos de botella, estacionalidad y shocks de oferta/demanda.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    async function loadDashboard(){
+      const res = await fetch("{{ url_for('main.mercados_json') }}", {cache: 'no-store'});
+      const data = await res.json();
+
+      const byId = {};
+      for (const m of data.markets){ byId[m.id] = m; }
+
+      function setCard(idPrefix, m){
+        document.getElementById(idPrefix+'Value').textContent = (m.value ?? '—');
+        document.getElementById(idPrefix+'Unit').textContent  = m.unit || '';
+        document.getElementById(idPrefix+'10d').textContent   =
+          (m.chg_10d_pct==null) ? '—' : (m.chg_10d_pct.toFixed(2) + '%');
+        document.getElementById(idPrefix+'30d').textContent   =
+          (m.chg_30d_pct==null) ? '—' : (m.chg_30d_pct.toFixed(2) + '%');
+        document.getElementById(idPrefix+'Stale').style.display = m.stale ? 'inline-block' : 'none';
+      }
+
+      setCard('brent', byId['brent'] || {});
+      setCard('wti', byId['wti'] || {});
+
+      function drawSpark(canvasId, series){
+        const ctx = document.getElementById(canvasId);
+        if (!ctx || !series) return;
+        new Chart(ctx, {
+          type: 'line',
+          data: { labels: series.map((_,i)=>i+1), datasets: [{ data: series }] },
+          options: {
+            responsive: true,
+            plugins: { legend: { display:false }, tooltip: { enabled:false }},
+            scales: { x: { display:false }, y: { display:false } },
+            elements: { line: { tension: 0.25 }, point: { radius: 0 } }
+          }
+        });
+      }
+
+      drawSpark('chartBrent', byId['brent']?.spark || []);
+      drawSpark('chartWti',   byId['wti']?.spark || []);
+    }
+
+    loadDashboard();
+    // (Opcional) refresco automático cada 15 minutos:
+    // setInterval(loadDashboard, 15*60*1000);
+  </script>
+{% endblock %}
