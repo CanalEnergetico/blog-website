@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="Merge remote-tracking branch 'origin/main' into mercados2&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
+    <list default="true" id="8a162dfc-3516-4fa1-bd3e-c070e8ef7fbc" name="Changes" comment="añadir descripcion articulo en seccion de opinion">
+      <change beforePath="$PROJECT_DIR$/.idea/blog-energetico.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/blog-energetico.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/mercados.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/mercados.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,12 +31,12 @@
     &quot;assignee&quot;: &quot;jackovic05&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/CanalEnergetico/blog-website.git&quot;,
-    &quot;accountId&quot;: &quot;94ec6d12-d3bc-49ce-a561-661a44d79722&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/CanalEnergetico/blog-website.git",
+    "accountId": "b2836f9e-7511-4335-a436-c2f0da6b3019"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -44,19 +45,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.run.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;mercados2&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/josea/PycharmProjects/blog-energetico/static/images&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Python.main.executor": "Run",
+    "Python.run.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "mercados2",
+    "last_opened_file_path": "C:/Users/josea/PycharmProjects/blog-energetico/static/images",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\josea\PycharmProjects\blog-energetico\static\images" />
@@ -72,11 +78,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="Python 3.12" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -99,6 +105,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/run.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -118,6 +125,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
+        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-PY-251.26927.90" />
         <option value="bundled-python-sdk-41e8cd69c857-64d779b69b7a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26927.90" />
       </set>
     </attachedChunks>
@@ -130,22 +138,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1750945230178</updated>
-    </task>
-    <task id="LOCAL-00001" summary="First commit">
-      <option name="closed" value="true" />
-      <created>1752846401927</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1752846401927</updated>
-    </task>
-    <task id="LOCAL-00002" summary="comments">
-      <option name="closed" value="true" />
-      <created>1753112348989</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1753112348989</updated>
+      <workItem from="1756827983704" duration="314000" />
     </task>
     <task id="LOCAL-00003" summary="photos eliminated">
       <option name="closed" value="true" />
@@ -467,17 +460,85 @@
       <option name="project" value="LOCAL" />
       <updated>1756078049945</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="workspace">
+      <option name="closed" value="true" />
+      <created>1756079721623</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1756079721623</updated>
+    </task>
+    <task id="LOCAL-00044" summary="workspace">
+      <option name="closed" value="true" />
+      <created>1756577017141</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1756577017141</updated>
+    </task>
+    <task id="LOCAL-00045" summary="workspace">
+      <option name="closed" value="true" />
+      <created>1756582691357</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1756582691357</updated>
+    </task>
+    <task id="LOCAL-00046" summary="pagination feature star">
+      <option name="closed" value="true" />
+      <created>1756587710266</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1756587710266</updated>
+    </task>
+    <task id="LOCAL-00047" summary="paginacion feature">
+      <option name="closed" value="true" />
+      <created>1756588326384</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1756588326384</updated>
+    </task>
+    <task id="LOCAL-00048" summary="text filter">
+      <option name="closed" value="true" />
+      <created>1756589189930</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1756589189930</updated>
+    </task>
+    <task id="LOCAL-00049" summary="tag filter">
+      <option name="closed" value="true" />
+      <created>1756693849261</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1756693849261</updated>
+    </task>
+    <task id="LOCAL-00050" summary="Se incluyo en routes.py funcion para google news y tambien en post.html añadir un bloque">
+      <option name="closed" value="true" />
+      <created>1756758897875</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1756758897875</updated>
+    </task>
+    <task id="LOCAL-00051" summary="añadir descripcion articulo en seccion de opinion">
+      <option name="closed" value="true" />
+      <created>1756781062667</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1756781062667</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="comment out href de autor" />
-    <MESSAGE value="create local env variables" />
-    <MESSAGE value="link local env variables" />
-    <MESSAGE value="Comment main.py" />
-    <MESSAGE value="Comment base.html" />
-    <MESSAGE value="Comment index.html" />
-    <MESSAGE value="debug=False" />
     <MESSAGE value="new branch" />
     <MESSAGE value="delete post + debug false" />
     <MESSAGE value="Actualizacion base de datos articulos y comentarios" />
@@ -493,9 +554,19 @@
     <MESSAGE value="cambios josei" />
     <MESSAGE value="fix opinion" />
     <MESSAGE value="debug False" />
-    <MESSAGE value="workspace" />
     <MESSAGE value="env example same" />
     <MESSAGE value="bbdd supabase" />
-    <option name="LAST_COMMIT_MESSAGE" value="bbdd supabase" />
+    <MESSAGE value="workspace" />
+    <MESSAGE value="pagination feature star" />
+    <MESSAGE value="paginacion feature" />
+    <MESSAGE value="text filter" />
+    <MESSAGE value="tag filter" />
+    <MESSAGE value="Se incluyo en routes.py funcion para google news y tambien en post.html añadir un bloque" />
+    <MESSAGE value="ws" />
+    <MESSAGE value="añadir descripcion articulo en seccion de opinion" />
+    <option name="LAST_COMMIT_MESSAGE" value="añadir descripcion articulo en seccion de opinion" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/blog_website$run.coverage" NAME="run Coverage Results" MODIFIED="1756828571178" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
