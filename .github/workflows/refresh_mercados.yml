@@ -1,0 +1,37 @@
+name: Refresh Mercados (6h)
+
+on:
+  schedule:
+    # Corre a :00 cada 6 horas (UTC): 00:00, 06:00, 12:00, 18:00
+    - cron: "0 */6 * * *"
+  # Permite ejecutarlo manualmente cuando quieras
+  workflow_dispatch:
+
+permissions: {}
+concurrency:
+  group: refresh-mercados
+  cancel-in-progress: false
+
+jobs:
+  hit-refresh-endpoint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call /tasks/refresh-mercados on Render
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CANAL_KEY: ${{ secrets.CANAL_KEY }}
+        run: |
+          set -euo pipefail
+          echo "Calling $SITE_URL/tasks/refresh-mercados ..."
+          # Primer ping para “despertar” Render si está dormido (no importa si falla)
+          curl -sS -m 20 "$SITE_URL/" || true
+          # Llamada principal con reintentos por si Render tarda en levantar
+          http_code=$(curl -sS -X POST "$SITE_URL/tasks/refresh-mercados" \
+            -H "X-Refresh-Token: $CANAL_KEY" \
+            --retry 6 --retry-all-errors --retry-delay 10 \
+            --connect-timeout 10 --max-time 60 \
+            -w "%{http_code}" -o /tmp/resp.json)
+          echo "HTTP $http_code"
+          echo "Response:" && cat /tmp/resp.json || true
+          test "$http_code" -eq 200
