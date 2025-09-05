@@ -44,22 +44,35 @@
   <body>
     <!-- HEADER -->
     <div class="container">
-      <header class="blog-header py-3 border-bottom">
-          <!-- PARTE SUPERIOR CON EL LOGO-->
-          <div class="row flex-nowrap justify-content-between align-items-center">
-            <div class="col-12 text-center">
-              <a href="{{ url_for('main.home') }}">
-                <img
-                  src="{{ url_for('static', filename='images/logo_canal_en.png') }}"
-                  alt="Logo Canal Energético"
-                  height="90"
-                  class="bd-placeholder-img rounded"
-                  style="object-fit: cover; cursor: pointer;"
-                >
-              </a>
-            </div>
-          </div>
-      </header>
+<header class="blog-header py-3 border-bottom">
+  <div class="row align-items-center g-2">
+    <!-- IZQUIERDA (≥lg): buscador para que el centro quede realmente centrado -->
+    <div class="col-lg-4 d-none d-lg-flex align-items-center"></div>
+
+    <!-- CENTRO: logo (centrado en xs, a la izquierda en md, centrado real en lg al equilibrar columnas) -->
+    <div class="col-12 col-md-6 col-lg-4 text-center text-md-start text-lg-center">
+      <a class="text-decoration-none d-inline-block" href="{{ url_for('main.home') }}">
+        <img
+          src="{{ url_for('static', filename='images/logo_canal_en.png') }}"
+          alt="Logo Canal Energético"
+          height="90"
+          class="bd-placeholder-img rounded"
+          style="object-fit: cover; cursor: pointer;"
+        >
+      </a>
+    </div>
+
+    <!-- DERECHA: botones (centrados en móvil, a la derecha desde md) -->
+    <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center justify-content-md-end align-items-center">
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary px-2 py-1" href="#" aria-disabled="true">Iniciar sesión</a>
+        <a class="btn btn-danger px-2 py-1" href="{{ url_for('main.registrarse') }}">Crear cuenta</a>
+      </div>
+    </div>
+
+  </div>
+</header>
+
       <!-- NAVIGATION BAR -->
       <div class="nav-scroller py-1 mb-3 border-bottom">
         <nav class="nav d-flex justify-content-around">

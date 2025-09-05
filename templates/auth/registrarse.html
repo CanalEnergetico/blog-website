@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Registrarse – Canal Energético{% endblock %}
+
+{% block content_top %}
+  <div class="bg-light p-3 rounded mb-4">
+    <h1 class="m-0">Crear cuenta</h1>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <form method="post" action="{{ url_for('main.registrarse') }}" class="card p-3 shadow-sm">
+        <div class="mb-3">
+          <label class="form-label">Nombre</label>
+          <input name="nombre" type="text" class="form-control" placeholder="Tu nombre" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input name="email" type="email" class="form-control" placeholder="tucorreo@ejemplo.com" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Contraseña</label>
+          <input name="password" type="password" class="form-control" placeholder="••••••••" required minlength="6">
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Crear cuenta</button>
+        <p class="text-muted small mt-2 mb-0">
+          Al registrarte aceptas nuestras condiciones de uso.
+        </p>
+      </form>
+    </div>
+  </div>
+{% endblock %}

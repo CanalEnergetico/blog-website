@@ -1,10 +1,11 @@
 # app/routes.py
 from datetime import date, datetime
-from flask import Blueprint, render_template, redirect, url_for, send_from_directory, Response, current_app, request, jsonify
+from flask import Blueprint, render_template, redirect, url_for, send_from_directory, Response, current_app, request, jsonify, flash, abort
+from flask_login import current_user
 from sqlalchemy import func, or_
 from sqlalchemy.exc import IntegrityError
 from .extensions import db
-from .models import Articulos, Comentarios, Tag, MercadoUltimo, MercadoDaily
+from .models import Articulos, Comentarios, Tag, MercadoUltimo, MercadoDaily, User, Role
 from .forms import PostForm, CommentForm
 from .utils import generar_slug, _parse_fecha, parse_tags, tag_slug, pct_change_n, rolling_insert_30
 # Importa las mismas funciones de siempre; tu app/markets.py está "disfrazada" para EIA
@@ -344,7 +345,7 @@ def news_sitemap():
     xml.append("</urlset>")
     return Response("\n".join(xml), mimetype="application/xml")
 
-# ========= Mercados =========
+# ========= MERCADOS =========
 @bp.route("/mercados", endpoint="mercados_home")
 def mercados_home():
     return render_template("mercados.html")
@@ -442,3 +443,36 @@ def refresh_mercados():
 
     db.session.commit()
     return {"ok": True}
+
+# ========= USUARIOS =========
+@bp.route("/registrarse", methods=["GET", "POST"])
+def registrarse():
+    if request.method == "POST":
+        nombre = (request.form.get("nombre") or "").strip()
+        email = (request.form.get("email") or "").strip().lower()
+        password = request.form.get("password") or ""
+
+        if not nombre or not email or not password:
+            flash("Completa nombre, email y contraseña.", "warning")
+            return redirect(url_for("main.registrarse"))
+
+        # Si el email está en la whitelist, será admin; si no, lector por defecto.
+        admin_whitelist = current_app.config.get("ADMIN_EMAILS", [])
+        role = Role.admin if email in admin_whitelist else Role.lector
+
+        user = User(nombre=nombre, email=email, role=role)
+        user.set_password(password)
+
+        try:
+            db.session.add(user)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash("Ese email ya está registrado.", "danger")
+            return redirect(url_for("main.registrarse"))
+
+        flash("Cuenta creada correctamente. Ya puedes iniciar sesión.", "success")
+        return redirect(url_for("main.home"))
+
+    # GET
+    return render_template("auth/registrarse.html")
