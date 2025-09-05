@@ -1,13 +1,18 @@
 # app/__init__.py
 from flask import Flask
+from flask_login import LoginManager
 from werkzeug.middleware.proxy_fix import ProxyFix
 from .config import Config
 from .extensions import db, ckeditor
 from .routes import bp
+from .models import User
 from .context import register_context
 import logging, sys
 from .errors import init_error_handlers
 
+login_manager = LoginManager()
+login_manager.login_view = "main.login"   # redirige a /login cuando haga falta
+login_manager.login_message_category = "warning"
 
 def create_app():
     app = Flask(
@@ -17,6 +22,8 @@ def create_app():
         static_folder="../static",
     )
     app.config.from_object(Config)
+
+    login_manager.init_app(app)
 
     @app.after_request
     def _force_utf8(resp):
@@ -47,5 +54,9 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+
+    @login_manager.user_loader
+    def load_user(user_id: str):
+        return User.query.get(int(user_id))
 
     return app

@@ -64,10 +64,18 @@
 
     <!-- DERECHA: botones (centrados en móvil, a la derecha desde md) -->
     <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center justify-content-md-end align-items-center">
+      {% if current_user.is_authenticated %}
+    <div class="d-flex gap-2">
+      <span class="btn btn-outline-secondary px-2 py-1 disabled">Hola, {{ current_user.nombre.split(' ')[0] }}</span>
+      <a class="btn btn-danger px-2 py-1" href="{{ url_for('main.logout') }}">Cerrar sesión</a>
+    </div>
+      {% else %}
       <div class="d-flex gap-2">
-        <a class="btn btn-outline-primary px-2 py-1" href="#" aria-disabled="true">Iniciar sesión</a>
+        <a class="btn btn-outline-primary px-2 py-1" href="{{ url_for('main.login') }}">Iniciar sesión</a>
         <a class="btn btn-danger px-2 py-1" href="{{ url_for('main.registrarse') }}">Crear cuenta</a>
       </div>
+        {% endif %}
+
     </div>
 
   </div>

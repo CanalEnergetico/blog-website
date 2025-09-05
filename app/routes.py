@@ -1,7 +1,7 @@
 # app/routes.py
 from datetime import date, datetime
 from flask import Blueprint, render_template, redirect, url_for, send_from_directory, Response, current_app, request, jsonify, flash, abort
-from flask_login import current_user
+from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy import func, or_
 from sqlalchemy.exc import IntegrityError
 from .extensions import db
@@ -476,3 +476,29 @@ def registrarse():
 
     # GET
     return render_template("auth/registrarse.html")
+
+@bp.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        email = (request.form.get("email") or "").strip().lower()
+        password = request.form.get("password") or ""
+        remember = bool(request.form.get("remember"))
+
+        user = User.query.filter_by(email=email).first()
+        if not user or not user.check_password(password):
+            flash("Credenciales inválidas.", "danger")
+            return redirect(url_for("main.login"))
+
+        login_user(user, remember=remember)
+        next_url = request.args.get("next")
+        flash("Has iniciado sesión.", "success")
+        return redirect(next_url or url_for("main.home"))
+
+    return render_template("auth/iniciar_sesion.html")
+
+@bp.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("Sesión cerrada.", "info")
+    return redirect(url_for("main.home"))
