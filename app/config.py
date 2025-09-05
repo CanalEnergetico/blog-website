@@ -46,3 +46,7 @@ class Config:
         "brent": "RBRTE",  # Brent (PET.RBRTE.D)
         "wti":   "RWTC",   # WTI  (PET.RWTC.D)
     }
+
+    ADMIN_EMAILS = [e.strip().lower() for e in os.getenv("ADMIN_EMAILS", "").split(",") if e.strip()]
+
+
