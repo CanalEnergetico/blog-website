@@ -37,6 +37,24 @@
     <div class="article-content border-bottom">
       {{ articulo.contenido | safe }}
     </div>
+
+    {% if current_user.is_authenticated and current_user.has_role('admin') %}
+  <div class="d-flex gap-2 my-3">
+    <a class="btn btn-outline-secondary btn-sm"
+       href="{{ url_for('main.editar_articulo', slug=articulo.slug) }}">
+      Editar artículo
+    </a>
+
+    <form method="post"
+          action="{{ url_for('main.delete_post', slug=articulo.slug) }}"
+          onsubmit="return confirm('¿Seguro que quieres eliminar este artículo?');">
+      {# Si usas Flask-WTF/CSRFProtect y tienes el token disponible como función global: #}
+      {# {{ csrf_token() }} #}
+      <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
+    </form>
+  </div>
+{% endif %}
+
   </article>
 </div>
 
