@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, redirect, url_for, send_from_direc
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy import func, or_
 from sqlalchemy.exc import IntegrityError
+from functools import wraps
 from .extensions import db
 from .models import Articulos, Comentarios, Tag, MercadoUltimo, MercadoDaily, User, Role
 from .forms import PostForm, CommentForm
@@ -12,6 +13,18 @@ from .utils import generar_slug, _parse_fecha, parse_tags, tag_slug, pct_change_
 from .markets import td_price_batch, td_timeseries_daily, parse_last_ts
 
 bp = Blueprint("main", __name__)
+
+# --- Decorador simple por rol ---
+def roles_required(*roles):
+    def decorator(fn):
+        @wraps(fn)
+        @login_required
+        def wrapper(*args, **kwargs):
+            if not current_user.has_role(*roles):
+                abort(403)
+            return fn(*args, **kwargs)
+        return wrapper
+    return decorator
 
 # Inicio
 @bp.route("/", endpoint="home")
@@ -142,6 +155,7 @@ def _get_or_create_tag(nombre: str) -> Tag:
 
 # Crear post
 @bp.route("/new-post", methods=["GET", "POST"], endpoint="make_new_post")
+@roles_required(Role.admin)
 def make_new_post():
     form = PostForm()
     if form.validate_on_submit():
@@ -152,11 +166,11 @@ def make_new_post():
             descripcion = form.descripcion.data,
             img_url     = form.img_url.data,
             img_fuente  = form.img_fuente.data,
-            # legacy: guarda la primera por compat si quieres
-            tag         = (nombres[0] if nombres else None),
+            tag         = (nombres[0] if nombres else None),  # legacy opcional
             autor       = form.autor.data,
             contenido   = form.contenido.data,
-            fecha       = date.today().strftime("%d/%m/%Y")
+            # ⚠️ Articulos.fecha es db.Date -> guarda tipo date (no "dd/mm/YYYY")
+            fecha       = date.today(),
         )
         nuevo.tags = [_get_or_create_tag(n) for n in nombres]
         db.session.add(nuevo)
@@ -164,8 +178,10 @@ def make_new_post():
         return redirect(url_for('main.detalle_articulo', slug=nuevo.slug))
     return render_template('make-post.html', form=form)
 
+
 # Editar
 @bp.route("/edit-post/<slug>", methods=["GET", "POST"], endpoint="editar_articulo")
+@roles_required(Role.admin)
 def editar_articulo(slug):
     post = Articulos.query.filter_by(slug=slug).first_or_404()
     form = PostForm(
@@ -173,7 +189,6 @@ def editar_articulo(slug):
         descripcion = post.descripcion,
         img_url     = post.img_url,
         img_fuente  = post.img_fuente,
-        # pre-popula usando la relación nueva; si vacío, cae a legacy
         tags        = ", ".join([t.nombre for t in post.tags]) if post.tags else (post.tag or ""),
         autor       = post.autor,
         contenido   = post.contenido,
@@ -181,30 +196,32 @@ def editar_articulo(slug):
     if form.validate_on_submit():
         if form.titulo.data != post.titulo:
             post.slug = generar_slug(form.titulo.data)
+
         post.titulo      = form.titulo.data
         post.descripcion = form.descripcion.data
         post.img_url     = form.img_url.data
         post.img_fuente  = form.img_fuente.data
 
-        nombres = parse_tags(form.tags.data)
-        post.tag = (nombres[0] if nombres else None)  # legacy opcional
-        post.autor       = form.autor.data
-        post.contenido   = form.contenido.data
-
-        # Reemplaza asociaciones
-        post.tags = [_get_or_create_tag(n) for n in nombres]
+        nombres   = parse_tags(form.tags.data)
+        post.tag  = (nombres[0] if nombres else None)  # legacy opcional
+        post.autor     = form.autor.data
+        post.contenido = form.contenido.data
+        post.tags      = [_get_or_create_tag(n) for n in nombres]
 
         db.session.commit()
         return redirect(url_for("main.detalle_articulo", slug=post.slug))
     return render_template("make-post.html", form=form, is_edit=True)
 
+
 # Borrar post
-@bp.route("/delete-post/<slug>", endpoint="delete_post")
+@bp.route("/delete-post/<slug>", methods=["POST"], endpoint="delete_post")
+@roles_required(Role.admin)
 def delete_post(slug):
     post = Articulos.query.filter_by(slug=slug).first_or_404()
     db.session.delete(post)
     db.session.commit()
     return redirect(url_for('main.articulos_todos'))
+
 
 # Borrar comentario
 @bp.route("/delete-comment/<int:id>", endpoint="delete_comment")
