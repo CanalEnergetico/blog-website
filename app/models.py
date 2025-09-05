@@ -110,7 +110,7 @@ class User(db.Model, UserMixin):
 
     # Estado y trazas
     is_active: Mapped[bool] = mapped_column(db.Boolean, nullable=False, default=True)
-    created_at: Mapped[datetime] = mapped_column(db.DateTime, nullable=False, defa
+    created_at: Mapped[datetime] = mapped_column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     # --- Helpers de contraseña y autorización ---
     def set_password(self, password: str) -> None:
