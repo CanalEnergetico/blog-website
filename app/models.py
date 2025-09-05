@@ -1,19 +1,22 @@
 # app/models.py
+from enum import Enum
+from datetime import datetime
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 from typing import Optional
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Table, Column, Integer, ForeignKey, UniqueConstraint, Index, Date
 from .extensions import db
 
-
 # Tabla de asociación muchos-a-muchos
 articulo_tags = Table(
-    "articulo_tags",
-    db.metadata,
+    "articulo_tags", db.metadata,
     Column("articulo_id", Integer, ForeignKey("articulos.id", ondelete="CASCADE"), primary_key=True),
     Column("tag_id", Integer, ForeignKey("tags.id", ondelete="CASCADE"), primary_key=True),
     UniqueConstraint("articulo_id", "tag_id", name="uq_articulo_tag")
 )
 
+# ARTÍCULOS
 class Articulos(db.Model):
     __tablename__ = "articulos"
     id:          Mapped[int]  = mapped_column(primary_key=True)
@@ -87,3 +90,41 @@ class MercadoDaily(db.Model):
     __table_args__ = (
         UniqueConstraint("symbol", "date", name="uq_symbol_date"),
     )
+
+# USUARIOS
+class Role(Enum):
+    admin = "admin"
+    colaborador = "colaborador"
+    lector = "lector"
+
+class User(db.Model, UserMixin):
+    __tablename__ = "users"
+
+    id:            Mapped[int] = mapped_column(primary_key=True)
+    nombre:        Mapped[str] = mapped_column(db.String(120), nullable=False)
+    email:         Mapped[str] = mapped_column(db.String(255), nullable=False, unique=True, index=True)
+    password_hash: Mapped[str] = mapped_column(db.String(255), nullable=False)
+
+
+    role: Mapped[Role] = mapped_column(db.Enum(Role, name="role_enum"), nullable=False, default=Role.lector)
+
+    # Estado y trazas
+    is_active: Mapped[bool] = mapped_column(db.Boolean, nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(db.DateTime, nullable=False, defa
+
+    # --- Helpers de contraseña y autorización ---
+    def set_password(self, password: str) -> None:
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password: str) -> bool:
+        return check_password_hash(self.password_hash, password)
+
+    def has_role(self, *roles) -> bool:
+        """
+        Permite: user.has_role('admin','colaborador') o user.has_role(Role.admin)
+        """
+        own = self.role.value
+        wanted = [(r.value if isinstance(r, Role) else str(r)) for r in roles]
+        return own in wanted
+
+
