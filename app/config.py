@@ -49,4 +49,6 @@ class Config:
 
     ADMIN_EMAILS = [e.strip().lower() for e in os.getenv("ADMIN_EMAILS", "").split(",") if e.strip()]
 
+    PASSWORD_RESET_SALT = os.getenv("PASSWORD_RESET_SALT", "cambia-esta-sal")
+    PASSWORD_RESET_EXP_SECS = int(os.getenv("PASSWORD_RESET_EXP_SECS", "3600"))
 

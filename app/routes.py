@@ -5,6 +5,8 @@ from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy import func, or_
 from sqlalchemy.exc import IntegrityError
 from functools import wraps
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+import re
 from .extensions import db
 from .models import Articulos, Comentarios, Tag, MercadoUltimo, MercadoDaily, User, Role
 from .forms import PostForm, CommentForm
@@ -34,6 +36,31 @@ def can_manage_comment(c: Comentarios) -> bool:
     if not current_user.is_authenticated:
         return False
     return is_admin() or (c.user_id == current_user.id) or (c.correo == current_user.email)
+
+# --- Helpers para tokens de reset ---
+def _reset_serializer():
+    return URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+
+def gen_reset_token(email: str) -> str:
+    return _reset_serializer().dumps(email, salt=current_app.config["PASSWORD_RESET_SALT"])
+
+def verify_reset_token(token: str, max_age: int | None = None) -> str | None:
+    if max_age is None:
+        max_age = int(current_app.config.get("PASSWORD_RESET_EXP_SECS", 3600))  # 1h por defecto
+    try:
+        return _reset_serializer().loads(
+            token,
+            salt=current_app.config["PASSWORD_RESET_SALT"],
+            max_age=max_age,
+        )
+    except (BadSignature, SignatureExpired):
+        return None
+
+# --- Política de contraseña: mínimo 8, solo letras o números ---
+PASSWORD_REGEX = re.compile(r"^[A-Za-z0-9]{8,}$")
+def valid_password(pw: str) -> bool:
+    return bool(PASSWORD_REGEX.fullmatch(pw or ""))
+
 
 # Inicio
 @bp.route("/", endpoint="home")
@@ -516,6 +543,12 @@ def registrarse():
         if not nombre or not email or not password:
             flash("Completa nombre, email y contraseña.", "warning")
             return redirect(url_for("main.registrarse"))
+            # OJO: esta validación estricta en login hará que usuarios con contraseñas antiguas con símbolos no puedan entrar.
+            # Si quieres permitir login de legacy y forzar nueva política solo en registro/reset, quita este bloque.
+
+        if len(password) < 8 or not re.match(r"^[A-Za-z0-9]+$", password):
+            flash("La contraseña debe tener al menos 8 caracteres y solo letras o números.", "warning")
+            return redirect(url_for("main.login"))
 
         # Si el email está en la whitelist, será admin; si no, lector por defecto.
         admin_whitelist = current_app.config.get("ADMIN_EMAILS", [])
@@ -563,3 +596,52 @@ def logout():
     logout_user()
     flash("Sesión cerrada.", "info")
     return redirect(url_for("main.home"))
+
+# Política de Privacidad
+@bp.get("/privacidad")
+def privacy():
+    return render_template("privacy.html")
+
+# Olvidé mi contraseña
+@bp.route("/forgot-password", methods=["GET", "POST"], endpoint="forgot_password")
+def forgot_password():
+    if request.method == "POST":
+        email = (request.form.get("email") or "").strip().lower()
+        user = User.query.filter_by(email=email).first()
+        # Genera y "envía" el enlace (por ahora, al log; luego lo mandas por SMTP)
+        if user:
+            token = gen_reset_token(user.email)
+            reset_url = url_for("main.reset_password", token=token, _external=True)
+            current_app.logger.info("Password reset link for %s: %s", email, reset_url)
+        flash("Si el correo existe, te enviaremos instrucciones para restablecer la contraseña.", "info")
+        return redirect(url_for("main.login"))
+    return render_template("auth/forgot_password.html")
+
+# Reset con token
+@bp.route("/reset-password/<token>", methods=["GET", "POST"], endpoint="reset_password")
+def reset_password(token):
+    email = verify_reset_token(token)
+    if not email:
+        flash("Enlace inválido o caducado.", "danger")
+        return redirect(url_for("main.forgot_password"))
+
+    user = User.query.filter_by(email=email).first_or_404()
+
+    if request.method == "POST":
+        new_pwd = request.form.get("password") or ""
+        confirm = request.form.get("confirm") or ""
+
+        if not valid_password(new_pwd):
+            flash("La contraseña debe tener al menos 8 caracteres y solo letras o números.", "warning")
+            return redirect(url_for("main.reset_password", token=token))
+
+        if new_pwd != confirm:
+            flash("Las contraseñas no coinciden.", "warning")
+            return redirect(url_for("main.reset_password", token=token))
+
+        user.set_password(new_pwd)   # tu método ya debe hashear+saltear
+        db.session.commit()
+        flash("Contraseña actualizada. Ya puedes iniciar sesión.", "success")
+        return redirect(url_for("main.login"))
+
+    return render_template("auth/reset_password.html", email=email)

@@ -21,7 +21,15 @@
         </div>
         <div class="mb-3">
           <label class="form-label">Contraseña</label>
-          <input name="password" type="password" class="form-control" placeholder="••••••••" required minlength="6">
+          <input name="password"
+       type="password"
+       class="form-control"
+       placeholder="Tu contraseña"
+       required
+       minlength="8"
+       pattern="[A-Za-z0-9]+"
+       title="Solo letras y números, mínimo 8 caracteres">
+
         </div>
         <button type="submit" class="btn btn-primary w-100">Crear cuenta</button>
         <p class="text-muted small mt-2 mb-0">
