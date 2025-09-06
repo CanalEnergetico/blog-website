@@ -61,12 +61,14 @@ class Comentarios(db.Model):
     __tablename__ = "comentarios"
     id: Mapped[int] = mapped_column(primary_key=True)
     articulo_id: Mapped[int] = mapped_column(db.Integer, db.ForeignKey("articulos.id"), nullable=False)
+    user_id: Mapped[int | None] = mapped_column(db.Integer, db.ForeignKey("users.id"), nullable=True)  # NUEVO
     nombre: Mapped[str] = mapped_column(db.String(100), nullable=False)
     correo: Mapped[str] = mapped_column(db.String(150), nullable=False)
     comentario: Mapped[str] = mapped_column(db.Text, nullable=False)
     fecha: Mapped[str] = mapped_column(db.String(250), nullable=False)
 
     articulo = db.relationship("Articulos", backref="comentarios")
+    usuario = db.relationship("User", backref="comentarios", lazy="joined")  # opcional
 
 #Para las API de mercados
 class MercadoUltimo(db.Model):
@@ -126,5 +128,3 @@ class User(db.Model, UserMixin):
         own = self.role.value
         wanted = [(r.value if isinstance(r, Role) else str(r)) for r in roles]
         return own in wanted
-
-

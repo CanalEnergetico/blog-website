@@ -58,67 +58,122 @@
   </article>
 </div>
 
-<!-- FORMULARIO DE COMENTARIOS -->
-<section class="mb-5 mt-4">
-  <h3 class="mb-3">💬 Deja un comentario</h3>
-  <div class="card shadow-sm border-0">
-    <div class="card-body">
-      <form method="POST">
-        {{ form.hidden_tag() }}
-        <div class="mb-3">
-          {{ form.nombre.label(class="form-label") }}
-          {{ form.nombre(class="form-control", placeholder="Tu nombre") }}
-        </div>
-        <div class="mb-3">
-          {{ form.correo.label(class="form-label") }}
-          {{ form.correo(class="form-control", placeholder="Tu correo electrónico") }}
-        </div>
-        <div class="mb-3">
-          {{ form.comentario.label(class="form-label") }}
-          {{ form.comentario(class="form-control", rows=3, placeholder="Escribe tu comentario aquí...") }}
-        </div>
-
-        <!-- Botón de enviar -->
-        {{ form.submit(class="btn btn-primary px-4") }}
-
-        <!-- Disclaimer con enlace al modal -->
-        <p class="text-muted small mt-3 mb-0">
-          Al enviar un comentario, aceptas nuestra
-          <a href="#" data-bs-toggle="modal" data-bs-target="#modalPrivacidad">Política de Privacidad</a>.
-        </p>
-      </form>
-    </div>
-  </div>
-</section>
-
-<hr class="my-4">
-
 <!-- LISTA DE COMENTARIOS -->
 <section>
   <h3 class="mb-3">🗨️ Comentarios</h3>
   {% if comentarios %}
     <div class="list-group">
       {% for c in comentarios %}
-        <div class="list-group-item list-group-item-action flex-column align-items-start">
-          <div class="d-flex w-100 justify-content-between align-items-center">
-            <h6 class="mb-1">{{ c.nombre }}</h6>
-            <small class="text-muted">
-              <!-- ID oculto pero seleccionable -->
-              <span class="user-select-all"
-                    style="color:transparent; text-shadow: 0 0 0 #ffffff; margin-right: .25rem;">
-                #{{ c.id }}
-              </span>
-              {{ c.fecha }}
-            </small>
+        <div id="c{{ c.id }}" class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 align-items-center">
+            <h6 class="mb-1 me-auto">{{ c.nombre }}</h6>
+            <small class="text-muted me-2">{{ c.fecha }}</small>
+
+            {# Permisos: dueño o admin #}
+            {% set puede_gestionar = (
+              current_user.is_authenticated and
+              ( current_user.has_role('admin') or current_user.id == c.user_id or current_user.email == c.correo )
+            ) %}
+
+            {% if puede_gestionar %}
+              <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        title="Opciones">
+                  &#8942;  {# ⋮ #}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <a class="dropdown-item"
+                       href="#"
+                       data-bs-toggle="modal"
+                       data-bs-target="#editModal-{{ c.id }}">
+                      Editar
+                    </a>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <form method="post"
+                          action="{{ url_for('main.delete_comment', cid=c.id) }}"
+                          onsubmit="return confirm('¿Eliminar este comentario?');">
+                      {# Si usas CSRF global, descomenta: {{ csrf_token() }} #}
+                      <button type="submit" class="dropdown-item text-danger">Borrar</button>
+                    </form>
+                  </li>
+                </ul>
+              </div>
+            {% endif %}
           </div>
-          <p class="mb-1">{{ c.comentario }}</p>
+
+          <p class="mb-1 mt-2">{{ c.comentario }}</p>
         </div>
+
+        {# Modal de edición inline (sin plantilla aparte) #}
+        {% if puede_gestionar %}
+        <div class="modal fade" id="editModal-{{ c.id }}" tabindex="-1"
+             aria-labelledby="editModalLabel-{{ c.id }}" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <form method="post" action="{{ url_for('main.edit_comment', cid=c.id) }}">
+                {# Si usas CSRF global, descomenta: {{ csrf_token() }} #}
+                <div class="modal-header">
+                  <h5 class="modal-title" id="editModalLabel-{{ c.id }}">Editar comentario</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label class="form-label">Comentario</label>
+                    <textarea name="comentario" class="form-control" rows="4" required>{{ c.comentario }}</textarea>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
       {% endfor %}
     </div>
   {% else %}
     <p class="text-muted fst-italic">No hay comentarios aún. ¡Sé el primero en opinar!</p>
   {% endif %}
 </section>
+<hr class="my-4">
+
+<!-- FORMULARIO DE COMENTARIOS -->
+<section class="mb-5 mt-4" id="comentarios">
+  <h3 class="mb-3">💬 Deja un comentario</h3>
+
+  {% if current_user.is_authenticated %}
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <form method="POST" action="{{ url_for('main.detalle_articulo', slug=articulo.slug) }}">
+          <div class="mb-3">
+            <label class="form-label">Tu comentario</label>
+            <textarea name="comentario" class="form-control" rows="3" placeholder="Escribe tu comentario aquí..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary px-4">Publicar comentario</button>
+          <p class="text-muted small mt-3 mb-0">
+            Se publicará como {{ current_user.nombre }} ({{ current_user.email }}).
+          </p>
+        </form>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-info">
+      Para comentar, <a href="{{ url_for('main.login') }}">inicia sesión</a> o
+      <a href="{{ url_for('main.register') }}">crea una cuenta</a>.
+    </div>
+  {% endif %}
+</section>
+
+<hr class="my-4">
 
 <!-- MODAL POLÍTICA DE PRIVACIDAD -->
 <div class="modal fade" id="modalPrivacidad" tabindex="-1" aria-labelledby="modalPrivacidadLabel" aria-hidden="true">

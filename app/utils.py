@@ -5,7 +5,6 @@ from typing import List, Optional
 from slugify import slugify
 from .models import Articulos
 
-
 def generar_slug(titulo: str) -> str:
     base = slugify(titulo)
     slug = base
