@@ -26,6 +26,15 @@ def roles_required(*roles):
         return wrapper
     return decorator
 
+def is_admin() -> bool:
+    return current_user.is_authenticated and current_user.has_role('admin')
+
+def can_manage_comment(c: Comentarios) -> bool:
+    # dueño del comentario (por user_id o email) o admin
+    if not current_user.is_authenticated:
+        return False
+    return is_admin() or (c.user_id == current_user.id) or (c.correo == current_user.email)
+
 # Inicio
 @bp.route("/", endpoint="home")
 def home():
@@ -123,20 +132,35 @@ def proximamente():
 @bp.route("/articulos/<slug>", methods=["GET", "POST"], endpoint="detalle_articulo")
 def detalle_articulo(slug):
     post = Articulos.query.filter_by(slug=slug).first_or_404()
-    form = CommentForm()
-    if form.validate_on_submit():
-        nuevo_comentario = Comentarios(
+
+    # POST: publicar comentario (solo usuarios logueados)
+    if request.method == "POST":
+        if not current_user.is_authenticated:
+            flash("Debes iniciar sesión para comentar.", "warning")
+            return redirect(url_for("main.login"))
+
+        texto = (request.form.get("comentario") or "").strip()
+        if not texto:
+            flash("Escribe un comentario.", "warning")
+            return redirect(url_for("main.detalle_articulo", slug=slug) + "#comentarios")
+
+        nuevo = Comentarios(
             articulo_id=post.id,
-            nombre=form.nombre.data,
-            correo=form.correo.data,
-            comentario=form.comentario.data,
-            fecha=date.today().strftime("%d/%m/%Y")
+            user_id=current_user.id,
+            nombre=current_user.nombre,
+            correo=current_user.email,
+            comentario=texto,
+            fecha=date.today().strftime("%d/%m/%Y"),
         )
-        db.session.add(nuevo_comentario)
+        db.session.add(nuevo)
         db.session.commit()
-        return redirect(url_for("main.detalle_articulo", slug=slug))
-    comentarios = Comentarios.query.filter_by(articulo_id=post.id).order_by(Comentarios.id.desc()).all()
-    return render_template("post.html", articulo=post, form=form, comentarios=comentarios)
+        flash("Comentario publicado.", "success")
+        return redirect(url_for("main.detalle_articulo", slug=slug) + "#comentarios")
+
+    # GET: render
+    comentarios = Comentarios.query.filter_by(articulo_id=post.id)\
+                                   .order_by(Comentarios.id.desc()).all()
+    return render_template("post.html", articulo=post, comentarios=comentarios)
 
 # Helper para crear/obtener tag
 def _get_or_create_tag(nombre: str) -> Tag:
@@ -222,14 +246,34 @@ def delete_post(slug):
     db.session.commit()
     return redirect(url_for('main.articulos_todos'))
 
+#  Editar comentario
+@bp.route("/comentarios/<int:cid>/edit", methods=["POST"], endpoint="edit_comment")
+@login_required
+def edit_comment(cid):
+    c = Comentarios.query.get_or_404(cid)
+    if not can_manage_comment(c):
+        abort(403)
+    texto = (request.form.get("comentario") or "").strip()
+    if not texto:
+        flash("El comentario no puede estar vacío.", "warning")
+        return redirect(url_for("main.detalle_articulo", slug=c.articulo.slug) + f"#c{c.id}")
+    c.comentario = texto
+    db.session.commit()
+    flash("Comentario actualizado.", "success")
+    return redirect(url_for("main.detalle_articulo", slug=c.articulo.slug) + f"#c{c.id}")
 
 # Borrar comentario
-@bp.route("/delete-comment/<int:id>", endpoint="delete_comment")
-def delete_comment(id):
-    comentario = Comentarios.query.get_or_404(id)
-    db.session.delete(comentario)
+@bp.route("/comentarios/<int:cid>/delete", methods=["POST"], endpoint="delete_comment")
+@login_required
+def delete_comment(cid):
+    c = Comentarios.query.get_or_404(cid)
+    if not can_manage_comment(c):
+        abort(403)
+    slug = c.articulo.slug
+    db.session.delete(c)
     db.session.commit()
-    return redirect(url_for('main.home'))
+    flash("Comentario eliminado.", "info")
+    return redirect(url_for("main.detalle_articulo", slug=slug) + "#comentarios")
 
 # Listar artículos por etiqueta
 @bp.route("/tags/<tag_slug>", endpoint="articulos_por_tag")
