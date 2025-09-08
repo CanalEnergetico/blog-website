@@ -56,10 +56,9 @@ def verify_reset_token(token: str, max_age: int | None = None) -> str | None:
     except (BadSignature, SignatureExpired):
         return None
 
-# --- Política de contraseña: mínimo 8, solo letras o números ---
-PASSWORD_REGEX = re.compile(r"^[A-Za-z0-9]{8,}$")
+# --- Política de contraseña: mínimo 8
 def valid_password(pw: str) -> bool:
-    return bool(PASSWORD_REGEX.fullmatch(pw or ""))
+    return isinstance(pw, str) and len(pw) >= 8
 
 
 # Inicio
@@ -546,7 +545,7 @@ def registrarse():
             return render_template("auth/registrarse.html", nombre=nombre, email=email)
 
         # Si la contraseña no cumple (mejor aquí que en login)
-        if len(password) < 8:
+        if not valid_password(password):
             flash("La contraseña debe tener al menos 8 caracteres.", "warning")
             return render_template("auth/registrarse.html", nombre=nombre, email=email)
 
@@ -614,9 +613,10 @@ def forgot_password():
         if user:
             token = gen_reset_token(user.email)
             reset_url = url_for("main.reset_password", token=token, _external=True)
-            current_app.logger.info("Password reset link for %s: %s", email, reset_url)
+            # TODO: enviar email con reset_url (no logear el enlace)
         flash("Si el correo existe, te enviaremos instrucciones para restablecer la contraseña.", "info")
         return redirect(url_for("main.login"))
+
     return render_template("auth/forgot_password.html")
 
 # Reset con token
@@ -634,7 +634,7 @@ def reset_password(token):
         confirm = request.form.get("confirm") or ""
 
         if not valid_password(new_pwd):
-            flash("La contraseña debe tener al menos 8 caracteres y solo letras o números.", "warning")
+            flash("La contraseña debe tener al menos 8 caracteres.", "warning")
             return redirect(url_for("main.reset_password", token=token))
 
         if new_pwd != confirm:
