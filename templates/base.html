@@ -89,6 +89,8 @@
   </div>
 </header>
 
+
+
       <!-- NAVIGATION BAR -->
       <div class="nav-scroller py-1 mb-3 border-bottom">
         <nav class="nav d-flex justify-content-around">
@@ -115,6 +117,20 @@
         </nav>
       </div>
     </div>
+  <div class="container py-1 mb-3">
+     {% with msgs = get_flashed_messages(with_categories=true) %}
+  {% if msgs %}
+    <div class="mt-2">
+      {% for cat, msg in msgs %}
+        <div class="alert alert-{{ 'warning' if cat=='message' else cat }} alert-dismissible fade show" role="alert">
+          {{ msg }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+  </div>
 
     <!-- CONTENIDO -->
     <main class="container py-2">

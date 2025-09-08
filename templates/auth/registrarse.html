@@ -13,11 +13,11 @@
       <form method="post" action="{{ url_for('main.registrarse') }}" class="card p-3 shadow-sm">
         <div class="mb-3">
           <label class="form-label">Nombre</label>
-          <input name="nombre" type="text" class="form-control" placeholder="Tu nombre" required>
+          <input name="nombre" type="text" class="form-control" placeholder="Tu nombre" value="{{ nombre or '' }}" required>
         </div>
         <div class="mb-3">
           <label class="form-label">Email</label>
-          <input name="email" type="email" class="form-control" placeholder="tucorreo@ejemplo.com" required>
+          <input name="email" type="email" class="form-control" placeholder="tucorreo@ejemplo.com" value="{{ email or '' }}" required>
         </div>
         <div class="mb-3">
           <label class="form-label">Contraseña</label>

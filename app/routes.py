@@ -540,15 +540,15 @@ def registrarse():
         email = (request.form.get("email") or "").strip().lower()
         password = request.form.get("password") or ""
 
+        # Si falta algún campo:
         if not nombre or not email or not password:
             flash("Completa nombre, email y contraseña.", "warning")
-            return redirect(url_for("main.registrarse"))
-            # OJO: esta validación estricta en login hará que usuarios con contraseñas antiguas con símbolos no puedan entrar.
-            # Si quieres permitir login de legacy y forzar nueva política solo en registro/reset, quita este bloque.
+            return render_template("auth/registrarse.html", nombre=nombre, email=email)
 
-        if len(password) < 8 or not re.match(r"^[A-Za-z0-9]+$", password):
-            flash("La contraseña debe tener al menos 8 caracteres y solo letras o números.", "warning")
-            return redirect(url_for("main.login"))
+        # Si la contraseña no cumple (mejor aquí que en login)
+        if len(password) < 8:
+            flash("La contraseña debe tener al menos 8 caracteres.", "warning")
+            return render_template("auth/registrarse.html", nombre=nombre, email=email)
 
         # Si el email está en la whitelist, será admin; si no, lector por defecto.
         admin_whitelist = current_app.config.get("ADMIN_EMAILS", [])
@@ -557,16 +557,18 @@ def registrarse():
         user = User(nombre=nombre, email=email, role=role)
         user.set_password(password)
 
+        # Crear usuario…
         try:
             db.session.add(user)
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
             flash("Ese email ya está registrado.", "danger")
-            return redirect(url_for("main.registrarse"))
+            # Mantener valores para no reescribir
+            return render_template("auth/registrarse.html", nombre=nombre, email=email)
 
         flash("Cuenta creada correctamente. Ya puedes iniciar sesión.", "success")
-        return redirect(url_for("main.home"))
+        return redirect(url_for("main.login"))
 
     # GET
     return render_template("auth/registrarse.html")
