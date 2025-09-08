@@ -106,6 +106,7 @@ class User(db.Model, UserMixin):
     nombre:        Mapped[str] = mapped_column(db.String(120), nullable=False)
     email:         Mapped[str] = mapped_column(db.String(255), nullable=False, unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(db.String(255), nullable=False)
+    verified_at = db.Column(db.DateTime, nullable=True, default=None)
 
 
     role: Mapped[Role] = mapped_column(db.Enum(Role, name="role_enum"), nullable=False, default=Role.lector)
@@ -128,3 +129,7 @@ class User(db.Model, UserMixin):
         own = self.role.value
         wanted = [(r.value if isinstance(r, Role) else str(r)) for r in roles]
         return own in wanted
+
+    @property
+    def is_verified(self) -> bool:
+        return self.verified_at is not None

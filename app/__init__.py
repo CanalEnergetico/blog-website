@@ -1,7 +1,7 @@
 # app/__init__.py
 from flask import Flask
 from flask_login import LoginManager
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, generate_csrf
 from werkzeug.middleware.proxy_fix import ProxyFix
 from .config import Config
 from .extensions import db, ckeditor, migrate
@@ -11,6 +11,7 @@ from .errors import init_error_handlers
 import logging, sys
 
 login_manager = LoginManager()
+csrf = CSRFProtect()
 login_manager.login_view = "main.login"
 login_manager.login_message_category = "warning"
 
@@ -43,6 +44,8 @@ def create_app():
     login_manager.init_app(app)
     csrf = CSRFProtect()
     csrf.init_app(app)
+
+    app.jinja_env.globals['csrf_token'] = generate_csrf
 
     # Asegura que Alembic "vea" todos los modelos
     from . import models  # <-- IMPORTANTE: cargar modelos dentro de create_app()

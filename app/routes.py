@@ -11,6 +11,7 @@ from .extensions import db
 from .models import Articulos, Comentarios, Tag, MercadoUltimo, MercadoDaily, User, Role
 from .forms import PostForm, CommentForm
 from .utils import generar_slug, _parse_fecha, parse_tags, tag_slug, pct_change_n, rolling_insert_30
+from .utils_mail import send_email
 # Importa las mismas funciones de siempre; tu app/markets.py está "disfrazada" para EIA
 from .markets import td_price_batch, td_timeseries_daily, parse_last_ts
 
@@ -53,6 +54,19 @@ def verify_reset_token(token: str, max_age: int | None = None) -> str | None:
             salt=current_app.config["PASSWORD_RESET_SALT"],
             max_age=max_age,
         )
+    except (BadSignature, SignatureExpired):
+        return None
+
+def _signer() -> URLSafeTimedSerializer:
+    return URLSafeTimedSerializer(current_app.config["SECRET_KEY"], salt="email-verify")
+
+def gen_email_token(email: str) -> str:
+    return _signer().dumps({"email": email})
+
+def verify_email_token(token: str, max_age=60*60*24*2):  # 48 h
+    try:
+        data = _signer().loads(token, max_age=max_age)
+        return data.get("email")
     except (BadSignature, SignatureExpired):
         return None
 
@@ -539,34 +553,65 @@ def registrarse():
         email = (request.form.get("email") or "").strip().lower()
         password = request.form.get("password") or ""
 
-        # Si falta algún campo:
+        # 1) Campos obligatorios
         if not nombre or not email or not password:
             flash("Completa nombre, email y contraseña.", "warning")
             return render_template("auth/registrarse.html", nombre=nombre, email=email)
 
-        # Si la contraseña no cumple (mejor aquí que en login)
+        # 2) Política de contraseña (coherente con reset)
         if not valid_password(password):
             flash("La contraseña debe tener al menos 8 caracteres.", "warning")
             return render_template("auth/registrarse.html", nombre=nombre, email=email)
 
-        # Si el email está en la whitelist, será admin; si no, lector por defecto.
+        # 3) Rol por whitelist
         admin_whitelist = current_app.config.get("ADMIN_EMAILS", [])
         role = Role.admin if email in admin_whitelist else Role.lector
 
+        # 4) Crear usuario (no verificado aún)
         user = User(nombre=nombre, email=email, role=role)
         user.set_password(password)
 
-        # Crear usuario…
         try:
             db.session.add(user)
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
             flash("Ese email ya está registrado.", "danger")
-            # Mantener valores para no reescribir
             return render_template("auth/registrarse.html", nombre=nombre, email=email)
 
-        flash("Cuenta creada correctamente. Ya puedes iniciar sesión.", "success")
+        # 5) Enviar verificación por email
+        try:
+            token = gen_email_token(user.email)
+            verify_url = url_for("main.verify_email", token=token, _external=True)
+
+            html = f"""
+            <h2>Verifica tu correo</h2>
+            <p>Hola {user.nombre}, gracias por registrarte en Canal Energético.</p>
+            <p>Haz clic para verificar tu cuenta (48 horas de validez):</p>
+            <p><a href="{verify_url}">{verify_url}</a></p>
+            """
+
+            send_email(
+                to_email=user.email,
+                subject="Verifica tu correo – Canal Energético",
+                html=html,
+                sender=current_app.config["MAIL_SENDER"],
+                smtp_host=current_app.config["SMTP_HOST"],
+                smtp_port=current_app.config["SMTP_PORT"],
+                username=current_app.config["SMTP_USER"],
+                password=current_app.config["SMTP_PASS"],
+            )
+
+            flash("Te enviamos un correo para verificar tu cuenta.", "info")
+            # Opcional: en desarrollo, muestra el enlace para probar rápido
+            if current_app.debug:
+                flash(f"Enlace de verificación (solo dev): {verify_url}", "secondary")
+
+        except Exception as e:
+            current_app.logger.exception("No se pudo enviar verificación: %s", e)
+            flash("Tu cuenta fue creada, pero no pudimos enviar el correo de verificación ahora. Prueba más tarde desde el banner ‘Reenviar verificación’.", "warning")
+
+        # 6) Redirige al login
         return redirect(url_for("main.login"))
 
     # GET

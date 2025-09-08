@@ -51,6 +51,7 @@
       {# Si usas Flask-WTF/CSRFProtect y tienes el token disponible como función global: #}
       {# {{ csrf_token() }} #}
       <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     </form>
   </div>
 {% endif %}
@@ -95,11 +96,9 @@
                   </li>
                   <li><hr class="dropdown-divider"></li>
                   <li>
-                    <form method="post"
-                          action="{{ url_for('main.delete_comment', cid=c.id) }}"
-                          onsubmit="return confirm('¿Eliminar este comentario?');">
-                      {# Si usas CSRF global, descomenta: {{ csrf_token() }} #}
-                      <button type="submit" class="dropdown-item text-danger">Borrar</button>
+                    <form method="post" action="{{ url_for('main.delete_comment', cid=c.id) }}" onsubmit="return confirm('¿Eliminar comentario?');">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button class="btn btn-sm btn-outline-danger">Eliminar</button>
                     </form>
                   </li>
                 </ul>
@@ -155,6 +154,7 @@
     <div class="card shadow-sm border-0">
       <div class="card-body">
         <form method="POST" action="{{ url_for('main.detalle_articulo', slug=articulo.slug) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="mb-3">
             <label class="form-label">Tu comentario</label>
             <textarea name="comentario" class="form-control" rows="3" placeholder="Escribe tu comentario aquí..." required></textarea>
