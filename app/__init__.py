@@ -1,6 +1,7 @@
 # app/__init__.py
 from flask import Flask
 from flask_login import LoginManager
+from flask_wtf.csrf import CSRFProtect
 from werkzeug.middleware.proxy_fix import ProxyFix
 from .config import Config
 from .extensions import db, ckeditor, migrate
@@ -40,6 +41,8 @@ def create_app():
     migrate.init_app(app, db)   # <-- Migrate justo después de db
     ckeditor.init_app(app)
     login_manager.init_app(app)
+    csrf = CSRFProtect()
+    csrf.init_app(app)
 
     # Asegura que Alembic "vea" todos los modelos
     from . import models  # <-- IMPORTANTE: cargar modelos dentro de create_app()

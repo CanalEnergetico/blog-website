@@ -17,6 +17,7 @@ def _get_db_url():
     return url
 
 class Config:
+    WTF_CSRF_ENABLED = True
     # Seguridad / token para el endpoint de refresh
     SECRET_KEY = os.getenv("CANAL_KEY", "dev-secret")
     CANAL_KEY  = os.getenv("CANAL_KEY", "")

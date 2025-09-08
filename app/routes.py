@@ -351,8 +351,8 @@ def sitemap():
                 "priority": "0.6",
             })
     posts = db.session.query(Articulos.slug, Articulos.fecha).all()
-    for slug, fecha_str in posts:
-        last = _parse_fecha(fecha_str) if fecha_str else date.today()
+    for slug, f in posts:
+        last = f or date.today()
         pages.append({
             "loc": url_for("main.detalle_articulo", slug=slug, _external=True),
             "lastmod": last.isoformat(),
@@ -388,7 +388,7 @@ def news_sitemap():
 
     items = []
     for p in posts:
-        d = _parse_fecha(p.fecha) if p.fecha else None
+        d = p.fecha
         if not d:
             continue
         dt = datetime(d.year, d.month, d.day, 12, 0, 0)

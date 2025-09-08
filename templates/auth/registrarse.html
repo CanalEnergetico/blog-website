@@ -11,6 +11,7 @@
   <div class="row justify-content-center">
     <div class="col-md-6 col-lg-5">
       <form method="post" action="{{ url_for('main.registrarse') }}" class="card p-3 shadow-sm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="mb-3">
           <label class="form-label">Nombre</label>
           <input name="nombre" type="text" class="form-control" placeholder="Tu nombre" value="{{ nombre or '' }}" required>
@@ -29,7 +30,6 @@
        minlength="8"
        pattern="[A-Za-z0-9]+"
        title="Solo letras y números, mínimo 8 caracteres">
-
         </div>
         <button type="submit" class="btn btn-primary w-100">Crear cuenta</button>
         <p class="text-muted small mt-2 mb-0">
