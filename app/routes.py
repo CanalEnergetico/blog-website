@@ -11,6 +11,7 @@ from .extensions import db
 from .models import Articulos, Comentarios, Tag, MercadoUltimo, MercadoDaily, User, Role
 from .forms import PostForm, CommentForm
 from .utils import generar_slug, _parse_fecha, parse_tags, tag_slug, pct_change_n, rolling_insert_30
+from .auth_tokens import gen_email_token
 from .utils_mail import send_email
 # Importa las mismas funciones de siempre; tu app/markets.py está "disfrazada" para EIA
 from .markets import td_price_batch, td_timeseries_daily, parse_last_ts
@@ -649,46 +650,113 @@ def privacy():
     return render_template("privacy.html")
 
 # Olvidé mi contraseña
-@bp.route("/forgot-password", methods=["GET", "POST"], endpoint="forgot_password")
+from .auth_tokens import gen_reset_token, verify_reset_token
+
+@bp.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
     if request.method == "POST":
         email = (request.form.get("email") or "").strip().lower()
-        user = User.query.filter_by(email=email).first()
-        # Genera y "envía" el enlace (por ahora, al log; luego lo mandas por SMTP)
-        if user:
-            token = gen_reset_token(user.email)
-            reset_url = url_for("main.reset_password", token=token, _external=True)
-            # TODO: enviar email con reset_url (no logear el enlace)
-        flash("Si el correo existe, te enviaremos instrucciones para restablecer la contraseña.", "info")
+        if email:
+            user = User.query.filter_by(email=email).first()
+            if user:
+                token = gen_reset_token(user.email)
+                reset_url = url_for("main.reset_password", token=token, _external=True)
+                html = f"""
+                <h2>Restablecer contraseña</h2>
+                <p>Hola {user.nombre}, haz clic para restablecer tu contraseña (2 h):</p>
+                <p><a href="{reset_url}">{reset_url}</a></p>
+                """
+                try:
+                    send_email(user.email, "Restablecer contraseña – Canal Energético", html)
+                except Exception:
+                    current_app.logger.exception("No se pudo enviar reset password")
+        # Mensaje neutro (no revelar si existe o no el email)
+        flash("Si el correo existe, te enviaremos instrucciones.", "info")
         return redirect(url_for("main.login"))
-
     return render_template("auth/forgot_password.html")
 
+
 # Reset con token
-@bp.route("/reset-password/<token>", methods=["GET", "POST"], endpoint="reset_password")
+@bp.route("/reset-password/<token>", methods=["GET", "POST"])
 def reset_password(token):
     email = verify_reset_token(token)
     if not email:
-        flash("Enlace inválido o caducado.", "danger")
+        flash("Enlace inválido o caducado.", "warning")
         return redirect(url_for("main.forgot_password"))
 
-    user = User.query.filter_by(email=email).first_or_404()
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        flash("Usuario no encontrado.", "danger")
+        return redirect(url_for("main.forgot_password"))
 
     if request.method == "POST":
         new_pwd = request.form.get("password") or ""
         confirm = request.form.get("confirm") or ""
-
+        if new_pwd != confirm:
+            flash("Las contraseñas no coinciden.", "warning")
+            return redirect(url_for("main.reset_password", token=token))
         if not valid_password(new_pwd):
             flash("La contraseña debe tener al menos 8 caracteres.", "warning")
             return redirect(url_for("main.reset_password", token=token))
 
-        if new_pwd != confirm:
-            flash("Las contraseñas no coinciden.", "warning")
-            return redirect(url_for("main.reset_password", token=token))
-
-        user.set_password(new_pwd)   # tu método ya debe hashear+saltear
+        user.set_password(new_pwd)
         db.session.commit()
         flash("Contraseña actualizada. Ya puedes iniciar sesión.", "success")
         return redirect(url_for("main.login"))
 
-    return render_template("auth/reset_password.html", email=email)
+    return render_template("auth/reset_password.html", token=token, email=email)
+
+
+from datetime import datetime
+from flask_login import login_required, current_user
+from .auth_tokens import verify_email_token, gen_email_token
+from .utils_mail import send_email
+
+@bp.get("/verify-email/<token>")
+def verify_email(token):
+    email = verify_email_token(token)
+    if not email:
+        flash("Enlace inválido o caducado. Solicita un reenvío.", "warning")
+        return redirect(url_for("main.login"))
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        flash("Usuario no encontrado.", "danger")
+        return redirect(url_for("main.login"))
+    if user.verified_at:
+        flash("Tu correo ya estaba verificado.", "info")
+        return redirect(url_for("main.home"))
+    user.verified_at = datetime.utcnow()
+    db.session.commit()
+    flash("¡Email verificado!", "success")
+    return redirect(url_for("main.home"))
+
+@bp.post("/resend-verification")
+@login_required
+def resend_verification():
+    if current_user.verified_at:
+        flash("Tu correo ya está verificado.", "info")
+        return redirect(url_for("main.home"))
+    token = gen_email_token(current_user.email)
+    verify_url = url_for("main.verify_email", token=token, _external=True)
+    html = f"""
+    <h2>Verifica tu correo</h2>
+    <p>Hola {current_user.nombre}, este es tu nuevo enlace (48 h):</p>
+    <p><a href="{verify_url}">{verify_url}</a></p>
+    """
+    try:
+        send_email(current_user.email, "Reenviar verificación – Canal Energético", html)
+        flash("Te reenviamos el correo de verificación.", "info")
+    except Exception:
+        current_app.logger.exception("No se pudo reenviar verificación")
+        flash("No pudimos reenviar ahora. Intenta más tarde.", "warning")
+    return redirect(url_for("main.home"))
+
+
+@bp.route("/test-mail")
+def test_mail():
+    send_email(
+        to_email="joseignacio.ariasguardia@gmail.com",
+        subject="Prueba Blog Energético",
+        html="<h1>Funciona!</h1><p>Este es un test de Gmail SMTP.</p>",
+    )
+    return "Correo enviado"

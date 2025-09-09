@@ -53,11 +53,11 @@ class Config:
     PASSWORD_RESET_SALT = os.getenv("PASSWORD_RESET_SALT", "cambia-esta-sal")
     PASSWORD_RESET_EXP_SECS = int(os.getenv("PASSWORD_RESET_EXP_SECS", "3600"))
 
-    # CORREOS
-    MAIL_SENDER = os.getenv("MAIL_SENDER", "no-reply@tu-dominio.com")
-    SMTP_HOST = os.getenv("SMTP_HOST", "smtp.office365.com")
+    # Configuración de correo
+    MAIL_SENDER = os.getenv("MAIL_SENDER")
+    SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
     SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
-    SMTP_USER = os.getenv("SMTP_USER", "")
-    SMTP_PASS = os.getenv("SMTP_PASS", "")
+    SMTP_USER = os.getenv("SMTP_USER")
+    SMTP_PASS = os.getenv("SMTP_PASS")
 
 
