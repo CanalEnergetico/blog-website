@@ -28,14 +28,14 @@
         </div>
 
         <!-- Enlace a “Olvidé mi contraseña” -->
-        <a class="small" href="{{ url_for('main.forgot_password') }}">¿Olvidaste tu contraseña?</a>
+        <a class="small" href="{{ url_for('auth.forgot_password') }}">¿Olvidaste tu contraseña?</a>
       </div>
 
       <button type="submit" class="btn btn-primary w-100">Entrar</button>
 
       <p class="text-muted small mt-3 mb-0">
         ¿No tienes cuenta?
-        <a href="{{ url_for('main.registrarse') }}">Crea una aquí</a>.
+        <a href="{{ url_for('auth.registrarse') }}">Crea una aquí</a>.
       </p>
     </form>
   </div>

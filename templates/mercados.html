@@ -234,7 +234,7 @@
     }
 
     async function loadDashboard(){
-      const res = await fetch("{{ url_for('main.mercados_json') }}", {cache: 'no-store'});
+      const res = await fetch("{{ url_for('markets.mercados_json') }}", {cache: 'no-store'});
       const data = await res.json();
       const byId = {};
       for (const m of data.markets){ byId[m.id] = m; }
