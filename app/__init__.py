@@ -5,14 +5,14 @@ from flask_wtf.csrf import CSRFProtect, generate_csrf
 from werkzeug.middleware.proxy_fix import ProxyFix
 from .config import Config
 from .extensions import db, ckeditor, migrate
-from .routes import bp
 from .context import register_context
 from .errors import init_error_handlers
 import logging, sys
 
 login_manager = LoginManager()
 csrf = CSRFProtect()
-login_manager.login_view = "main.login"
+# Cambia el login_view al blueprint de auth
+login_manager.login_view = "auth.login"
 login_manager.login_message_category = "warning"
 
 def create_app():
@@ -39,24 +39,29 @@ def create_app():
 
     # Extensiones
     db.init_app(app)
-    migrate.init_app(app, db)   # <-- Migrate justo después de db
+    migrate.init_app(app, db)     # Alembic/Flask-Migrate después de db
     ckeditor.init_app(app)
     login_manager.init_app(app)
-    csrf = CSRFProtect()
-    csrf.init_app(app)
+    csrf.init_app(app)            # OJO: no reinstanciar csrf aquí
 
+    # CSRF en plantillas ({{ csrf_token() }})
     app.jinja_env.globals['csrf_token'] = generate_csrf
 
     # Asegura que Alembic "vea" todos los modelos
-    from . import models  # <-- IMPORTANTE: cargar modelos dentro de create_app()
+    from . import models  # noqa: F401
 
+    # Context processors y manejadores de error
     register_context(app)
-    app.register_blueprint(bp)
     init_error_handlers(app)
 
-    # Nada de db.create_all() con Flask-Migrate
-    # with app.app_context():
-    #     db.create_all()
+    # Blueprints (importa y registra todos)
+    from .blueprints import main_bp, blog_bp, comments_bp, auth_bp, markets_bp, meta_bp
+    app.register_blueprint(main_bp)
+    app.register_blueprint(blog_bp)
+    app.register_blueprint(comments_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(markets_bp)
+    app.register_blueprint(meta_bp)
 
     @app.after_request
     def _force_utf8(resp):
@@ -68,7 +73,6 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id: str):
-        # Import local para evitar ciclos
         from .models import User
         return User.query.get(int(user_id))
 

@@ -46,7 +46,7 @@
         <h4 class="mb-0 truncate-2">{{ articulo.titulo }}</h4>
         <div class="mb-1 text-body-secondary">{{ articulo.fecha }} | {{ articulo.autor }}</div>
         <p class="mb-auto truncate-2">{{ articulo.descripcion }}</p>
-        <a href="{{ url_for('main.detalle_articulo', slug=articulo.slug) }}" class="icon-link gap-1 icon-link-hover stretched-link">
+        <a href="{{ url_for('blog.detalle_articulo', slug=articulo.slug) }}" class="icon-link gap-1 icon-link-hover stretched-link">
           Seguir leyendo
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                class="bi bi-chevron-right" viewBox="0 0 16 16">
@@ -131,7 +131,7 @@
       {% set _desc = _desc[:220] ~ ('…' if (_desc|length) > 220 else '') %}
       <p class="text-muted small fst-italic mb-3">{{ _desc }}</p>
 
-      <a href="{{ url_for('main.detalle_articulo', slug=ns.post.slug) }}" class="btn btn-outline-primary btn-sm">Leer más</a>
+      <a href="{{ url_for('blog.detalle_articulo', slug=ns.post.slug) }}" class="btn btn-outline-primary btn-sm">Leer más</a>
     {% else %}
       <p class="text-muted small">No hay columnas disponibles.</p>
     {% endif %}
