@@ -23,14 +23,16 @@
 <!--    Título del artículo  -->
     <h1 class="blog-post-title">{{ articulo.titulo }}</h1>
 <!--    Fecha y autor  -->
-    <div class="d-flex flex-wrap align-items-center gap-2 text-muted small">
-      <span>{{ articulo.fecha }}</span>
-        <span>por <a class="text-reset text-decoration-none">{{ articulo.autor }}</a></span>
-      <!-- categoría a la derecha -->
-        <span class="ms-auto fw-bold text-white bg-{{ primary|tag_color }} p-1">
-          {{ primary }}
-        </span>
-    </div>
+<div class="d-flex align-items-center justify-content-between text-muted small">
+  <div class="d-flex align-items-center gap-2">
+    <span>{{ articulo.fecha }}</span>
+    <span>| <a class="text-reset text-decoration-none">{{ articulo.autor }}</a></span>
+  </div>
+  <span class="fw-bold text-white bg-{{ primary|tag_color }} px-2 py-1 rounded">
+    {{ primary }}
+  </span>
+</div>
+
 <!-- Descripción del artículo -->
     {# Lead opcional si articulo.descripcion existe #}
     {% if articulo.descripcion %}
