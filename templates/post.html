@@ -58,6 +58,7 @@
     </div>
 <!--    TAGS  -->
        <section class="d-flex flex-wrap align-items-center justify-content-between py-3 border-bottom">
+
       {# Tags clicables (si usas relación) #}
       <div class="d-flex flex-wrap gap-2">
         {% if articulo.tags %}
@@ -70,6 +71,57 @@
           <span class="small fw-semibold text-{{ articulo.tag|tag_color }}">#{{ articulo.tag }}</span>
         {% endif %}
       </div>
+
+         <div class="btn-group">
+  <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+          type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Compartir
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end small">
+    <li>
+      <a class="dropdown-item"
+         href="https://www.linkedin.com/sharing/share-offsite/?url={{ url_for('blog.detalle_articulo', slug=articulo.slug, _external=True)|urlencode }}"
+         target="_blank" rel="noopener">
+        LinkedIn
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item"
+         href="https://wa.me/?text={{ articulo.titulo|urlencode }}%20{{ url_for('blog.detalle_articulo', slug=articulo.slug, _external=True)|urlencode }}"
+         target="_blank" rel="noopener">
+        WhatsApp
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item"
+         href="https://www.facebook.com/sharer/sharer.php?u={{ url_for('blog.detalle_articulo', slug=articulo.slug, _external=True)|urlencode }}"
+         target="_blank" rel="noopener">
+        Facebook
+      </a>
+    </li>
+    <li><hr class="dropdown-divider"></li>
+    <li>
+      <button class="dropdown-item" type="button"
+              onclick="copyArticleLink(this)"
+              data-url="{{ url_for('blog.detalle_articulo', slug=articulo.slug, _external=True) }}">
+        Copiar enlace
+      </button>
+    </li>
+  </ul>
+</div>
+
+<script>
+function copyArticleLink(btn){
+  const url = btn.getAttribute('data-url');
+  navigator.clipboard.writeText(url).then(()=>{
+    const original = btn.textContent;
+    btn.textContent = 'Enlace copiado';
+    setTimeout(()=>{ btn.textContent = original; }, 1500);
+  });
+}
+</script>
+
+
     </section>
 
 <!--Editar y borrar artículos-->
