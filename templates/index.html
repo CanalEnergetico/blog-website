@@ -36,13 +36,18 @@
   <div class="col-md-6">
     <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
       <div class="col p-4 d-flex flex-column position-static truncate-1">
-        <strong class="d-inline-block mb-2 {{ 'text-primary' if loop.index==1 else 'text-success' }}">
-          {% if articulo.tags and articulo.tags|length > 0 %}
-            {{ articulo.tags[0].nombre }}
-          {% else %}
-            {{ articulo.tag }}
-          {% endif %}
-        </strong>
+{# decide el tag principal #}
+{% set primary = articulo.tag %}
+{% if not primary and articulo.tags and articulo.tags|length > 0 %}
+  {% set primary = (articulo.tags|sort(attribute='id')|first).nombre %}
+{% endif %}
+
+<strong class="d-inline-block mb-2 fw-bold text-{{ primary|tag_color }}">
+  {{ primary }}
+</strong>
+
+
+
         <h4 class="mb-0 truncate-2">{{ articulo.titulo }}</h4>
         <div class="mb-1 text-body-secondary">{{ articulo.fecha }} | {{ articulo.autor }}</div>
         <p class="mb-auto truncate-2">{{ articulo.descripcion }}</p>
