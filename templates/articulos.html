@@ -66,55 +66,97 @@
   </div>
 </div>
 
-<!--  TODOS LOS ARTÍCULOS  -->
-  {% if articulos %}
-    <!-- Cuatro destacados al principio -->
-    <div class="row mb-4">
-      {% for articulo in articulos[:4] %}
-        <div class="col-md-6 mb-4">
-          <div class="card h-100 shadow-sm">
-            {% if articulo.img_url %}
-              <img src="{{ articulo.img_url }}"
-                   class="card-img-top"
-                   alt="{{ articulo.titulo }}"
-                   style="object-fit: cover; height: 200px;">
-            {% else %}
-              <img
-                src="{{ url_for('static', filename='imagen/logo_canal_en.png') }}"
-                alt="Logo Canal Energético"
-                class="bd-placeholder-img rounded"
-                style="object-fit: cover; width:200px; height:250px;">
-            {% endif %}
-            <div class="card-body d-flex flex-column">
-              <strong class="d-inline-block mb-2 {{ 'text-primary' if loop.index==1 else 'text-success' }}">{{ articulo.tag }}</strong>
-              <h5 class="card-title truncate-2">{{ articulo.titulo }}</h5>
-              <p class="text-muted small mb-2">{{ articulo.fecha }} | {{ articulo.autor }}</p>
-              <p class="card-text mb-4 truncate-2">{{ articulo.descripcion }}</p>
-              <a href="{{ url_for('blog.detalle_articulo', slug=articulo.slug) }}" class="mt-auto btn btn-secondary">Leer más</a>
-            </div>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
+{# === TODOS LOS ARTÍCULOS === #}
+{% if articulos %}
+  {# 1) Partimos la lista: 4 destacados estilo magazine + resto en grid #}
+  {% set destacados = articulos[:4] %}
+  {% set restantes = articulos[4:12] %}
 
-    <!-- Resto de artículos en filas de tres -->
-    <div class="row">
-      {% for articulo in articulos[4:] %}
-        <div class="col-md-4 mb-4">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title truncate-2">{{ articulo.titulo }}</h5>
-              <p class="text-muted small mb-2">{{ articulo.fecha }} | {{ articulo.autor }}</p>
-              <p class="card-text mb-4 truncate-2">{{ articulo.descripcion }}</p>
-              <a href="{{ url_for('blog.detalle_articulo', slug=articulo.slug) }}" class="mt-auto btn btn-outline-secondary">Leer más</a>
-            </div>
+  {# ===== Destacados (magazine) ===== #}
+  <div class="row g-3 mb-4">
+    {% for a in destacados %}
+      <div class="col-12">
+        <article class="card flex-md-row shadow-sm h-100 border-0 border-start border-4 border-{{ a.tag|tag_color }}">
+          {% if a.img_url %}
+            <img src="{{ a.img_url }}" alt="{{ a.titulo }}"
+                 class="magazine-cover d-none d-md-block"
+                 style="width:40%;object-fit:cover;max-height:240px;">
+          {% endif %}
+
+          <div class="card-body d-flex flex-column">
+            <span class="fw-bold text-{{ a.tag|tag_color }} mb-1">{{ a.tag }}</span>
+            <h2 class="h5 card-title mb-2">
+              <a href="{{ url_for('blog.detalle_articulo', slug=a.slug) }}"
+                 class="stretched-link text-decoration-none text-dark">{{ a.titulo }}</a>
+            </h2>
+            <p class="text-muted small mb-2">{{ a.fecha }} | {{ a.autor }}</p>
+            <p class="card-text clamp-3 mb-0">{{ a.descripcion }}</p>
           </div>
-        </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <p>No hay artículos para mostrar.</p>
-  {% endif %}
+        </article>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# ===== Resto (2 por fila) ===== #}
+  <div class="row g-3">
+    {% for a in restantes %}
+      <div class="col-12 col-md-6">
+        <article class="card h-100 shadow-sm border-0 border-start border-4 border-{{ a.tag|tag_color }}">
+          {% if a.img_url %}
+            <img src="{{ a.img_url }}" alt="{{ a.titulo }}"
+                 class="card-img-top" style="height:180px;object-fit:cover;">
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <span class="fw-bold text-{{ a.tag|tag_color }} mb-1">{{ a.tag }}</span>
+            <h3 class="h6 card-title mb-2">
+              <a href="{{ url_for('blog.detalle_articulo', slug=a.slug) }}"
+                 class="stretched-link text-decoration-none text-dark">{{ a.titulo }}</a>
+            </h3>
+            <p class="text-muted small mb-2">{{ a.fecha }} | {{ a.autor }}</p>
+            <p class="card-text clamp-2 mb-0">{{ a.descripcion }}</p>
+          </div>
+        </article>
+      </div>
+    {% endfor %}
+  </div>
+
+{% else %}
+  <p>No hay artículos para mostrar.</p>
+{% endif %}
+
+<!--  {% if articulos %}-->
+<!--    <div class="row mb-4">-->
+<!--      {% for articulo in articulos[:12] %}-->
+<!--        <div class="col-md-6 mb-4">-->
+<!--          <div class="card h-100 shadow-sm">-->
+<!--            {% if articulo.img_url %}-->
+<!--              <img src="{{ articulo.img_url }}"-->
+<!--                   class="card-img-top"-->
+<!--                   alt="{{ articulo.titulo }}"-->
+<!--                   style="object-fit: cover; height: 200px;">-->
+<!--            {% else %}-->
+<!--              <img-->
+<!--                src="{{ url_for('static', filename='imagen/logo_canal_en.png') }}"-->
+<!--                alt="Logo Canal Energético"-->
+<!--                class="bd-placeholder-img rounded"-->
+<!--                style="object-fit: cover; width:200px; height:250px;">-->
+<!--            {% endif %}-->
+<!--            <div class="card-body d-flex flex-column">-->
+<!--              <strong class="d-inline-block mb-2 text-{{ articulo.tag|tag_color }}">-->
+<!--                {{ articulo.tag }}-->
+<!--              </strong>-->
+<!--              <h5 class="card-title truncate-2">{{ articulo.titulo }}</h5>-->
+<!--              <p class="text-muted small mb-2">{{ articulo.fecha }} | {{ articulo.autor }}</p>-->
+<!--              <p class="card-text mb-4 truncate-2">{{ articulo.descripcion }}</p>-->
+<!--              <a href="{{ url_for('blog.detalle_articulo', slug=articulo.slug) }}" class="mt-auto btn btn-secondary">Leer más</a>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      {% endfor %}-->
+<!--    </div>-->
+<!--  {% else %}-->
+<!--    <p>No hay artículos para mostrar.</p>-->
+<!--  {% endif %}-->
 
 <!--  PAGINACIÓN  -->
   {% if pagination and pagination.pages >= 1 %}

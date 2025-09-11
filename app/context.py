@@ -51,3 +51,56 @@ def register_context(app):
     def inject_articulos():
         articulos = Articulos.query.order_by(Articulos.id.asc()).all()
         return dict(articulos=articulos)
+
+    # 👉 NUEVO: filtro para colores de tags
+    TAG_TO_BADGE = {
+        "renovables": "success",  # verde
+        "combustibles": "danger",  # rojo
+        "sistema eléctrico": "primary",  # azul
+    }
+
+    def tag_color(nombre: str) -> str:
+        if not nombre:
+            return "dark"
+        n = nombre.strip().lower()
+
+        # Combustibles fósiles
+        if any(word in n for word in
+               ["combustible", "gas", "oil", "petróleo", "petroleo", "diesel", "carbón", "carbon", "gas natural"]):
+            return "danger"  # rojo
+
+        # Renovables
+        if any(word in n for word in
+               ["renovable", "solar", "eólica", "hidrógeno", "hidrogeno", "geotérmica", "geotermica", "biomasa",
+                "hidráulica", "hidraulica"]):
+            return "success"  # verde
+
+        # Sistema eléctrico
+        if any(word in n for word in ["sistema eléctrico", "red eléctrica", "transmisión", "distribución", "grid"]):
+            return "primary"  # azul
+
+        # Innovación
+        if "innovación" in n or "innovacion" in n:
+            return "info"  # celeste
+
+        # Movilidad
+        if "movilidad" in n or "transporte" in n:
+            return "primary"  # amarillo
+
+        # Sostenibilidad
+        if "sostenibilidad" in n or "sostenible" in n:
+            return "success"  # verde (igual que renovables, o puedes diferenciar con "secondary")
+
+        # Sociedad y energía
+        if "sociedad" in n or "energía" in n or "energia" in n:
+            return "dark"  # gris
+
+        # Actualidad
+        if "actualidad" in n or "noticia" in n:
+            return "dark"
+
+        # Default
+        return "dark"
+
+    # registra el filtro global en Jinja
+    app.jinja_env.filters["tag_color"] = tag_color
