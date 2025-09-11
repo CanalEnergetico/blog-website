@@ -60,3 +60,13 @@ section.text-center .display-5 { letter-spacing: .3px; }
 /* Botones suaves coherentes con Bootstrap 5 */
 .btn-primary { border-radius: 12px; }
 .btn-outline-secondary { border-radius: 12px; }
+
+<style>
+  .article-content p { line-height: 1.75; font-size: 1.05rem; }
+  .article-content h2, .article-content h3 { margin-top: 1.5rem; }
+  .article-content img { max-width: 100%; height: auto; }
+  blockquote {
+    border-left: .25rem solid var(--bs-secondary);
+    padding-left: 1rem; margin: 1rem 0; font-style: italic; color: #555;
+  }
+</style>

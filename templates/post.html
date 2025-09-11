@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block title %}{{ articulo.titulo }} – Canal Energético{% endblock %}
 
 {% block content %}
@@ -12,14 +11,32 @@
       <li class="breadcrumb-item active" aria-current="page">{{ articulo.titulo }}</li>
     </ol>
   </nav>
-<!-- Artículo -->
-  <article class="blog-post">
-    <h1 class="blog-post-title">{{ articulo.titulo }}</h1>
-    <p class="blog-post-meta">
-      {{ articulo.fecha }} por
-      <a>{{ articulo.autor }}</a>
-    </p>
 
+<!-- Artículo -->
+  {# Tag principal (coherente con el resto del sitio) #}
+  {% set primary = articulo.tag %}
+  {% if not primary and articulo.tags and articulo.tags|length > 0 %}
+    {% set primary = (articulo.tags|sort(attribute='id')|first).nombre %}
+  {% endif %}
+
+  <article class="blog-post">
+<!--    Título del artículo  -->
+    <h1 class="blog-post-title">{{ articulo.titulo }}</h1>
+<!--    Fecha y autor  -->
+    <div class="d-flex flex-wrap align-items-center gap-2 text-muted small">
+      <span>{{ articulo.fecha }}</span>
+        <span>por <a class="text-reset text-decoration-none">{{ articulo.autor }}</a></span>
+      <!-- categoría a la derecha -->
+        <span class="ms-auto fw-bold text-white bg-{{ primary|tag_color }} p-1">
+          {{ primary }}
+        </span>
+    </div>
+<!-- Descripción del artículo -->
+    {# Lead opcional si articulo.descripcion existe #}
+    {% if articulo.descripcion %}
+      <p class="lead">{{ articulo.descripcion }}</p>
+    {% endif %}
+<!-- Foto -->
     {% if articulo.img_url %}
       <img
         src="{{ articulo.img_url }}"
@@ -33,11 +50,27 @@
         </figcaption>
       {% endif %}
     {% endif %}
-
+<!-- Contenido -->
     <div class="article-content border-bottom">
       {{ articulo.contenido | safe }}
     </div>
+<!--    TAGS  -->
+       <section class="d-flex flex-wrap align-items-center justify-content-between py-3 border-bottom">
+      {# Tags clicables (si usas relación) #}
+      <div class="d-flex flex-wrap gap-2">
+        {% if articulo.tags %}
+          {% for t in articulo.tags|sort(attribute='nombre') %}
+            <p class="text-decoration-none small fw-semibold text-{{ t.nombre|tag_color }}">
+              #{{ t.nombre }}
+            </p>
+          {% endfor %}
+        {% elif articulo.tag %}
+          <span class="small fw-semibold text-{{ articulo.tag|tag_color }}">#{{ articulo.tag }}</span>
+        {% endif %}
+      </div>
+    </section>
 
+<!--Editar y borrar artículos-->
     {% if current_user.is_authenticated and current_user.has_role('admin') %}
   <div class="d-flex gap-2 my-3">
     <a class="btn btn-outline-secondary btn-sm"
@@ -55,7 +88,6 @@
     </form>
   </div>
 {% endif %}
-
   </article>
 </div>
 
