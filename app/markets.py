@@ -9,14 +9,28 @@ from flask import current_app
 
 EIA_BASE = "https://api.eia.gov/v2/petroleum/pri/spt/data/"
 
+# ---- Alias comunes -> series EIA oficiales ----
+# RBRTE = Brent (Europe Brent Spot)
+# RWTC  = WTI (Cushing, OK WTI Spot)
+_SERIES_ALIASES = {
+    "BRENT": "RBRTE",
+    "BRET": "RBRTE",
+    "BREN": "RBRTE",
+    "RBRTE": "RBRTE",
+    "WTI": "RWTC",
+    "WTIC": "RWTC",
+    "WTICUSH": "RWTC",
+    "RWTC": "RWTC",
+}
+
 # ---------- Session con reintentos ----------
 def _make_session() -> requests.Session:
     s = requests.Session()
     retry = Retry(
-        total=3,
-        connect=3,
-        read=3,
-        backoff_factor=0.8,
+        total=4,
+        connect=4,
+        read=4,
+        backoff_factor=1.0,
         status_forcelist=[429, 500, 502, 503, 504],
         allowed_methods=["GET"],
         raise_on_status=False,
@@ -30,23 +44,32 @@ def _make_session() -> requests.Session:
 _session = _make_session()
 
 def _timeout():
-    # (connect, read) – dejamos buen margen al read por lentitud del endpoint
-    return (5, 45)
+    # (connect, read) – margen generoso por lentitud eventual del endpoint
+    return (5, 60)
 
 # ---------- Utils ----------
 def _eia_key() -> str:
     return (current_app.config.get("EIA_API_KEY") or "").strip()
 
 def _norm_series_id(sym: str) -> str:
+    """
+    Normaliza entradas variadas:
+      'bret', 'brent', 'BRENT', 'RBRTE' -> 'RBRTE'
+      'wti',  'WTI',   'RWTC'           -> 'RWTC'
+      además acepta 'EIA.RBRTE' y devuelve 'RBRTE'
+    """
     if not sym:
         return ""
     s = sym.strip().upper()
-    # Permitimos "EIA.RBRTE" -> "RBRTE"
+
+    # Permite "EIA.RBRTE" -> "RBRTE"
     if "." in s:
         parts = s.split(".")
         if len(parts) >= 2:
-            return parts[1]
-    return s
+            s = parts[-1].strip().upper()
+
+    # Aplica alias
+    return _SERIES_ALIASES.get(s, s)
 
 def _req_xparams(series_key: str, length: int, offset: int = 0) -> Optional[dict]:
     """
@@ -70,8 +93,10 @@ def _req_xparams(series_key: str, length: int, offset: int = 0) -> Optional[dict
         resp.raise_for_status()
         return resp.json()
     except Exception as e:
-        current_app.logger.exception("EIA X-Params request error %s len=%s off=%s: %s",
-                                     series_key, length, offset, e)
+        current_app.logger.exception(
+            "EIA X-Params request error series=%s len=%s off=%s: %s",
+            series_key, length, offset, e
+        )
         return None
 
 def _req_querystring(series_key: str, length: int, offset: int = 0) -> Optional[dict]:
@@ -97,8 +122,10 @@ def _req_querystring(series_key: str, length: int, offset: int = 0) -> Optional[
         resp.raise_for_status()
         return resp.json()
     except Exception as e:
-        current_app.logger.exception("EIA querystring request error %s len=%s off=%s: %s",
-                                     series_key, length, offset, e)
+        current_app.logger.exception(
+            "EIA querystring request error series=%s len=%s off=%s: %s",
+            series_key, length, offset, e
+        )
         return None
 
 def _extract_rows(js: Optional[dict]) -> List[dict]:
@@ -107,6 +134,13 @@ def _extract_rows(js: Optional[dict]) -> List[dict]:
     return (js.get("response", {}) or {}).get("data", []) or []
 
 # ---------- Lecturas de dato único / series ----------
+def _to_float_or_none(v) -> Optional[float]:
+    # API v2 estandariza valores como *string*; castear con cuidado.  :contentReference[oaicite:2]{index=2}
+    try:
+        return float(v) if v is not None and str(v).strip() != "" else None
+    except Exception:
+        return None
+
 def _eia_get_latest_value(series_key: str) -> Optional[float]:
     """
     Último valor (float) o None. Intenta X-Params y cae a querystring si falla/queda vacío.
@@ -117,24 +151,21 @@ def _eia_get_latest_value(series_key: str) -> Optional[float]:
         js = _req_querystring(series_key, length=1, offset=0)
         rows = _extract_rows(js)
         if not rows:
-            current_app.logger.warning("EIA empty latest for %s (after fallback): %s", series_key, js)
+            current_app.logger.warning(
+                "EIA empty latest for series=%s (after fallback). Raw=%s", series_key, js
+            )
             return None
-    try:
-        return float(rows[0]["value"])
-    except Exception:
-        return None
+    return _to_float_or_none(rows[0].get("value"))
 
 def _eia_get_last_n(series_key: str, n: int) -> List[Tuple[str, float]]:
     """
     Descarga hasta n puntos recientes (desc) en bloques con paginación (offset).
-    Esto evita timeouts y repetición del mismo bloque.
     """
     n = max(1, int(n))
     out: List[Tuple[str, float]] = []
     offset = 0
 
     while len(out) < n:
-        # Pedimos en bloques de 10 para ser conservadores con el endpoint
         take = min(10, n - len(out))
 
         js = _req_xparams(series_key, length=take, offset=offset)
@@ -144,47 +175,57 @@ def _eia_get_last_n(series_key: str, n: int) -> List[Tuple[str, float]]:
             rows = _extract_rows(js)
 
         if not rows:
-            current_app.logger.warning("EIA empty chunk for %s len=%s off=%s", series_key, take, offset)
+            current_app.logger.warning(
+                "EIA empty chunk series=%s len=%s off=%s", series_key, take, offset
+            )
             break
 
         # Agregamos este bloque
         for r in rows:
-            try:
-                out.append((str(r["period"]), float(r["value"])))
-            except Exception:
-                continue
+            d = str(r.get("period", ""))[:10]
+            v = _to_float_or_none(r.get("value"))
+            if d and v is not None:
+                out.append((d, v))
 
-        # Si nos devolvieron menos que 'take', ya no hay más páginas
+        # Si devolvieron menos que 'take', ya no hay más páginas
         if len(rows) < take:
             break
 
-        # Avanza el offset para la siguiente página (como estamos en orden desc)
+        # Avanza el offset (orden desc)
         offset += len(rows)
 
-    # Asegura tamaño n
     return out[:n]
 
 # ---------- Interfaz compatible con tu app ----------
 def td_price_batch(symbols_csv: str) -> Dict[str, Any]:
     """
-    'RBRTE,RWTC' -> {"RBRTE":{"price":"xx.x"},"RWTC":{"price":"yy.y"}}
+    'RBRTE,RWTC' o 'BRENT,WTI' -> {"RBRTE":{"price":"xx.x"},"RWTC":{"price":"yy.y"}}
+    Mantiene las claves originales de entrada para no romper llamadas existentes.
     """
     out: Dict[str, Any] = {}
     if not symbols_csv:
         return out
+
     for raw in [s.strip() for s in symbols_csv.split(",") if s.strip()]:
         skey = _norm_series_id(raw)
+        if not skey:
+            out[raw] = {"price": None}
+            continue
         val = _eia_get_latest_value(skey)
         out[raw] = {"price": (str(val) if val is not None else None)}
+        if val is None:
+            current_app.logger.warning("No latest value for input=%s mapped_series=%s", raw, skey)
     return out
 
 def td_timeseries_daily(symbol: str, outputsize: int = 2) -> Dict[str, Any]:
     """
-    'RBRTE' -> {"values":[{"datetime":"YYYY-MM-DD","close":85.1}, ...]} (orden desc).
+    'RBRTE' o 'BRENT' -> {"values":[{"datetime":"YYYY-MM-DD","close":85.1}, ...]} (orden desc).
     """
     skey = _norm_series_id(symbol)
     pairs = _eia_get_last_n(skey, outputsize) if skey else []
     values = [{"datetime": d, "close": v} for (d, v) in pairs]
+    if not values:
+        current_app.logger.warning("Empty timeseries for input=%s mapped_series=%s", symbol, skey)
     return {"values": values}
 
 def parse_last_ts(ts_json: Dict[str, Any]):

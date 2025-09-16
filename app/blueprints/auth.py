@@ -1,5 +1,6 @@
 # app/blueprints/auth.py
 from datetime import datetime
+import os
 from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy.exc import IntegrityError
@@ -10,6 +11,25 @@ from ..auth_tokens import gen_reset_token, verify_reset_token, gen_email_token, 
 from ..utils_mail import send_email
 
 bp = Blueprint("auth", __name__)
+
+# --- Helpers de correo (anti-placeholder) ---
+_BAD_DOMAINS = {"example.com", "ejemplo.com", "example.org", "test.com"}
+
+def _resolve_contact_to() -> str:
+    """
+    Devuelve el destinatario para pruebas/avisos.
+    Prioriza env CONTACT_TO, luego config CONTACT_TO, y finalmente un fallback seguro.
+    """
+    to = (os.getenv("CONTACT_TO") or current_app.config.get("CONTACT_TO") or "").strip()
+    return to or "info.canalenergetico@gmail.com"
+
+def _is_bad_domain(addr: str) -> bool:
+    try:
+        dom = addr.split("@", 1)[1].lower()
+        return dom in _BAD_DOMAINS
+    except Exception:
+        return True  # considera inválido si no se puede parsear
+
 
 @bp.route("/registrarse", methods=["GET", "POST"])
 def registrarse():
@@ -68,6 +88,7 @@ def registrarse():
         return redirect(url_for("auth.login"))
     return render_template("auth/registrarse.html")
 
+
 @bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -86,6 +107,7 @@ def login():
         return redirect(next_url or url_for("main.home"))
     return render_template("auth/iniciar_sesion.html")
 
+
 @bp.get("/logout")
 @login_required
 def logout():
@@ -93,9 +115,11 @@ def logout():
     flash("Sesión cerrada.", "info")
     return redirect(url_for("main.home"))
 
+
 @bp.get("/privacidad")
 def privacy():
     return render_template("privacy.html")
+
 
 @bp.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
@@ -118,6 +142,7 @@ def forgot_password():
         flash("Si el correo existe, te enviaremos instrucciones.", "info")
         return redirect(url_for("auth.login"))
     return render_template("auth/forgot_password.html")
+
 
 @bp.route("/reset-password/<token>", methods=["GET", "POST"])
 def reset_password(token):
@@ -145,6 +170,7 @@ def reset_password(token):
         return redirect(url_for("auth.login"))
     return render_template("auth/reset_password.html", token=token, email=email)
 
+
 @bp.get("/verify-email/<token>")
 def verify_email(token):
     email = verify_email_token(token)
@@ -162,6 +188,7 @@ def verify_email(token):
     db.session.commit()
     flash("¡Email verificado!", "success")
     return redirect(url_for("main.home"))
+
 
 @bp.post("/resend-verification")
 @login_required
@@ -184,11 +211,22 @@ def resend_verification():
         flash("No pudimos reenviar ahora. Intenta más tarde.", "warning")
     return redirect(url_for("main.home"))
 
+
 @bp.get("/test-mail")
 def test_mail():
+    """
+    Ruta de prueba de SMTP.
+    Antes: enviaba a tucorreo@ejemplo.com (placeholder) => rebotes.
+    Ahora: usa CONTACT_TO/env y bloquea dominios de ejemplo.
+    """
+    to_addr = _resolve_contact_to()
+    if _is_bad_domain(to_addr):
+        current_app.logger.warning("Bloqueado envío a dominio de ejemplo: %s", to_addr)
+        return "Destinatario inválido para test (dominio de ejemplo). Configura CONTACT_TO.", 400
+
     send_email(
-        to_email="tucorreo@ejemplo.com",
+        to_email=to_addr,
         subject="Prueba Blog Energético",
         html="<h1>Funciona!</h1><p>Este es un test de SMTP.</p>",
     )
-    return "Correo enviado"
+    return f"Correo de prueba enviado a {to_addr}"

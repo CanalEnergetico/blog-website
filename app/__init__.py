@@ -8,6 +8,8 @@ from .extensions import db, ckeditor, migrate
 from .context import register_context
 from .errors import init_error_handlers
 import logging, sys
+from app.extensions import csrf
+
 
 login_manager = LoginManager()
 csrf = CSRFProtect()
