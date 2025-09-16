@@ -2,6 +2,7 @@
 
 from typing import Dict, Any, List, Tuple, Optional
 import json
+import os
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -49,7 +50,11 @@ def _timeout():
 
 # ---------- Utils ----------
 def _eia_key() -> str:
-    return (current_app.config.get("EIA_API_KEY") or "").strip()
+    # lee de config o de entorno, prioridad config
+    return (
+        current_app.config.get("EIA_API_KEY")
+        or os.getenv("EIA_API_KEY", "")
+    ).strip()
 
 def _norm_series_id(sym: str) -> str:
     """
@@ -135,7 +140,6 @@ def _extract_rows(js: Optional[dict]) -> List[dict]:
 
 # ---------- Lecturas de dato único / series ----------
 def _to_float_or_none(v) -> Optional[float]:
-    # API v2 estandariza valores como *string*; castear con cuidado.  :contentReference[oaicite:2]{index=2}
     try:
         return float(v) if v is not None and str(v).strip() != "" else None
     except Exception:
@@ -187,11 +191,8 @@ def _eia_get_last_n(series_key: str, n: int) -> List[Tuple[str, float]]:
             if d and v is not None:
                 out.append((d, v))
 
-        # Si devolvieron menos que 'take', ya no hay más páginas
         if len(rows) < take:
             break
-
-        # Avanza el offset (orden desc)
         offset += len(rows)
 
     return out[:n]

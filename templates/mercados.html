@@ -76,24 +76,55 @@
   </div>
 </div>
 
-<!-- Último comentario (actualizado) -->
+<!-- Último comentario (en card) -->
 <div class="card shadow-sm mt-3">
   <div class="card-body">
-    <div class="d-flex align-items-baseline justify-content-between">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
       <h5 class="card-title mb-0">Último comentario</h5>
-      <small class="text-muted">03/09/2025</small>
+
+      <div class="d-flex align-items-center gap-2">
+        {% if markets_note_date %}
+          <span class="badge bg-secondary">Actualizado: {{ markets_note_date }}</span>
+        {% endif %}
+        {% if current_user.is_authenticated and current_user.role.name == 'admin' %}
+          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#marketsNoteModal">
+            Nuevo comentario mercados
+          </button>
+        {% endif %}
+      </div>
     </div>
-    <div class="mt-2 text-muted fst-italic">
-      <p>El precio del petróleo Brent bajó a 67,8 dólares por barril este miércoles, luego de haber alcanzado un máximo de un mes más temprano en la jornada. Esta caída se debe a nuevos indicios de que podría haber más oferta de crudo en el mercado.</p>
 
-      <p>Se reportó que la OPEP+ estaría considerando aumentar su producción de petróleo en la reunión prevista para este fin de semana, algo que sorprendió a los mercados, ya que se esperaba que mantuvieran los niveles actuales. Esta posible subida se sumaría a otros incrementos de producción realizados durante el año, con el objetivo de recuperar cuota de mercado y aumentar ingresos, a pesar de una demanda global más débil.</p>
-
-      <p>Por otro lado, las exportaciones marítimas de petróleo ruso hacia China aumentaron fuertemente, tras una reducción de compras por parte de India debido a los fuertes aranceles impuestos por Estados Unidos.</p>
-
-      <p>Además, en Estados Unidos, el panorama para la demanda de combustible se volvió más negativo tras publicarse un índice industrial (ISM PMI) más débil de lo esperado.</p>
+    <div class="mt-3">
+      <!-- Si guardas HTML en el comentario, deja |safe; si no, quítalo y el CSS hará saltos de línea -->
+      <div class="text-body" style="white-space: pre-wrap;">
+        {{ markets_note|safe }}
+      </div>
     </div>
   </div>
 </div>
+
+<!-- Modal (idéntico al tuyo) -->
+{% if current_user.is_authenticated and current_user.role.name == 'admin' %}
+  <div class="modal fade" id="marketsNoteModal" tabindex="-1" aria-labelledby="marketsNoteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form method="post" action="{{ url_for('markets.update_markets_note') }}" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="marketsNoteLabel">Editar comentario de mercados</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <textarea name="content" rows="8" class="form-control" required>{{ markets_note }}</textarea>
+          <small class="text-muted">Se reemplazará el comentario actual. Se guardará la fecha de hoy automáticamente.</small>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endif %}
 
 
 <!-- Mapa estático -->

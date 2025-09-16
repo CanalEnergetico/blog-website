@@ -133,3 +133,22 @@ class User(db.Model, UserMixin):
     @property
     def is_verified(self) -> bool:
         return self.verified_at is not None
+
+#Tabla para "Ultimo comentario mercados"
+class SiteNote(db.Model):
+    __tablename__ = "site_notes"
+    # “singleton” por clave
+    key = db.Column(db.String(64), primary_key=True)
+    content = db.Column(db.Text, nullable=False, default="")
+    updated_at = db.Column(
+        db.DateTime(timezone=True),
+        server_default=db.func.now(),
+        onupdate=db.func.now(),
+    )
+    author_id = db.Column(
+        db.Integer,
+        db.ForeignKey(f"{User.__tablename__}.id"),  # típicamente "users.id"
+        nullable=True,
+        index=True,
+    )
+    author = db.relationship("User", lazy="joined")

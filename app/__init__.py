@@ -8,12 +8,10 @@ from .extensions import db, ckeditor, migrate
 from .context import register_context
 from .errors import init_error_handlers
 import logging, sys
-from app.extensions import csrf
-
+from app.extensions import csrf  # ← usa la instancia única definida en app/extensions.py
 
 login_manager = LoginManager()
-csrf = CSRFProtect()
-# Cambia el login_view al blueprint de auth
+# NO crear otra instancia aquí: csrf = CSRFProtect()
 login_manager.login_view = "auth.login"
 login_manager.login_message_category = "warning"
 
@@ -41,10 +39,10 @@ def create_app():
 
     # Extensiones
     db.init_app(app)
-    migrate.init_app(app, db)     # Alembic/Flask-Migrate después de db
+    migrate.init_app(app, db)      # Alembic/Flask-Migrate después de db
     ckeditor.init_app(app)
     login_manager.init_app(app)
-    csrf.init_app(app)            # OJO: no reinstanciar csrf aquí
+    csrf.init_app(app)             # ← inicializa la instancia única importada
 
     # CSRF en plantillas ({{ csrf_token() }})
     app.jinja_env.globals['csrf_token'] = generate_csrf
@@ -56,7 +54,7 @@ def create_app():
     register_context(app)
     init_error_handlers(app)
 
-    # Blueprints (importa y registra todos)
+    # Blueprints
     from .blueprints import main_bp, blog_bp, comments_bp, auth_bp, markets_bp, meta_bp
     app.register_blueprint(main_bp)
     app.register_blueprint(blog_bp)

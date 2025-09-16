@@ -1,89 +1,88 @@
 # app/blueprints/markets.py
-from flask import Blueprint, render_template, jsonify, current_app, request
-from datetime import datetime
-from ..extensions import db
-from ..models import MercadoUltimo, MercadoDaily
-from ..utils import pct_change_n, rolling_insert_30  # si están en utils
-from ..markets import td_price_batch, td_timeseries_daily
+
+from datetime import datetime, timezone
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, jsonify
+from flask_login import current_user, login_required
+from app.extensions import db
+from app.models import SiteNote, Role  # SiteNote(key, content, updated_at, author_id) y Role.admin
+from app.markets import td_price_batch, td_timeseries_daily  # ← usa tus funciones EIA
 
 bp = Blueprint("markets", __name__)
 
+# Contenido inicial si la nota aún no existe (para que no salga vacío)
+_INITIAL_CONTENT = (
+    "Sin comentario aún. (Usa el botón “Nuevo comentario mercados” para publicar el primero.)"
+)
+
+def _ensure_singleton_note():
+    """
+    Garantiza que exista la fila única key='markets'.
+    Si no existe, la crea con contenido inicial y fecha actual.
+    Devuelve la instancia de SiteNote.
+    """
+    note = SiteNote.query.get("markets")
+    if note is None:
+        note = SiteNote(
+            key="markets",
+            content=_INITIAL_CONTENT,
+            updated_at=datetime.now(timezone.utc),
+            author_id=(current_user.id if getattr(current_user, "is_authenticated", False) else None),
+        )
+        db.session.add(note)
+        db.session.commit()
+    return note
+
 @bp.get("/mercados")
 def mercados_home():
-    return render_template("mercados.html")
+    note = _ensure_singleton_note()
+    date_str = note.updated_at.strftime("%d/%m/%Y") if note.updated_at else None
+    return render_template(
+        "mercados.html",
+        markets_note=note.content or "",
+        markets_note_date=date_str,
+    )
 
-@bp.get("/mercados/dashboard.json")
+# ← Este endpoint es el que necesita tu plantilla: {{ url_for('markets.mercados_json') }}
+@bp.get("/mercados/dashboard.json", endpoint="mercados_json")
 def mercados_json():
-    items = []
-    unidades = {"brent": "USD/bbl", "wti": "USD/bbl"}
-    nombres = {"brent": "Brent", "wti": "WTI"}
-    for symbol in ("brent", "wti"):
-        last = MercadoUltimo.query.filter_by(symbol=symbol).first()
-        hist = (MercadoDaily.query
-                .filter_by(symbol=symbol)
-                .order_by(MercadoDaily.date.asc())
-                .all())
-        series = [h.close for h in hist]
-        dates = [h.date.isoformat() if hasattr(h.date, "isoformat") else str(h.date) for h in hist]
-        last_date = dates[-1] if dates else None
-        items.append({
-            "id": symbol, "name": nombres[symbol], "unit": unidades[symbol],
-            "value": last.value if last else None, "asof": last.asof if last else None,
-            "stale": bool(last.stale) if last else True,
-            "chg_10d_pct": pct_change_n(series, 10),
-            "chg_30d_pct": pct_change_n(series, 30),
-            "spark": series[-30:], "spark_dates": dates[-30:], "last_date": last_date,
-        })
-    return jsonify({"updated_at": datetime.utcnow().isoformat()+"Z", "markets": items})
+    """
+    Devuelve precios y series para el dashboard de mercados.
+    Usa 's' en querystring para elegir símbolos (por defecto RBRTE,RWTC).
+    """
+    syms_csv = request.args.get("s", "RBRTE,RWTC")
+    # precios actuales (mantiene claves de entrada)
+    prices = td_price_batch(syms_csv)
 
-@bp.post("/tasks/refresh-mercados")
-def refresh_mercados():
-    token = request.headers.get("X-Refresh-Token", "")
-    if token != current_app.config.get("CANAL_KEY", ""):
-        return {"error": "unauthorized"}, 401
+    # series recientes (por defecto 30 puntos)
+    series = {}
+    for raw in [s.strip() for s in syms_csv.split(",") if s.strip()]:
+        series[raw] = td_timeseries_daily(raw, outputsize=30)
 
-    symmap   = current_app.config.get("TWELVEDATA_SYMBOLS", {})
-    brent_sym = symmap.get("brent")
-    wti_sym   = symmap.get("wti")
-    symbols_csv = ",".join([brent_sym, wti_sym])
-    now_iso = datetime.utcnow().isoformat() + "Z"
+    return jsonify({"prices": prices, "series": series})
 
-    try:
-        prices = td_price_batch(symbols_csv)
-    except Exception as e:
-        current_app.logger.exception("Error td_price_batch: %s", e)
-        prices = {}
+# IMPORTANTÍSIMO: endpoint="update_markets_note" para que coincida con url_for('markets.update_markets_note')
+@bp.route("/admin/markets-note", methods=["POST"], endpoint="update_markets_note")
+@login_required
+def update_markets_note():
+    # Solo administradores
+    if current_user.role != Role.admin:
+        abort(403)
 
-    for real_sym, logical in [(brent_sym, "brent"), (wti_sym, "wti")]:
-        obj = prices.get(real_sym) or {}
-        val = None
-        try:
-            if obj.get("price") is not None:
-                val = float(obj.get("price"))
-        except Exception:
-            pass
+    content = (request.form.get("content") or "").strip()
+    if not content:
+        flash("Escribe el comentario antes de guardar.", "warning")
+        return redirect(url_for("markets.mercados_home"))
 
-        row = (MercadoUltimo.query.filter_by(symbol=logical).first()
-               or MercadoUltimo(symbol=logical, unit="USD/bbl", value=0.0, asof=now_iso, stale=True))
-        if val is not None:
-            row.value, row.asof, row.stale = val, now_iso, False
-        else:
-            row.stale = True
-            if not row.asof:
-                row.asof = now_iso
-        db.session.add(row)
+    note = SiteNote.query.get("markets")
+    if note is None:
+        note = SiteNote(key="markets")
+        db.session.add(note)
 
-    for logical, real_sym in [("brent", brent_sym), ("wti", wti_sym)]:
-        try:
-            ts = td_timeseries_daily(real_sym, outputsize=31)
-            values = ts.get("values") or []
-            for v in reversed(values[:30]):
-                d = v.get("datetime", "")[:10]
-                c = v.get("close")
-                if d and (c is not None):
-                    rolling_insert_30(db.session, logical, d, float(c), MercadoDaily)
-        except Exception as e:
-            current_app.logger.exception("Error time_series %s: %s", real_sym, e)
+    note.content = content
+    note.author_id = current_user.id
+    # onupdate debería manejarlo; por si acaso, seteamos explícitamente:
+    note.updated_at = datetime.now(timezone.utc)
 
     db.session.commit()
-    return {"ok": True}
+    flash("Comentario de mercados actualizado.", "success")
+    return redirect(url_for("markets.mercados_home"))
