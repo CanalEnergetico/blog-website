@@ -1,6 +1,6 @@
 # app/blueprints/markets.py
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, jsonify
 from flask_login import current_user, login_required
 from app.extensions import db
@@ -42,23 +42,120 @@ def mercados_home():
         markets_note_date=date_str,
     )
 
+def _pct_change(last, base):
+    try:
+        if last is None or base is None or float(base) == 0:
+            return None
+        return (float(last) - float(base)) / float(base) * 100.0
+    except Exception:
+        return None
+
+def _extract_vals(ts_json):
+    """Devuelve (dates_desc, closes_desc) tal como vienen del helper (orden descendente)."""
+    vals = (ts_json or {}).get("values") or []
+    dates = [str(v.get("datetime", ""))[:10] for v in vals if v.get("datetime")]
+    closes = [v.get("close") for v in vals]
+    return dates, closes
+
 # ← Este endpoint es el que necesita tu plantilla: {{ url_for('markets.mercados_json') }}
 @bp.get("/mercados/dashboard.json", endpoint="mercados_json")
 def mercados_json():
     """
-    Devuelve precios y series para el dashboard de mercados.
-    Usa 's' en querystring para elegir símbolos (por defecto RBRTE,RWTC).
+    Devuelve la estructura que espera el front:
+    {
+      "markets": [
+        {
+          "id": "brent" | "wti",
+          "value": 67.8,
+          "unit": "USD/bbl",
+          "chg_10d_pct": -1.23,
+          "chg_30d_pct": 2.34,
+          "stale": false,
+          "last_date": "YYYY-MM-DD",
+          "spark_dates": ["YYYY-MM-DD", ...] (asc),
+          "spark": [..precios..] (asc)
+        },
+        ...
+      ]
+    }
     """
+    # Permitimos pasar alias por query; por defecto mostramos Brent/WTI
     syms_csv = request.args.get("s", "RBRTE,RWTC")
-    # precios actuales (mantiene claves de entrada)
+
+    # 1) Precios puntuales (strings en el helper) y series (30 puntos recientes)
     prices = td_price_batch(syms_csv)
-
-    # series recientes (por defecto 30 puntos)
-    series = {}
+    series_map = {}
     for raw in [s.strip() for s in syms_csv.split(",") if s.strip()]:
-        series[raw] = td_timeseries_daily(raw, outputsize=30)
+        series_map[raw] = td_timeseries_daily(raw, outputsize=32)
 
-    return jsonify({"prices": prices, "series": series})
+    # 2) Función para construir cada tarjeta (brent/wti)
+    def _mk_market(id_key: str, price_key: str):
+        # Precio puntual -> float
+        p_obj = (prices.get(price_key) or {})
+        p_val = p_obj.get("price")
+        try:
+            value = float(p_val) if p_val is not None else None
+        except Exception:
+            value = None
+
+        # Serie descendente (más reciente primero)
+        ts = series_map.get(price_key) or {}
+        dates_desc, closes_desc = _extract_vals(ts)
+
+        # Para spark, el front quiere ASCENDENTE
+        spark_dates = list(reversed(dates_desc))
+        spark = [float(x) if x is not None else None for x in reversed(closes_desc)]
+
+        # Último dato (si hay)
+        last_date = dates_desc[0] if dates_desc else None
+        last_close = float(closes_desc[0]) if closes_desc and closes_desc[0] is not None else None
+
+        # Cambios % a ~10 y ~30 observaciones atrás (si existen)
+        base10 = float(closes_desc[10]) if len(closes_desc) > 10 and closes_desc[10] is not None else None
+        base30 = float(closes_desc[30]) if len(closes_desc) > 30 and closes_desc[30] is not None else None
+        chg10 = _pct_change(last_close, base10)
+        chg30 = _pct_change(last_close, base30)
+
+        # Staleness: si el último dato es de hace >10 días
+        stale = False
+        if last_date:
+            try:
+                y, m, d = [int(x) for x in last_date.split("-")]
+                delta_days = (date.today() - date(y, m, d)).days
+                stale = delta_days > 10
+            except Exception:
+                stale = False
+
+        return {
+            "id": id_key,
+            "value": value,
+            "unit": "USD/bbl",
+            "chg_10d_pct": chg10,
+            "chg_30d_pct": chg30,
+            "stale": stale,
+            "last_date": last_date,
+            "spark_dates": spark_dates,
+            "spark": spark,
+        }
+
+    # 3) Mapear claves de entrada a tarjetas esperadas por el front
+    def _find_key(*candidates):
+        for c in candidates:
+            if c in prices:
+                return c
+        # si nada coincide, devuelve el primero (el front manejará None)
+        return candidates[0]
+
+    key_brent = _find_key("BRENT", "RBRTE")
+    key_wti   = _find_key("WTI", "RWTC")
+
+    payload = {
+        "markets": [
+            _mk_market("brent", key_brent),
+            _mk_market("wti", key_wti),
+        ]
+    }
+    return jsonify(payload)
 
 # IMPORTANTÍSIMO: endpoint="update_markets_note" para que coincida con url_for('markets.update_markets_note')
 @bp.route("/admin/markets-note", methods=["POST"], endpoint="update_markets_note")
