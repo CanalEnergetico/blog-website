@@ -62,24 +62,25 @@
 
 <div class="filters-wrap mb-3">
   <div class="filters-card">
-    <div class="filters-row">
+    <div class="filters-row align-items-center">
       <select id="fTema" class="form-select" aria-label="Filtrar por tema">
         <option value="">Tema</option>
       </select>
+
       <select id="fInstitucion" class="form-select" aria-label="Filtrar por institución">
         <option value="">Institución</option>
       </select>
+
       <select id="fTipo" class="form-select" aria-label="Filtrar por tipo de documento">
         <option value="">Tipo</option>
       </select>
-    </div>
-    <div class="filters-actions mt-2">
-      <div class="ms-auto d-flex gap-2">
-        <button class="btn btn-outline-secondary" id="btnResetFilters">Restablecer filtros</button>
-      </div>
+
+      <button class="btn btn-outline-secondary btn-reset" id="btnResetFilters">Restablecer filtros</button>
     </div>
   </div>
 </div>
+
+
 
 <!-- Resultados -->
 <div id="resultsWrap">
