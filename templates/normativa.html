@@ -8,14 +8,13 @@
     <p class="text-muted mb-0">Busca y filtra leyes, decretos, resoluciones y manuales de forma simple.</p>
   </div>
   {% if current_user.is_authenticated and current_user.role.name == 'admin' %}
-    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevaNorma">Nueva normativa</button>
+    <button id="btnOpenCreate" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalNorma">Nueva normativa</button>
   {% endif %}
 </div>
 {% endblock %}
 
 {% block content %}
 <style>
-  /* Layout */
   .filters-wrap{position:sticky;top:.5rem;z-index:2}
   .filters-card{border:1px solid #e5e5e5;border-radius:.75rem;padding:.75rem;background:#fff}
   .filters-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}
@@ -24,7 +23,6 @@
   @media (max-width:992px){.filters-row{grid-template-columns:repeat(2,1fr)}}
   @media (max-width:576px){.filters-row{grid-template-columns:1fr}}
 
-  /* Cards */
   .grid{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}
   .card-norma{border:1px solid #e9ecef;border-radius:.75rem;background:#fff;height:100%;display:flex}
   .card-norma .card-body{display:flex;flex-direction:column}
@@ -32,20 +30,24 @@
   .badges{display:flex;gap:.5rem;flex-wrap:wrap;margin:.25rem 0 .5rem}
   .desc{margin:.5rem 0 .75rem}
 
-  /* States / pager */
   .state{text-align:center;padding:2rem 1rem;color:#6c757d}
   .spinner-inline{width:1.25rem;height:1.25rem;border:.2rem solid #dee2e6;border-top-color:#343a40;border-radius:50%;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle}
   @keyframes spin{to{transform:rotate(360deg)}}
   .pager{display:flex;gap:.5rem;justify-content:center;align-items:center;margin-top:1rem}
   .pager .btn{min-width:42px}
 
-  /* Search */
   .search-wrap{display:flex;gap:.5rem;flex-wrap:wrap;position:relative}
   .search-wrap .form-control{flex:1;min-width:260px;height:44px;border:2px solid var(--bs-primary);font-weight:600;box-shadow:0 0 0 .1rem rgba(13,110,253,.15);padding-left:2.25rem}
   .search-wrap .form-control:focus{border-color:var(--bs-primary);box-shadow:0 0 0 .25rem rgba(13,110,253,.25)}
   .search-wrap::before{content:"🔎";position:absolute;left:.5rem;top:50%;transform:translateY(-50%);opacity:.75;font-size:1.1rem;pointer-events:none}
   #btnSearch.btn-primary{font-weight:600}
 </style>
+
+<!-- Mensaje comunidad -->
+<div class="alert alert-primary d-flex align-items-center gap-2 mt-2" role="alert">
+  <span>🤝</span>
+  <div><strong>Ayúdanos a crecer como comunidad.</strong> Si conoces una norma que no está aquí, envíala y así fortalecemos la base de datos pública de normativa energética en Panamá.</div>
+</div>
 
 <!-- Search + Filters -->
 <div class="mb-3">
@@ -104,12 +106,6 @@
   </div>
 </div>
 
-    <!-- Mensaje comunidad -->
-<div class="alert alert-primary d-flex align-items-center gap-2 mt-2" role="alert">
-  <span>🤝</span>
-  <div><strong>Ayúdanos a crecer como comunidad.</strong> Si conoces una norma que no está aquí, envíala y así fortalecemos la base de datos pública de normativa energética en Panamá.</div>
-</div>
-
 <!-- Sugerencias -->
 <div class="card shadow-sm mt-4">
   <div class="card-body">
@@ -132,40 +128,31 @@
 </div>
 
 {% if current_user.is_authenticated and current_user.role.name == 'admin' %}
-<!-- Modal: Nueva normativa -->
-<div class="modal fade" id="modalNuevaNorma" tabindex="-1" aria-labelledby="modalNuevaNormaLabel" aria-hidden="true">
+<!-- Modal: Crear/Editar normativa -->
+<div class="modal fade" id="modalNorma" tabindex="-1" aria-labelledby="modalNormaLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <form method="post" action="{{ url_for('normativa.admin_create') }}" class="modal-content">
-      <div class="modal-header"><h5 class="modal-title" id="modalNuevaNormaLabel">Nueva normativa</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button></div>
+    <form id="formUpsert" method="post" action="{{ url_for('normativa.admin_create') }}" class="modal-content">
+      <div class="modal-header"><h5 class="modal-title" id="modalNormaLabel">Nueva normativa</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button></div>
       <div class="modal-body">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="id" id="fId">
         <div class="row g-3">
-          <div class="col-12"><label class="form-label">Título oficial *</label><input name="titulo_oficial" class="form-control" required></div>
-          <div class="col-md-6"><label class="form-label">Fecha de publicación (YYYY-MM-DD)</label><input name="fecha_publicacion" type="date" class="form-control" placeholder="YYYY-MM-DD"></div>
-          <div class="col-md-6"><label class="form-label">Institución</label><input name="institucion" class="form-control" placeholder="ASEP, Secretaría de Energía, ..."></div>
-          <div class="col-md-6">
-            <label class="form-label">Tipo</label>
-            <select name="tipo" class="form-select">
-              <option value="">—</option><option>Ley</option><option>Decreto</option><option>Resolución</option>
-              <option>Reglamento técnico</option><option>Manual / Guía</option><option>Información adicional</option>
+          <div class="col-12"><label class="form-label">Título oficial *</label><input id="fTitulo" name="titulo_oficial" class="form-control" required></div>
+          <div class="col-md-6"><label class="form-label">Fecha de publicación (YYYY-MM-DD)</label><input id="fFecha" name="fecha_publicacion" type="date" class="form-control"></div>
+          <div class="col-md-6"><label class="form-label">Institución</label><input id="fInstitucion" name="institucion" class="form-control"></div>
+          <div class="col-md-6"><label class="form-label">Tipo</label>
+            <select id="fTipo" name="tipo" class="form-select">
+              <option value="">—</option><option>Ley</option><option>Decreto</option><option>Resolución</option><option>Reglamento técnico</option><option>Manual / Guía</option><option>Información adicional</option>
             </select>
           </div>
-          <div class="col-md-6">
-            <label class="form-label">Tema</label>
-            <select name="tema" class="form-select">
-              <option value="">—</option><option>Electricidad</option><option>Gas e hidrocarburos</option><option>Energías renovables</option>
-              <option>Movilidad eléctrica</option><option>Seguridad / Infraestructura</option><option>Mercado y tarifas</option>
-              <option>Ambiente y sostenibilidad</option><option>Institucional</option>
+          <div class="col-md-6"><label class="form-label">Tema</label>
+            <select id="fTemaEdit" name="tema" class="form-select">
+              <option value="">—</option><option>Electricidad</option><option>Gas e hidrocarburos</option><option>Energías renovables</option><option>Movilidad eléctrica</option><option>Seguridad / Infraestructura</option><option>Mercado y tarifas</option><option>Ambiente y sostenibilidad</option><option>Institucional</option>
             </select>
           </div>
-          <div class="col-12"><label class="form-label">Descripción breve (2–3 líneas)</label><textarea name="descripcion" rows="3" class="form-control"></textarea></div>
-          <div class="col-md-6"><label class="form-label">Enlace oficial (URL)</label><input name="enlace_oficial" type="text" class="form-control" placeholder="https://... (puedes poner google.com)"></div>
-          <div class="col-md-6"><label class="form-label">PDF (URL)</label><input name="pdf_url" type="text" class="form-control" placeholder="https://...pdf (opcional)"></div>
-          <div class="col-12">
-            <label class="form-label">Slug (opcional)</label>
-            <input name="slug_url" class="form-control" placeholder="de-xx-2024 (si lo dejas vacío se genera automáticamente)">
-            <div class="form-text">Se usará como parte de la URL de detalle. Debe ser único.</div>
-          </div>
+          <div class="col-12"><label class="form-label">Descripción</label><textarea id="fDescripcion" name="descripcion" rows="3" class="form-control"></textarea></div>
+          <div class="col-md-6"><label class="form-label">Enlace oficial (URL)</label><input id="fEnlace" name="enlace_oficial" type="text" class="form-control"></div>
+          <div class="col-md-6"><label class="form-label">PDF (URL)</label><input id="fPdf" name="pdf_url" type="text" class="form-control"></div>
+          <div class="col-12"><label class="form-label">Slug (opcional)</label><input id="fSlug" name="slug_url" class="form-control"><div class="form-text">Debe ser único.</div></div>
         </div>
       </div>
       <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary">Guardar</button></div>
@@ -179,9 +166,14 @@
   {{ super() }}
 
   {% if current_user.is_authenticated and current_user.role.name == 'admin' %}
-  <script>const IS_ADMIN=true,CSRF_TOKEN="{{ csrf_token() }}",ADMIN_DELETE_URL="{{ url_for('normativa.admin_delete') }}";</script>
+  <script>
+    const IS_ADMIN=true,CSRF_TOKEN="{{ csrf_token() }}",
+          ADMIN_DELETE_URL="{{ url_for('normativa.admin_delete') }}",
+          ADMIN_CREATE_URL="{{ url_for('normativa.admin_create') }}",
+          ADMIN_EDIT_URL="{{ url_for('normativa.admin_edit') }}";
+  </script>
   {% else %}
-  <script>const IS_ADMIN=false,CSRF_TOKEN="",ADMIN_DELETE_URL="";</script>
+  <script>const IS_ADMIN=false,CSRF_TOKEN="",ADMIN_DELETE_URL="",ADMIN_CREATE_URL="",ADMIN_EDIT_URL="";</script>
   {% endif %}
 
   <script>
@@ -191,42 +183,52 @@
           stateError=$('#stateError'), pager=$('#pager'), pageInfo=$('#pageInfo'),
           btnPrev=$('#btnPrev'), btnNext=$('#btnNext');
     const qs=new URLSearchParams(location.search);
-    const state={ q:qs.get('q')||'', tema:qs.get('tema')||'', anio:qs.get('anio')||'', institucion:qs.get('institucion')||'',
-                  tipo:qs.get('tipo')||'', orden:qs.get('orden')||'recientes', page:parseInt(qs.get('page')||'1',10) };
+    const state={ q:qs.get('q')||'', tema:qs.get('tema')||'', anio:qs.get('anio')||'', institucion:qs.get('institucion')||'', tipo:qs.get('tipo')||'', orden:qs.get('orden')||'recientes', page:parseInt(qs.get('page')||'1',10) };
     const syncUI=()=>{ $('#q').value=state.q; $('#fTema').value=state.tema; $('#fAnio').value=state.anio; $('#fInstitucion').value=state.institucion; $('#fTipo').value=state.tipo; $('#fOrden').value=state.orden; };
     syncUI();
-
-    // Render
     const escapeHtml=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     const fmtDate=iso=>{ try{ const d=new Date(iso+(iso.length===10?'T00:00:00Z':'')); return d.toLocaleDateString('es-PA',{year:'numeric',month:'short',day:'2-digit'});}catch{return iso;} };
+
+    // Cards (título → PDF, si no fuente oficial)
     function cardHTML(it){
       const tipo=it.tipo?`<span class="badge text-bg-light">${escapeHtml(it.tipo)}</span>`:'';
       const year=it.anio?`<span class="badge text-bg-light">${it.anio}</span>`:'';
       const inst=it.institucion?escapeHtml(it.institucion):'';
       const date=it.fecha_publicacion?fmtDate(it.fecha_publicacion):'';
       const desc=it.descripcion?escapeHtml(it.descripcion):'';
-      const href=it.slug_url||'#';
+      const bestLink=it.pdf_url||it.enlace_oficial||'#';
       const aOf=it.enlace_oficial?`<a href="${it.enlace_oficial}" target="_blank" rel="noopener">Fuente oficial</a>`:'';
       const aPdf=it.pdf_url?`<a href="${it.pdf_url}" target="_blank" rel="noopener">PDF</a>`:'';
+
+      const adminEdit=IS_ADMIN?`
+        <button type="button" class="btn btn-sm btn-outline-primary btn-edit"
+          data-bs-toggle="modal" data-bs-target="#modalNorma"
+          data-id="${it.id}" data-titulo="${escapeHtml(it.titulo_oficial||'')}" data-fecha="${it.fecha_publicacion||''}"
+          data-institucion="${escapeHtml(it.institucion||'')}" data-tipo="${escapeHtml(it.tipo||'')}"
+          data-tema="${escapeHtml(it.tema||'')}" data-descripcion="${escapeHtml(it.descripcion||'')}"
+          data-enlace="${escapeHtml(it.enlace_oficial||'')}" data-pdf="${escapeHtml(it.pdf_url||'')}"
+          data-slug="${escapeHtml(it.slug_url||'')}">Editar</button>`:'';
+
       const adminDelete=IS_ADMIN?`
-        <form method="post" action="${ADMIN_DELETE_URL}" class="ms-auto" onsubmit="return confirm('¿Eliminar esta normativa? Esta acción no se puede deshacer.');">
+        <form method="post" action="${ADMIN_DELETE_URL}" class="ms-auto" onsubmit="return confirm('¿Eliminar esta normativa?');">
           <input type="hidden" name="csrf_token" value="${CSRF_TOKEN}"><input type="hidden" name="id" value="${it.id}">
           <button class="btn btn-sm btn-outline-danger">Eliminar</button>
         </form>`:'';
+
       return `<li class="card-norma"><div class="card-body">
-        <h5 class="card-title mb-1"><a href="${href}">${escapeHtml(it.titulo_oficial||'Sin título')}</a></h5>
+        <h5 class="card-title mb-1"><a href="${bestLink}" target="_blank" rel="noopener">${escapeHtml(it.titulo_oficial||'Sin título')}</a></h5>
         <div class="badges">${tipo}${year}</div>
         <p class="meta">${inst}${inst&&date?' · ':''}${date}</p>
         <p class="desc">${desc}</p>
-        <div class="mt-auto d-flex gap-2 flex-wrap align-items-center">${aOf} ${aPdf} ${adminDelete}</div>
+        <div class="mt-auto d-flex gap-2 flex-wrap align-items-center">${aOf} ${aPdf} ${adminEdit} ${adminDelete}</div>
       </div></li>`;
     }
+
     function renderList(items,page,total){ grid.innerHTML=items.map(cardHTML).join(''); stateEmpty.hidden=items.length!==0; pager.hidden=total<=1;
       pageInfo.textContent=`Página ${page} de ${total}`; btnPrev.disabled=page<=1; btnNext.disabled=page>=total; }
     function setLoading(on){ stateLoading.hidden=!on; stateError.hidden=true; if(on){ grid.innerHTML=''; pager.hidden=true; stateEmpty.hidden=true; } }
-    function pushUrl(){ const p=new URLSearchParams(); for(const [k,v] of Object.entries(state)){ if(v && !(k==='page'&&v===1)) p.set(k,v); } const u=p.toString()?`?${p}`:location.pathname; history.replaceState(null,'',u); }
+    function pushUrl(){ const p=new URLSearchParams(); for(const [k,v] of Object.entries(state)){ if(v && !(k==='page'&&v===1)) p.set(k,v); } history.replaceState(null,'', p.toString()?`?${p}`:location.pathname); }
 
-    // Data
     async function fetchList(){
       setLoading(true);
       try{
@@ -235,10 +237,9 @@
         Object.entries(q).forEach(([k,v])=>{ if(v) url.searchParams.set(k,v); });
         const res=await fetch(url,{cache:'no-store'}); if(!res.ok) throw new Error('HTTP '+res.status);
         const data=await res.json(); renderList(data.items||[], data.page||1, data.total_pages||1); setLoading(false);
-      }catch(e){ console.error(e); stateLoading.hidden=true; stateError.hidden=false; }
+      }catch{ stateLoading.hidden=true; stateError.hidden=false; }
     }
 
-    // Events
     const debounced=(fn,ms=300)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
     $('#btnSearch').addEventListener('click',()=>{ state.q=$('#q').value.trim(); state.page=1; pushUrl(); fetchList(); });
     $('#q').addEventListener('keydown',ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); $('#btnSearch').click(); } });
@@ -254,9 +255,28 @@
     const suggestForm=$('#formSuggest'), suggestMsg=$('#suggestMsg');
     suggestForm?.addEventListener('submit',async e=>{
       e.preventDefault(); suggestMsg.textContent='Enviando…';
-      try{ const res=await fetch(suggestForm.action,{method:'POST',body:new FormData(suggestForm)}); if(!res.ok) throw new Error('HTTP '+res.status);
+      try{ const res=await fetch(suggestForm.action,{method:'POST',body:new FormData(suggestForm)}); if(!res.ok) throw new Error();
            suggestForm.reset(); suggestMsg.textContent='¡Gracias! Revisaremos tu aporte.'; setTimeout(()=>suggestMsg.textContent='',4000);
       }catch{ suggestMsg.textContent='No se pudo enviar. Inténtalo nuevamente.'; }
+    });
+
+    // Crear/Editar (admin)
+    const formUpsert=$('#formUpsert'), modalLabel=$('#modalNormaLabel');
+    const f={ id:$('#fId'), titulo:$('#fTitulo'), fecha:$('#fFecha'), institucion:$('#fInstitucion'),
+              tipo:$('#fTipo'), tema:$('#fTemaEdit'), descripcion:$('#fDescripcion'),
+              enlace:$('#fEnlace'), pdf:$('#fPdf'), slug:$('#fSlug') };
+
+    document.getElementById('btnOpenCreate')?.addEventListener('click',()=>{
+      modalLabel.textContent='Nueva normativa'; formUpsert.action=ADMIN_CREATE_URL;
+      Object.values(f).forEach(i=>i.value='');
+    });
+
+    grid.addEventListener('click',e=>{
+      const b=e.target.closest('.btn-edit'); if(!b) return;
+      modalLabel.textContent='Editar normativa'; formUpsert.action=ADMIN_EDIT_URL;
+      f.id.value=b.dataset.id||''; f.titulo.value=b.dataset.titulo||''; f.fecha.value=b.dataset.fecha||'';
+      f.institucion.value=b.dataset.institucion||''; f.tipo.value=b.dataset.tipo||''; f.tema.value=b.dataset.tema||'';
+      f.descripcion.value=b.dataset.descripcion||''; f.enlace.value=b.dataset.enlace||''; f.pdf.value=b.dataset.pdf||''; f.slug.value=b.dataset.slug||'';
     });
 
     fetchList();

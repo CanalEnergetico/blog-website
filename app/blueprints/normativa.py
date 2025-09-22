@@ -1,4 +1,3 @@
-# app/blueprints/normativa.py
 from flask import Blueprint, render_template, request, jsonify, abort, current_app, redirect, url_for, flash
 import math
 from sqlalchemy import text
@@ -10,21 +9,18 @@ from app.utils_mail import send_email
 
 bp = Blueprint("normativa", __name__)
 
-# Helpers: SQL, orden, slug, URL
+# Helpers
 def _build_where_and_params(q: str, tema: str, anio: str, institucion: str, tipo: str):
     where, params = [], {}
     if q:
         where.append("to_tsvector('spanish', coalesce(titulo_oficial,'') || ' ' || coalesce(descripcion,'')) @@ plainto_tsquery('spanish', :q)")
         params["q"] = q
-    if tema:
-        where.append("tema = :tema"); params["tema"] = tema
+    if tema: where.append("tema = :tema"); params["tema"] = tema
     if anio:
         try: params["anio"] = int(anio); where.append("anio = :anio")
         except: pass
-    if institucion:
-        where.append("institucion = :institucion"); params["institucion"] = institucion
-    if tipo:
-        where.append("tipo = :tipo"); params["tipo"] = tipo
+    if institucion: where.append("institucion = :institucion"); params["institucion"] = institucion
+    if tipo: where.append("tipo = :tipo"); params["tipo"] = tipo
     return ("WHERE " + " AND ".join(where)) if where else "", params
 
 def _order_clause(orden: str) -> str:
@@ -40,6 +36,14 @@ def _unique_slug(base: str) -> str:
     slug, i = base, 2
     while True:
         if not db.session.execute(text("select 1 from normativa where slug_url = :s limit 1"), {"s": slug}).first():
+            return slug
+        slug = f"{base}-{i}"; i += 1
+
+def _unique_slug_excluding(base: str, exclude_id: int) -> str:
+    slug, i = base, 2
+    while True:
+        row = db.session.execute(text("select id from normativa where slug_url = :s limit 1"), {"s": slug}).first()
+        if not row or (row.id == exclude_id):
             return slug
         slug = f"{base}-{i}"; i += 1
 
@@ -148,6 +152,56 @@ def admin_create():
     except Exception:
         db.session.rollback(); current_app.logger.exception("Error creando normativa")
         flash("No se pudo crear la normativa. Revisa los datos.", "danger")
+    return redirect(url_for("normativa.list"))
+
+@bp.post("/normativa/admin/edit", endpoint="admin_edit")
+@login_required
+def admin_edit():
+    if current_user.role != Role.admin: abort(403)
+    try: nid = int((request.form.get("id") or "").strip())
+    except: flash("ID inválido.", "warning"); return redirect(url_for("normativa.list"))
+
+    row = db.session.execute(text("SELECT id FROM normativa WHERE id = :id"), {"id": nid}).first()
+    if not row: flash("No se encontró la normativa.", "warning"); return redirect(url_for("normativa.list"))
+
+    titulo = (request.form.get("titulo_oficial") or "").strip()
+    if not titulo: flash("El título oficial es obligatorio.", "warning"); return redirect(url_for("normativa.list"))
+
+    fecha_raw = (request.form.get("fecha_publicacion") or "").strip()
+    try: fecha_dt = datetime.strptime(fecha_raw, "%Y-%m-%d").date() if fecha_raw else None
+    except ValueError:
+        flash("La fecha de publicación debe tener formato YYYY-MM-DD.", "warning"); return redirect(url_for("normativa.list"))
+
+    slug_candidate = (request.form.get("slug_url") or "").strip()
+    base_slug = _slugify(slug_candidate or titulo)
+    slug = _unique_slug_excluding(base_slug, exclude_id=nid)
+
+    params = {
+        "id": nid,
+        "slug_url": slug,
+        "titulo_oficial": titulo,
+        "fecha_publicacion": fecha_dt,
+        "institucion": (request.form.get("institucion") or "").strip() or None,
+        "tipo": (request.form.get("tipo") or "").strip() or None,
+        "tema": (request.form.get("tema") or "").strip() or None,
+        "descripcion": (request.form.get("descripcion") or "").strip() or None,
+        "enlace_oficial": _normalize_url(request.form.get("enlace_oficial")),
+        "pdf_url": _normalize_url(request.form.get("pdf_url")),
+    }
+    sql = text("""
+        UPDATE normativa SET
+          slug_url=:slug_url, titulo_oficial=:titulo_oficial, fecha_publicacion=:fecha_publicacion,
+          institucion=:institucion, tipo=:tipo, tema=:tema, descripcion=:descripcion,
+          enlace_oficial=:enlace_oficial, pdf_url=:pdf_url, updated_at=now()
+        WHERE id=:id RETURNING id
+    """)
+    try:
+        res = db.session.execute(sql, params).first()
+        if res: db.session.commit(); flash("Normativa actualizada.", "success")
+        else: db.session.rollback(); flash("No se pudo actualizar.", "danger")
+    except Exception:
+        db.session.rollback(); current_app.logger.exception("Error editando normativa")
+        flash("No se pudo actualizar la normativa.", "danger")
     return redirect(url_for("normativa.list"))
 
 @bp.post("/normativa/admin/delete", endpoint="admin_delete")
