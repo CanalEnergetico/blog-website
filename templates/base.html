@@ -104,6 +104,11 @@
           href="{{ url_for('markets.mercados_home') }}">
            Mercados
           </a>
+            <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='normativa.list' %} fw-bold{% endif %}"
+           href="{{ url_for('normativa.list') }}">
+          Normativa
+            </a>
+
           <a class="nav-item nav-link link-body-emphasis{% if request.endpoint=='main.proximamente' %} fw-bold{% endif %}"
              href="{{ url_for('main.proximamente') }}">
             Próximamente

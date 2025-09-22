@@ -56,12 +56,15 @@ def create_app():
 
     # Blueprints
     from .blueprints import main_bp, blog_bp, comments_bp, auth_bp, markets_bp, meta_bp
+    from .blueprints.normativa import bp as normativa_bp   # ← importamos normativa
+
     app.register_blueprint(main_bp)
     app.register_blueprint(blog_bp)
     app.register_blueprint(comments_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(markets_bp)
     app.register_blueprint(meta_bp)
+    app.register_blueprint(normativa_bp)                   # ← registramos normativa
 
     @app.after_request
     def _force_utf8(resp):

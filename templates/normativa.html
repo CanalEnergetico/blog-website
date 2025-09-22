@@ -1,0 +1,492 @@
+{% extends "base.html" %}
+{% block title %}Normativa – Canal Energético{% endblock %}
+
+{% block content_top %}
+<div class="bg-light p-3 rounded mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+  <div>
+    <h1 class="mb-1">Normativa</h1>
+    <p class="text-muted mb-0">Busca y filtra leyes, decretos, resoluciones y manuales de forma simple.</p>
+  </div>
+
+  {% if current_user.is_authenticated and current_user.role.name == 'admin' %}
+    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevaNorma">
+      Nueva normativa
+    </button>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+  /* Layout */
+  .filters-wrap{ position: sticky; top: .5rem; z-index: 2; }
+  .filters-card{ border: 1px solid #e5e5e5; border-radius: .75rem; padding: .75rem; background: #fff; }
+  .filters-row{ display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; }
+  .filters-row .form-select, .filters-row .form-control{ height: 40px; }
+  .filters-actions{ display:flex; gap:.5rem; flex-wrap:wrap; }
+
+  @media (max-width: 992px){
+    .filters-row{ grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 576px){
+    .filters-row{ grid-template-columns: 1fr; }
+  }
+
+  /* Cards */
+  .grid { list-style: none; padding: 0;
+          display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 1rem; }
+  .card-norma{ border:1px solid #e9ecef; border-radius: .75rem; background:#fff; height:100%; display:flex; }
+  .card-norma .card-body{ display:flex; flex-direction:column; }
+  .meta{ color:#6c757d; font-size:.9rem; }
+  .badges{ display:flex; gap:.5rem; flex-wrap:wrap; margin:.25rem 0 .5rem; }
+  .desc{ margin:.5rem 0 .75rem; }
+
+  /* Empty & states */
+  .state{ text-align:center; padding:2rem 1rem; color:#6c757d; }
+  .spinner-inline{ width:1.25rem; height:1.25rem; border:.2rem solid #dee2e6; border-top-color:#343a40; border-radius:50%; animation:spin 1s linear infinite; display:inline-block; vertical-align:middle; }
+  @keyframes spin { to { transform: rotate(360deg);} }
+
+  /* Pagination */
+  .pager{ display:flex; gap:.5rem; justify-content:center; align-items:center; margin-top:1rem; }
+  .pager .btn{ min-width: 42px; }
+
+  /* Search bar (más visible) */
+  .search-wrap{ display:flex; gap:.5rem; flex-wrap:wrap; position: relative; }
+  .search-wrap .form-control{
+    flex:1; min-width: 260px; height: 44px;
+    border: 2px solid var(--bs-primary);
+    font-weight: 600;
+    box-shadow: 0 0 0 .1rem rgba(13,110,253,.15);
+    padding-left: 2.25rem; /* espacio para el icono */
+  }
+  .search-wrap .form-control:focus{
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 .25rem rgba(13,110,253,.25);
+  }
+  .search-wrap::before{
+    content:"🔎";
+    position:absolute;
+    left:.5rem; top:50%; transform:translateY(-50%);
+    opacity:.75; font-size:1.1rem; pointer-events:none;
+  }
+  #btnSearch.btn-primary{ font-weight:600; }
+</style>
+
+<!-- Search + Filters -->
+<div class="mb-3">
+  <form id="formSearch" class="search-wrap" role="search" aria-label="Buscar normativa" onsubmit="return false;">
+    <input type="search" class="form-control" id="q" name="q" placeholder="Buscar… (ej.: puesta a tierra, autogeneración, tarifas)" value="{{ request.args.get('q','') }}">
+    <button type="button" id="btnSearch" class="btn btn-primary">Buscar</button>
+    <button type="button" id="btnClear" class="btn btn-outline-secondary">Limpiar</button>
+  </form>
+</div>
+
+<div class="filters-wrap mb-3">
+  <div class="filters-card">
+    <div class="filters-row">
+      <select id="fTema" class="form-select" aria-label="Filtrar por tema">
+        <option value="">Tema</option>
+        <option>Electricidad</option>
+        <option>Gas e hidrocarburos</option>
+        <option>Energías renovables</option>
+        <option>Movilidad eléctrica</option>
+        <option>Seguridad / Infraestructura</option>
+        <option>Mercado y tarifas</option>
+        <option>Ambiente y sostenibilidad</option>
+        <option>Institucional</option>
+      </select>
+
+      <select id="fAnio" class="form-select" aria-label="Filtrar por año">
+        <option value="">Año</option>
+        {% for y in range(2025, 1990, -1) %}
+          <option value="{{ y }}">{{ y }}</option>
+        {% endfor %}
+      </select>
+
+      <select id="fInstitucion" class="form-select" aria-label="Filtrar por institución">
+        <option value="">Institución</option>
+        <option>ASEP</option>
+        <option>Secretaría de Energía</option>
+        <option>Asamblea Nacional</option>
+        <option>MiAmbiente</option>
+        <option>Gobierno Nacional</option>
+      </select>
+
+      <select id="fTipo" class="form-select" aria-label="Filtrar por tipo de documento">
+        <option value="">Tipo</option>
+        <option>Ley</option>
+        <option>Decreto</option>
+        <option>Resolución</option>
+        <option>Reglamento técnico</option>
+        <option>Manual / Guía</option>
+        <option>Información adicional</option>
+      </select>
+    </div>
+
+    <div class="filters-actions mt-2">
+      <div class="ms-auto d-flex gap-2">
+        <select id="fOrden" class="form-select" aria-label="Ordenar resultados">
+          <option value="recientes">Más recientes</option>
+          <option value="az">A–Z</option>
+        </select>
+        <button class="btn btn-outline-secondary" id="btnResetFilters">Restablecer filtros</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Results -->
+<div id="resultsWrap">
+  <div id="stateLoading" class="state" hidden>
+    <span class="spinner-inline" aria-hidden="true"></span>
+    <span class="ms-2">Cargando resultados…</span>
+  </div>
+  <div id="stateEmpty" class="state" hidden>
+    No encontramos resultados para los filtros actuales.
+    <div><button class="btn btn-sm btn-outline-secondary mt-2" id="btnClearEmpty">Limpiar filtros</button></div>
+  </div>
+  <div id="stateError" class="state text-danger" hidden>
+    Ocurrió un error al cargar los datos. Intenta nuevamente.
+  </div>
+
+  <ul id="grid" class="grid"></ul>
+
+  <div id="pager" class="pager" hidden>
+    <button class="btn btn-outline-secondary" id="btnPrev" disabled>&laquo;</button>
+    <span id="pageInfo" class="text-muted small"></span>
+    <button class="btn btn-outline-secondary" id="btnNext" disabled>&raquo;</button>
+  </div>
+</div>
+
+<!-- Sugerencias -->
+<div class="card shadow-sm mt-4">
+  <div class="card-body">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <h5 class="card-title mb-0">¿Falta alguna normativa?</h5>
+      {% if current_user.is_authenticated and current_user.role.name == 'admin' %}
+      <span class="badge bg-secondary">Vista de administrador</span>
+      {% endif %}
+    </div>
+    <p class="text-muted mb-3">Envíanos el nombre y el enlace oficial; la revisamos y la incorporamos si corresponde.</p>
+    <form id="formSuggest" method="post" action="{{ url_for('normativa.suggest') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="row g-2">
+        <div class="col-md-6">
+          <label class="form-label">Nombre de la normativa</label>
+          <input name="nombre" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Enlace oficial (URL)</label>
+          <input name="url" type="url" class="form-control" required>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Comentario (opcional)</label>
+          <textarea name="comentario" rows="3" class="form-control" placeholder="Por qué es relevante, palabras clave…"></textarea>
+        </div>
+      </div>
+      <div class="mt-3 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Enviar</button>
+        <span id="suggestMsg" class="text-muted" role="status" aria-live="polite"></span>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if current_user.is_authenticated and current_user.role.name == 'admin' %}
+<!-- Modal: Nueva normativa -->
+<div class="modal fade" id="modalNuevaNorma" tabindex="-1" aria-labelledby="modalNuevaNormaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <form method="post" action="{{ url_for('normativa.admin_create') }}" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalNuevaNormaLabel">Nueva normativa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Título oficial *</label>
+            <input name="titulo_oficial" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Fecha de publicación (YYYY-MM-DD)</label>
+            <input name="fecha_publicacion" type="date" class="form-control" placeholder="YYYY-MM-DD">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Institución</label>
+            <input name="institucion" class="form-control" placeholder="ASEP, Secretaría de Energía, ...">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Tipo</label>
+            <select name="tipo" class="form-select">
+              <option value="">—</option>
+              <option>Ley</option>
+              <option>Decreto</option>
+              <option>Resolución</option>
+              <option>Reglamento técnico</option>
+              <option>Manual / Guía</option>
+              <option>Información adicional</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Tema</label>
+            <select name="tema" class="form-select">
+              <option value="">—</option>
+              <option>Electricidad</option>
+              <option>Gas e hidrocarburos</option>
+              <option>Energías renovables</option>
+              <option>Movilidad eléctrica</option>
+              <option>Seguridad / Infraestructura</option>
+              <option>Mercado y tarifas</option>
+              <option>Ambiente y sostenibilidad</option>
+              <option>Institucional</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Descripción breve (2–3 líneas)</label>
+            <textarea name="descripcion" rows="3" class="form-control"></textarea>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Enlace oficial (URL)</label>
+            <input name="enlace_oficial" type="url" class="form-control" placeholder="https://...">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">PDF (URL)</label>
+            <input name="pdf_url" type="url" class="form-control" placeholder="https://...pdf">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Slug (opcional)</label>
+            <input name="slug_url" class="form-control" placeholder="de-xx-2024 (si lo dejas vacío se genera automáticamente)">
+            <div class="form-text">Se usará como parte de la URL de detalle. Debe ser único.</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    // ---------- Utilidades ----------
+    const $ = s => document.querySelector(s);
+    const grid = $('#grid');
+    const stateLoading = $('#stateLoading');
+    const stateEmpty = $('#stateEmpty');
+    const stateError = $('#stateError');
+    const pager = $('#pager');
+    const pageInfo = $('#pageInfo');
+    const btnPrev = $('#btnPrev');
+    const btnNext = $('#btnNext');
+
+    const qs = new URLSearchParams(window.location.search);
+    const state = {
+      q: qs.get('q') || '',
+      tema: qs.get('tema') || '',
+      anio: qs.get('anio') || '',
+      institucion: qs.get('institucion') || '',
+      tipo: qs.get('tipo') || '',
+      orden: qs.get('orden') || 'recientes',
+      page: parseInt(qs.get('page') || '1', 10)
+    };
+
+    function syncUI(){
+      $('#q').value = state.q;
+      $('#fTema').value = state.tema;
+      $('#fAnio').value = state.anio;
+      $('#fInstitucion').value = state.institucion;
+      $('#fTipo').value = state.tipo;
+      $('#fOrden').value = state.orden;
+    }
+    syncUI();
+
+    // ---------- Render ----------
+    function cardHTML(item){
+      // item: { id, slug_url, titulo_oficial, fecha_publicacion, anio, institucion, tipo, tema, descripcion, enlace_oficial, pdf_url }
+      const tipo = item.tipo ? `<span class="badge text-bg-light">${escapeHtml(item.tipo)}</span>` : '';
+      const year = item.anio ? `<span class="badge text-bg-light">${item.anio}</span>` : '';
+      const inst = item.institucion ? escapeHtml(item.institucion) : '';
+      const date = item.fecha_publicacion ? fmtDate(item.fecha_publicacion) : '';
+      const desc = item.descripcion ? escapeHtml(item.descripcion) : '';
+      const href = item.slug_url || '#';
+
+      const aOf   = item.enlace_oficial ? `<a href="${item.enlace_oficial}" target="_blank" rel="noopener">Fuente oficial</a>` : '';
+      const aPdf  = item.pdf_url ? `<a href="${item.pdf_url}" target="_blank" rel="noopener">PDF</a>` : '';
+
+      return `
+      <li class="card-norma">
+        <div class="card-body">
+          <h5 class="card-title mb-1"><a href="${href}">${escapeHtml(item.titulo_oficial || 'Sin título')}</a></h5>
+          <div class="badges">${tipo}${year}</div>
+          <p class="meta">${inst}${inst && date ? ' · ' : ''}${date}</p>
+          <p class="desc">${desc}</p>
+          <div class="mt-auto d-flex gap-2 flex-wrap">
+            ${aOf} ${aPdf}
+          </div>
+        </div>
+      </li>`;
+    }
+
+    function renderList(items, page, total_pages){
+      grid.innerHTML = items.map(cardHTML).join('');
+      stateEmpty.hidden = items.length !== 0;
+      pager.hidden = total_pages <= 1;
+      pageInfo.textContent = `Página ${page} de ${total_pages}`;
+      btnPrev.disabled = page <= 1;
+      btnNext.disabled = page >= total_pages;
+    }
+
+    function setLoading(on){
+      stateLoading.hidden = !on;
+      stateError.hidden = true;
+      if (on){ grid.innerHTML = ''; pager.hidden = true; stateEmpty.hidden = true; }
+    }
+
+    function fmtDate(iso){
+      try{
+        const d = new Date(iso + (iso.length===10?'T00:00:00Z':''));
+        return d.toLocaleDateString('es-PA', { year:'numeric', month:'short', day:'2-digit' });
+      } catch { return iso; }
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    function pushUrl(){
+      const params = new URLSearchParams();
+      if (state.q) params.set('q', state.q);
+      if (state.tema) params.set('tema', state.tema);
+      if (state.anio) params.set('anio', state.anio);
+      if (state.institucion) params.set('institucion', state.institucion);
+      if (state.tipo) params.set('tipo', state.tipo);
+      if (state.orden) params.set('orden', state.orden);
+      if (state.page && state.page !== 1) params.set('page', String(state.page));
+      const u = params.toString() ? `?${params}` : location.pathname;
+      history.replaceState(null, '', u);
+    }
+
+    // ---------- Data ----------
+    async function fetchList(){
+      setLoading(true);
+      try{
+        const url = new URL("{{ url_for('normativa.list_json') }}", window.location.origin);
+        const p = {
+          q: state.q,
+          tema: state.tema,
+          anio: state.anio,
+          institucion: state.institucion,
+          tipo: state.tipo,
+          orden: state.orden,
+          page: state.page
+        };
+        Object.entries(p).forEach(([k,v]) => { if (v) url.searchParams.set(k, v); });
+
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP '+res.status);
+        const data = await res.json();
+        renderList(data.items || [], data.page || 1, data.total_pages || 1);
+        setLoading(false);
+      }catch(e){
+        console.error(e);
+        stateLoading.hidden = true;
+        stateError.hidden = false;
+      }
+    }
+
+    // ---------- Events ----------
+    const debounced = (fn, ms=300) => {
+      let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); };
+    };
+
+    $('#btnSearch').addEventListener('click', ()=>{
+      state.q = $('#q').value.trim();
+      state.page = 1;
+      pushUrl();
+      fetchList();
+    });
+
+    // Enter en search
+    $('#q').addEventListener('keydown', (ev)=>{
+      if (ev.key === 'Enter'){
+        ev.preventDefault();
+        $('#btnSearch').click();
+      }
+    });
+
+    // Cambios de filtros
+    const onFilterChange = debounced(()=>{
+      state.tema = $('#fTema').value;
+      state.anio = $('#fAnio').value;
+      state.institucion = $('#fInstitucion').value;
+      state.tipo = $('#fTipo').value;
+      state.orden = $('#fOrden').value;
+      state.page = 1;
+      pushUrl();
+      fetchList();
+    }, 150);
+
+    ['#fTema','#fAnio','#fInstitucion','#fTipo','#fOrden']
+      .forEach(sel => document.querySelector(sel).addEventListener('change', onFilterChange));
+
+    // Limpiar búsqueda
+    $('#btnClear').addEventListener('click', ()=>{
+      state.q = '';
+      $('#q').value = '';
+      state.page = 1;
+      pushUrl();
+      fetchList();
+    });
+
+    // Restablecer filtros
+    $('#btnResetFilters').addEventListener('click', ()=>{
+      state.tema = state.anio = state.institucion = state.tipo = '';
+      state.orden = 'recientes';
+      syncUI();
+      state.page = 1;
+      pushUrl();
+      fetchList();
+    });
+
+    $('#btnClearEmpty').addEventListener('click', ()=>{
+      $('#btnResetFilters').click();
+      $('#btnClear').click();
+    });
+
+    // Paginación
+    btnPrev.addEventListener('click', ()=>{
+      if (state.page > 1){ state.page--; pushUrl(); fetchList(); }
+    });
+    btnNext.addEventListener('click', ()=>{
+      state.page++; pushUrl(); fetchList();
+    });
+
+    // Sugerencias (UX mínimo)
+    const suggestForm = document.getElementById('formSuggest');
+    const suggestMsg = document.getElementById('suggestMsg');
+    suggestForm?.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      suggestMsg.textContent = 'Enviando…';
+      const fd = new FormData(suggestForm);
+      try{
+        const res = await fetch(suggestForm.action, { method: 'POST', body: fd });
+        if (!res.ok) throw new Error('HTTP '+res.status);
+        suggestForm.reset();
+        suggestMsg.textContent = '¡Gracias! Revisaremos tu aporte.';
+        setTimeout(()=> suggestMsg.textContent = '', 4000);
+      }catch(err){
+        suggestMsg.textContent = 'No se pudo enviar. Inténtalo nuevamente.';
+      }
+    });
+
+    // Carga inicial
+    fetchList();
+  </script>
+{% endblock %}
