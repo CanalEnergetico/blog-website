@@ -9,22 +9,19 @@ from app.utils_mail import send_email
 
 bp = Blueprint("normativa", __name__)
 
-# Helperss
-def _build_where_and_params(q: str, tema: str, anio: str, institucion: str, tipo: str):
+# Helpers
+def _build_where_and_params(q: str, tema: str, institucion: str, tipo: str):
     where, params = [], {}
     if q:
         where.append("to_tsvector('spanish', coalesce(titulo_oficial,'') || ' ' || coalesce(descripcion,'')) @@ plainto_tsquery('spanish', :q)")
         params["q"] = q
-    if tema: where.append("tema = :tema"); params["tema"] = tema
-    if anio:
-        try: params["anio"] = int(anio); where.append("anio = :anio")
-        except: pass
-    if institucion: where.append("institucion = :institucion"); params["institucion"] = institucion
-    if tipo: where.append("tipo = :tipo"); params["tipo"] = tipo
+    if tema:
+        where.append("tema = :tema"); params["tema"] = tema
+    if institucion:
+        where.append("institucion = :institucion"); params["institucion"] = institucion
+    if tipo:
+        where.append("tipo = :tipo"); params["tipo"] = tipo
     return ("WHERE " + " AND ".join(where)) if where else "", params
-
-def _order_clause(orden: str) -> str:
-    return "ORDER BY titulo_oficial ASC NULLS LAST" if orden == "az" else "ORDER BY fecha_publicacion DESC NULLS LAST, titulo_oficial ASC"
 
 def _slugify(s: str) -> str:
     import re, unicodedata
@@ -52,27 +49,37 @@ def _normalize_url(u: str) -> str:
     if not u: return ""
     return u if u.startswith(("http://","https://")) else "https://" + u
 
-# Routes
+# Views
 @bp.get("/normativa")
 def list():
     return render_template("normativa.html")
+
+@bp.get("/normativa/api/facets", endpoint="facets_json")
+def facets_json():
+    try:
+        temas = [r[0] for r in db.session.execute(text("SELECT DISTINCT tema FROM normativa WHERE tema IS NOT NULL AND tema<>'' ORDER BY tema")).all()]
+        instituciones = [r[0] for r in db.session.execute(text("SELECT DISTINCT institucion FROM normativa WHERE institucion IS NOT NULL AND institucion<>'' ORDER BY institucion")).all()]
+        tipos = [r[0] for r in db.session.execute(text("SELECT DISTINCT tipo FROM normativa WHERE tipo IS NOT NULL AND tipo<>'' ORDER BY tipo")).all()]
+    except Exception:
+        current_app.logger.exception("Error obteniendo facets de normativa")
+        return jsonify({"temas": [], "instituciones": [], "tipos": []})
+    return jsonify({"temas": temas, "instituciones": instituciones, "tipos": tipos})
 
 @bp.get("/normativa/api/list", endpoint="list_json")
 def list_json():
     q  = (request.args.get("q") or "").strip()
     tema = (request.args.get("tema") or "").strip()
-    anio = (request.args.get("anio") or "").strip()
     inst = (request.args.get("institucion") or "").strip()
     tipo = (request.args.get("tipo") or "").strip()
-    orden = (request.args.get("orden") or "recientes").strip()
     try: page = int(request.args.get("page","1"))
     except: page = 1
 
     PER_PAGE = 12
     page = max(1, page)
-    where_sql, params = _build_where_and_params(q, tema, anio, inst, tipo)
-    order_sql = _order_clause(orden)
+    where_sql, params = _build_where_and_params(q, tema, inst, tipo)
+    order_sql = "ORDER BY fecha_publicacion DESC NULLS LAST, titulo_oficial ASC"
 
+    # Conteo
     try:
         total = int(db.session.execute(text(f"SELECT count(*)::bigint AS c FROM normativa {where_sql}"), params).first().c or 0)
     except Exception:
@@ -81,8 +88,9 @@ def list_json():
     total_pages = max(1, math.ceil(total / PER_PAGE))
     page = min(page, total_pages); offset = (page - 1) * PER_PAGE
 
+    # Listado
     sql_list = text(f"""
-        SELECT id, slug_url, titulo_oficial, fecha_publicacion, anio, institucion, tipo, tema, descripcion, enlace_oficial, pdf_url
+        SELECT id, slug_url, titulo_oficial, fecha_publicacion, anio, institucion, tipo, tema, descripcion, enlace_oficial
         FROM normativa {where_sql} {order_sql} LIMIT :limit OFFSET :offset
     """)
     try:
@@ -139,11 +147,10 @@ def admin_create():
         "tema": (request.form.get("tema") or "").strip() or None,
         "descripcion": (request.form.get("descripcion") or "").strip() or None,
         "enlace_oficial": _normalize_url(request.form.get("enlace_oficial")),
-        "pdf_url": _normalize_url(request.form.get("pdf_url")),
     }
     sql = text("""
-        INSERT INTO normativa (slug_url, titulo_oficial, fecha_publicacion, institucion, tipo, tema, descripcion, enlace_oficial, pdf_url, created_at, updated_at)
-        VALUES (:slug_url, :titulo_oficial, :fecha_publicacion, :institucion, :tipo, :tema, :descripcion, :enlace_oficial, :pdf_url, now(), now())
+        INSERT INTO normativa (slug_url, titulo_oficial, fecha_publicacion, institucion, tipo, tema, descripcion, enlace_oficial, created_at, updated_at)
+        VALUES (:slug_url, :titulo_oficial, :fecha_publicacion, :institucion, :tipo, :tema, :descripcion, :enlace_oficial, now(), now())
         RETURNING id
     """)
     try:
@@ -186,13 +193,12 @@ def admin_edit():
         "tema": (request.form.get("tema") or "").strip() or None,
         "descripcion": (request.form.get("descripcion") or "").strip() or None,
         "enlace_oficial": _normalize_url(request.form.get("enlace_oficial")),
-        "pdf_url": _normalize_url(request.form.get("pdf_url")),
     }
     sql = text("""
         UPDATE normativa SET
           slug_url=:slug_url, titulo_oficial=:titulo_oficial, fecha_publicacion=:fecha_publicacion,
           institucion=:institucion, tipo=:tipo, tema=:tema, descripcion=:descripcion,
-          enlace_oficial=:enlace_oficial, pdf_url=:pdf_url, updated_at=now()
+          enlace_oficial=:enlace_oficial, updated_at=now()
         WHERE id=:id RETURNING id
     """)
     try:

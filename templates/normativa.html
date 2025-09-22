@@ -17,7 +17,7 @@
 <style>
   .filters-wrap{position:sticky;top:.5rem;z-index:2}
   .filters-card{border:1px solid #e5e5e5;border-radius:.75rem;padding:.75rem;background:#fff}
-  .filters-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}
+  .filters-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
   .filters-row .form-select,.filters-row .form-control{height:40px}
   .filters-actions{display:flex;gap:.5rem;flex-wrap:wrap}
   @media (max-width:992px){.filters-row{grid-template-columns:repeat(2,1fr)}}
@@ -25,8 +25,7 @@
 
   .grid{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}
   .card-norma{border:1px solid #e9ecef;border-radius:.75rem;background:#fff;height:100%;display:flex}
-  .card-norma .card-body{display:flex;flex-direction:column}
-  .meta{color:#6c757d;font-size:.9rem}
+  .card-norma .card-body{display:flex;flex-direction:column;padding:1.25rem}
   .badges{display:flex;gap:.5rem;flex-wrap:wrap;margin:.25rem 0 .5rem}
   .desc{margin:.5rem 0 .75rem}
 
@@ -41,6 +40,9 @@
   .search-wrap .form-control:focus{border-color:var(--bs-primary);box-shadow:0 0 0 .25rem rgba(13,110,253,.25)}
   .search-wrap::before{content:"🔎";position:absolute;left:.5rem;top:50%;transform:translateY(-50%);opacity:.75;font-size:1.1rem;pointer-events:none}
   #btnSearch.btn-primary{font-weight:600}
+
+  /* Toast login */
+  #toastAuth{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:1080}
 </style>
 
 <!-- Mensaje comunidad -->
@@ -49,7 +51,7 @@
   <div><strong>Ayúdanos a crecer como comunidad.</strong> Si conoces una norma que no está aquí, envíala y así fortalecemos la base de datos pública de normativa energética en Panamá.</div>
 </div>
 
-<!-- Search + Filters -->
+<!-- Search + Filtros -->
 <div class="mb-3">
   <form id="formSearch" class="search-wrap" role="search" aria-label="Buscar normativa" onsubmit="return false;">
     <input type="search" class="form-control" id="q" name="q" placeholder="Buscar… (ej.: puesta a tierra, autogeneración, tarifas)" value="{{ request.args.get('q','') }}">
@@ -63,37 +65,23 @@
     <div class="filters-row">
       <select id="fTema" class="form-select" aria-label="Filtrar por tema">
         <option value="">Tema</option>
-        <option>Electricidad</option><option>Gas e hidrocarburos</option><option>Energías renovables</option>
-        <option>Movilidad eléctrica</option><option>Seguridad / Infraestructura</option><option>Mercado y tarifas</option>
-        <option>Ambiente y sostenibilidad</option><option>Institucional</option>
-      </select>
-      <select id="fAnio" class="form-select" aria-label="Filtrar por año">
-        <option value="">Año</option>
-        {% for y in range(2025, 1990, -1) %}<option value="{{ y }}">{{ y }}</option>{% endfor %}
       </select>
       <select id="fInstitucion" class="form-select" aria-label="Filtrar por institución">
         <option value="">Institución</option>
-        <option>ASEP</option><option>Secretaría de Energía</option><option>Asamblea Nacional</option>
-        <option>MiAmbiente</option><option>Gobierno Nacional</option>
       </select>
       <select id="fTipo" class="form-select" aria-label="Filtrar por tipo de documento">
         <option value="">Tipo</option>
-        <option>Ley</option><option>Decreto</option><option>Resolución</option>
-        <option>Reglamento técnico</option><option>Manual / Guía</option><option>Información adicional</option>
       </select>
     </div>
     <div class="filters-actions mt-2">
       <div class="ms-auto d-flex gap-2">
-        <select id="fOrden" class="form-select" aria-label="Ordenar resultados">
-          <option value="recientes">Más recientes</option><option value="az">A–Z</option>
-        </select>
         <button class="btn btn-outline-secondary" id="btnResetFilters">Restablecer filtros</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Results -->
+<!-- Resultados -->
 <div id="resultsWrap">
   <div id="stateLoading" class="state" hidden><span class="spinner-inline"></span><span class="ms-2">Cargando resultados…</span></div>
   <div id="stateEmpty" class="state" hidden>No encontramos resultados para los filtros actuales. <div><button class="btn btn-sm btn-outline-secondary mt-2" id="btnClearEmpty">Limpiar filtros</button></div></div>
@@ -150,8 +138,7 @@
             </select>
           </div>
           <div class="col-12"><label class="form-label">Descripción</label><textarea id="fDescripcion" name="descripcion" rows="3" class="form-control"></textarea></div>
-          <div class="col-md-6"><label class="form-label">Enlace oficial (URL)</label><input id="fEnlace" name="enlace_oficial" type="text" class="form-control"></div>
-          <div class="col-md-6"><label class="form-label">PDF (URL)</label><input id="fPdf" name="pdf_url" type="text" class="form-control"></div>
+          <div class="col-12"><label class="form-label">Enlace oficial (URL)</label><input id="fEnlace" name="enlace_oficial" type="text" class="form-control" placeholder="https://..."></div>
           <div class="col-12"><label class="form-label">Slug (opcional)</label><input id="fSlug" name="slug_url" class="form-control"><div class="form-text">Debe ser único.</div></div>
         </div>
       </div>
@@ -160,10 +147,25 @@
   </div>
 </div>
 {% endif %}
+
+<!-- Toast (no auth) -->
+<div id="toastAuth" class="toast align-items-center text-bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true" hidden>
+  <div class="d-flex">
+    <div class="toast-body">Para descargar, inicia sesión o crea tu usuario.</div>
+    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
   {{ super() }}
+
+  {% if current_user.is_authenticated %}
+  <script>const IS_AUTH=true, LOGIN_URL="";</script>
+  {% else %}
+  <script>const IS_AUTH=false, LOGIN_URL="{{ url_for('auth.login') }}";</script>
+  {% endif %}
 
   {% if current_user.is_authenticated and current_user.role.name == 'admin' %}
   <script>
@@ -183,22 +185,18 @@
           stateError=$('#stateError'), pager=$('#pager'), pageInfo=$('#pageInfo'),
           btnPrev=$('#btnPrev'), btnNext=$('#btnNext');
     const qs=new URLSearchParams(location.search);
-    const state={ q:qs.get('q')||'', tema:qs.get('tema')||'', anio:qs.get('anio')||'', institucion:qs.get('institucion')||'', tipo:qs.get('tipo')||'', orden:qs.get('orden')||'recientes', page:parseInt(qs.get('page')||'1',10) };
-    const syncUI=()=>{ $('#q').value=state.q; $('#fTema').value=state.tema; $('#fAnio').value=state.anio; $('#fInstitucion').value=state.institucion; $('#fTipo').value=state.tipo; $('#fOrden').value=state.orden; };
-    syncUI();
-    const escapeHtml=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-    const fmtDate=iso=>{ try{ const d=new Date(iso+(iso.length===10?'T00:00:00Z':'')); return d.toLocaleDateString('es-PA',{year:'numeric',month:'short',day:'2-digit'});}catch{return iso;} };
+    const state={ q:qs.get('q')||'', tema:qs.get('tema')||'', institucion:qs.get('institucion')||'', tipo:qs.get('tipo')||'', page:parseInt(qs.get('page')||'1',10) };
 
-    // Cards (título → PDF, si no fuente oficial)
+    const syncUI=()=>{ $('#q').value=state.q; $('#fTema').value=state.tema; $('#fInstitucion').value=state.institucion; $('#fTipo').value=state.tipo; };
+    const escapeHtml=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+    // ---- Render tarjetas ----
     function cardHTML(it){
       const tipo=it.tipo?`<span class="badge text-bg-light">${escapeHtml(it.tipo)}</span>`:'';
       const year=it.anio?`<span class="badge text-bg-light">${it.anio}</span>`:'';
-      const inst=it.institucion?escapeHtml(it.institucion):'';
-      const date=it.fecha_publicacion?fmtDate(it.fecha_publicacion):'';
+      const inst=it.institucion?`<span class="badge text-bg-light">${escapeHtml(it.institucion)}</span>`:'';
       const desc=it.descripcion?escapeHtml(it.descripcion):'';
-      const bestLink=it.pdf_url||it.enlace_oficial||'#';
-      const aOf=it.enlace_oficial?`<a href="${it.enlace_oficial}" target="_blank" rel="noopener">Fuente oficial</a>`:'';
-      const aPdf=it.pdf_url?`<a href="${it.pdf_url}" target="_blank" rel="noopener">PDF</a>`:'';
+      const link = it.enlace_oficial || '#';
 
       const adminEdit=IS_ADMIN?`
         <button type="button" class="btn btn-sm btn-outline-primary btn-edit"
@@ -206,8 +204,7 @@
           data-id="${it.id}" data-titulo="${escapeHtml(it.titulo_oficial||'')}" data-fecha="${it.fecha_publicacion||''}"
           data-institucion="${escapeHtml(it.institucion||'')}" data-tipo="${escapeHtml(it.tipo||'')}"
           data-tema="${escapeHtml(it.tema||'')}" data-descripcion="${escapeHtml(it.descripcion||'')}"
-          data-enlace="${escapeHtml(it.enlace_oficial||'')}" data-pdf="${escapeHtml(it.pdf_url||'')}"
-          data-slug="${escapeHtml(it.slug_url||'')}">Editar</button>`:'';
+          data-enlace="${escapeHtml(it.enlace_oficial||'')}" data-slug="${escapeHtml(it.slug_url||'')}">Editar</button>`:'';
 
       const adminDelete=IS_ADMIN?`
         <form method="post" action="${ADMIN_DELETE_URL}" class="ms-auto" onsubmit="return confirm('¿Eliminar esta normativa?');">
@@ -215,12 +212,13 @@
           <button class="btn btn-sm btn-outline-danger">Eliminar</button>
         </form>`:'';
 
+      const cta = it.enlace_oficial ? `<a href="${link}" class="btn btn-sm btn-outline-secondary need-auth">PDF / Fuente oficial</a>` : '';
+
       return `<li class="card-norma"><div class="card-body">
-        <h5 class="card-title mb-1"><a href="${bestLink}" target="_blank" rel="noopener">${escapeHtml(it.titulo_oficial||'Sin título')}</a></h5>
-        <div class="badges">${tipo}${year}</div>
-        <p class="meta">${inst}${inst&&date?' · ':''}${date}</p>
+        <h5 class="card-title mb-1"><a href="${link}" class="need-auth">${escapeHtml(it.titulo_oficial||'Sin título')}</a></h5>
+        <div class="badges">${tipo}${year}${inst}</div>
         <p class="desc">${desc}</p>
-        <div class="mt-auto d-flex gap-2 flex-wrap align-items-center">${aOf} ${aPdf} ${adminEdit} ${adminDelete}</div>
+        <div class="mt-auto d-flex gap-2 flex-wrap align-items-center">${cta} ${adminEdit} ${adminDelete}</div>
       </div></li>`;
     }
 
@@ -229,29 +227,49 @@
     function setLoading(on){ stateLoading.hidden=!on; stateError.hidden=true; if(on){ grid.innerHTML=''; pager.hidden=true; stateEmpty.hidden=true; } }
     function pushUrl(){ const p=new URLSearchParams(); for(const [k,v] of Object.entries(state)){ if(v && !(k==='page'&&v===1)) p.set(k,v); } history.replaceState(null,'', p.toString()?`?${p}`:location.pathname); }
 
+    // ---- Data ----
     async function fetchList(){
       setLoading(true);
       try{
         const url=new URL("{{ url_for('normativa.list_json') }}", location.origin);
-        const q={ q:state.q,tema:state.tema,anio:state.anio,institucion:state.institucion,tipo:state.tipo,orden:state.orden,page:state.page };
+        const q={ q:state.q,tema:state.tema,institucion:state.institucion,tipo:state.tipo,page:state.page };
         Object.entries(q).forEach(([k,v])=>{ if(v) url.searchParams.set(k,v); });
         const res=await fetch(url,{cache:'no-store'}); if(!res.ok) throw new Error('HTTP '+res.status);
         const data=await res.json(); renderList(data.items||[], data.page||1, data.total_pages||1); setLoading(false);
       }catch{ stateLoading.hidden=true; stateError.hidden=false; }
     }
 
+    async function fetchFacets(){
+      try{
+        const res=await fetch("{{ url_for('normativa.facets_json') }}",{cache:'no-store'});
+        if(!res.ok) throw new Error();
+        const f=await res.json();
+        const setOptions=(sel, items, label)=>{
+          const el=$(sel); const cur=el.value;
+          el.innerHTML=`<option value="">${label}</option>` + (items||[]).map(v=>`<option>${escapeHtml(v)}</option>`).join('');
+          if(cur) el.value=cur;
+        };
+        setOptions('#fTema', f.temas, 'Tema');
+        setOptions('#fInstitucion', f.instituciones, 'Institución');
+        setOptions('#fTipo', f.tipos, 'Tipo');
+      }catch{}
+    }
+
+    // ---- Filtros / búsqueda ----
     const debounced=(fn,ms=300)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
     $('#btnSearch').addEventListener('click',()=>{ state.q=$('#q').value.trim(); state.page=1; pushUrl(); fetchList(); });
     $('#q').addEventListener('keydown',ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); $('#btnSearch').click(); } });
-    const onFilterChange=debounced(()=>{ state.tema=$('#fTema').value; state.anio=$('#fAnio').value; state.institucion=$('#fInstitucion').value; state.tipo=$('#fTipo').value; state.orden=$('#fOrden').value; state.page=1; pushUrl(); fetchList(); },150);
-    ['#fTema','#fAnio','#fInstitucion','#fTipo','#fOrden'].forEach(s=>document.querySelector(s).addEventListener('change',onFilterChange));
+    const onFilterChange=debounced(()=>{ state.tema=$('#fTema').value; state.institucion=$('#fInstitucion').value; state.tipo=$('#fTipo').value; state.page=1; pushUrl(); fetchList(); },150);
+    ['#fTema','#fInstitucion','#fTipo'].forEach(s=>document.querySelector(s).addEventListener('change',onFilterChange));
     $('#btnClear').addEventListener('click',()=>{ state.q=''; $('#q').value=''; state.page=1; pushUrl(); fetchList(); });
-    $('#btnResetFilters').addEventListener('click',()=>{ state.tema=state.anio=state.institucion=state.tipo=''; state.orden='recientes'; syncUI(); state.page=1; pushUrl(); fetchList(); });
+    $('#btnResetFilters').addEventListener('click',()=>{ state.tema=state.institucion=state.tipo=''; syncUI(); state.page=1; pushUrl(); fetchList(); });
     $('#btnClearEmpty').addEventListener('click',()=>{ $('#btnResetFilters').click(); $('#btnClear').click(); });
+
+    // ---- Paginación ----
     btnPrev.addEventListener('click',()=>{ if(state.page>1){ state.page--; pushUrl(); fetchList(); } });
     btnNext.addEventListener('click',()=>{ state.page++; pushUrl(); fetchList(); });
 
-    // Sugerencias
+    // ---- Sugerencias ----
     const suggestForm=$('#formSuggest'), suggestMsg=$('#suggestMsg');
     suggestForm?.addEventListener('submit',async e=>{
       e.preventDefault(); suggestMsg.textContent='Enviando…';
@@ -260,11 +278,10 @@
       }catch{ suggestMsg.textContent='No se pudo enviar. Inténtalo nuevamente.'; }
     });
 
-    // Crear/Editar (admin)
+    // ---- Crear/Editar (admin) ----
     const formUpsert=$('#formUpsert'), modalLabel=$('#modalNormaLabel');
     const f={ id:$('#fId'), titulo:$('#fTitulo'), fecha:$('#fFecha'), institucion:$('#fInstitucion'),
-              tipo:$('#fTipo'), tema:$('#fTemaEdit'), descripcion:$('#fDescripcion'),
-              enlace:$('#fEnlace'), pdf:$('#fPdf'), slug:$('#fSlug') };
+              tipo:$('#fTipo'), tema:$('#fTemaEdit'), descripcion:$('#fDescripcion'), enlace:$('#fEnlace'), slug:$('#fSlug') };
 
     document.getElementById('btnOpenCreate')?.addEventListener('click',()=>{
       modalLabel.textContent='Nueva normativa'; formUpsert.action=ADMIN_CREATE_URL;
@@ -276,9 +293,30 @@
       modalLabel.textContent='Editar normativa'; formUpsert.action=ADMIN_EDIT_URL;
       f.id.value=b.dataset.id||''; f.titulo.value=b.dataset.titulo||''; f.fecha.value=b.dataset.fecha||'';
       f.institucion.value=b.dataset.institucion||''; f.tipo.value=b.dataset.tipo||''; f.tema.value=b.dataset.tema||'';
-      f.descripcion.value=b.dataset.descripcion||''; f.enlace.value=b.dataset.enlace||''; f.pdf.value=b.dataset.pdf||''; f.slug.value=b.dataset.slug||'';
+      f.descripcion.value=b.dataset.descripcion||''; f.enlace.value=b.dataset.enlace||''; f.slug.value=b.dataset.slug||'';
     });
 
+    // ---- Protección de enlaces (mensaje + redirección) ----
+    const toastEl = document.getElementById('toastAuth');
+    let toast;
+    if (toastEl) {
+      toast = new bootstrap.Toast(toastEl, { delay: 1200 });
+    }
+    function requireAuth(e){
+      if (IS_AUTH) return;  // usuario logueado: permitimos
+      e.preventDefault();
+      try{ toastEl.hidden=false; toast?.show(); }catch{}
+      if (LOGIN_URL){ setTimeout(()=>{ location.href = LOGIN_URL; }, 1200); }
+    }
+    // Intercepta clicks en título y botón
+    grid.addEventListener('click', e=>{
+      const a = e.target.closest('a.need-auth');
+      if (a) requireAuth(e);
+    });
+
+    // Inicio
+    fetchFacets();
+    syncUI();
     fetchList();
   </script>
 {% endblock %}
