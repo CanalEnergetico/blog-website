@@ -9,7 +9,7 @@ from app.utils_mail import send_email
 
 bp = Blueprint("normativa", __name__)
 
-# Helpers
+# Helperss
 def _build_where_and_params(q: str, tema: str, anio: str, institucion: str, tipo: str):
     where, params = [], {}
     if q:
