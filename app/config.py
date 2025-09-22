@@ -53,11 +53,16 @@ class Config:
     PASSWORD_RESET_SALT = os.getenv("PASSWORD_RESET_SALT", "cambia-esta-sal")
     PASSWORD_RESET_EXP_SECS = int(os.getenv("PASSWORD_RESET_EXP_SECS", "3600"))
 
+    # ======================
     # Configuración de correo
+    # ======================
+    # Remitente y credenciales SMTP (Gmail con App Password recomendado)
     MAIL_SENDER = os.getenv("MAIL_SENDER")
     SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
     SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
     SMTP_USER = os.getenv("SMTP_USER")
     SMTP_PASS = os.getenv("SMTP_PASS")
 
-
+    # Destinatario de las sugerencias de normativa (opcional).
+    # Si no se define, el código usará MAIL_SENDER por defecto.
+    MAIL_RECIPIENT_NORMATIVA = os.getenv("MAIL_RECIPIENT_NORMATIVA", "")

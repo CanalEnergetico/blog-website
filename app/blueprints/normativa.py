@@ -7,10 +7,11 @@ from datetime import datetime
 from app.extensions import db  # usa DB_CANAL_URI ya configurado
 from flask_login import login_required, current_user
 from app.models import Role  # mismo uso que en markets.py (Role.admin)
+from app.utils_mail import send_email  # ← envío de correo con variables del .env
 
 bp = Blueprint("normativa", __name__)
 
-# ---------------------- Helpers (SQL y slugs) ----------------------
+# ---------------------- Helpers (SQL, slugs, URL) ----------------------
 def _build_where_and_params(q: str, tema: str, anio: str, institucion: str, tipo: str):
     """
     WHERE y parámetros para filtros y búsqueda.
@@ -77,6 +78,19 @@ def _unique_slug(base_slug: str) -> str:
             return slug
         slug = f"{base_slug}-{i}"
         i += 1
+
+
+def _normalize_url(u: str) -> str:
+    """
+    Acepta 'google.com' o 'www.google.com' y antepone https:// si falta esquema.
+    Devuelve '' si u está vacío.
+    """
+    u = (u or "").strip()
+    if not u:
+        return ""
+    if u.startswith(("http://", "https://")):
+        return u
+    return "https://" + u
 
 
 # ----------------------------- Rutas -----------------------------
@@ -168,16 +182,38 @@ def list_json():
 @bp.post("/normativa/sugerir", endpoint="suggest")
 def suggest():
     """
-    Form '¿Falta alguna normativa?' – MVP: valida y responde 204 (sin DB).
-    (Aquí puedes integrar el envío por email cuando quieras).
+    Form '¿Falta alguna normativa?' – Envía correo usando utils_mail y variables del .env.
+    To: MAIL_RECIPIENT_NORMATIVA (si existe) o MAIL_SENDER por defecto.
     """
     nombre = (request.form.get("nombre") or "").strip()
-    url    = (request.form.get("url") or "").strip()
-    # comentario = (request.form.get("comentario") or "").strip()
+    url_raw = (request.form.get("url") or "").strip()
+    comentario = (request.form.get("comentario") or "").strip()
+    correo = (request.form.get("correo") or "").strip()  # opcional
 
-    if not nombre or not url:
+    if not nombre or not url_raw:
         abort(400, description="Faltan campos obligatorios.")
 
+    url = _normalize_url(url_raw)
+
+    to_email = current_app.config.get("MAIL_RECIPIENT_NORMATIVA") or current_app.config.get("MAIL_SENDER")
+    subject = "Nueva sugerencia de normativa"
+    html = f"""
+      <h2>Nueva sugerencia de normativa</h2>
+      <p><strong>Nombre:</strong> {nombre}</p>
+      <p><strong>URL:</strong> <a href="{url}" target="_blank" rel="noopener">{url}</a></p>
+      <p><strong>Comentario:</strong><br>{(comentario or '—')}</p>
+      <p><strong>Correo de contacto (opcional):</strong> {(correo or '—')}</p>
+      <hr>
+      <p style="color:#888">Canal Energético – formulario de sugerencias</p>
+    """.strip()
+
+    try:
+        send_email(to_email=to_email, subject=subject, html=html)
+    except Exception:
+        current_app.logger.exception("Error enviando sugerencia de normativa")
+        abort(500, description="No se pudo enviar la sugerencia. Intenta más tarde.")
+
+    # Éxito (el front espera 204)
     return ("", 204)
 
 
@@ -220,6 +256,10 @@ def admin_create():
         slug_url = _slugify(titulo_oficial)
     slug_url = _unique_slug(slug_url)
 
+    # Normaliza URLs
+    enlace_oficial = _normalize_url(enlace_oficial)
+    pdf_url = _normalize_url(pdf_url)
+
     sql = text("""
         INSERT INTO normativa
           (slug_url, titulo_oficial, fecha_publicacion, institucion, tipo, tema, descripcion, enlace_oficial, pdf_url, created_at, updated_at)
@@ -248,5 +288,38 @@ def admin_create():
         db.session.rollback()
         current_app.logger.exception("Error creando normativa")
         flash("No se pudo crear la normativa. Revisa los datos.", "danger")
+
+    return redirect(url_for("normativa.list"))
+
+
+@bp.post("/normativa/admin/delete", endpoint="admin_delete")
+@login_required
+def admin_delete():
+    """
+    Elimina una normativa por ID (solo admin). Usado por el botón 'Eliminar' en las tarjetas.
+    """
+    if current_user.role != Role.admin:
+        abort(403)
+
+    nid = (request.form.get("id") or "").strip()
+    if not nid:
+        flash("ID no proporcionado.", "warning")
+        return redirect(url_for("normativa.list"))
+
+    try:
+        res = db.session.execute(
+            text("DELETE FROM normativa WHERE id = :id RETURNING id"),
+            {"id": nid}
+        ).first()
+        if res:
+            db.session.commit()
+            flash("Normativa eliminada.", "success")
+        else:
+            db.session.rollback()
+            flash("No se encontró la normativa indicada.", "warning")
+    except Exception:
+        db.session.rollback()
+        current_app.logger.exception("Error eliminando normativa")
+        flash("No se pudo eliminar la normativa.", "danger")
 
     return redirect(url_for("normativa.list"))
