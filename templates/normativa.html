@@ -213,10 +213,18 @@
           <button class="btn btn-sm btn-outline-danger">Eliminar</button>
         </form>`:'';
 
-      const cta = it.enlace_oficial ? `<a href="${link}" class="btn btn-sm btn-outline-secondary need-auth">PDF / Fuente oficial</a>` : '';
+      // Abrir en nueva pestaña (title y botón)
+      const cta = it.enlace_oficial
+        ? `<a href="${link}" target="_blank" rel="noopener noreferrer"
+              class="btn btn-sm btn-outline-secondary need-auth">PDF / Fuente oficial</a>`
+        : '';
 
       return `<li class="card-norma"><div class="card-body">
-        <h5 class="card-title mb-1"><a href="${link}" class="need-auth">${escapeHtml(it.titulo_oficial||'Sin título')}</a></h5>
+        <h5 class="card-title mb-1">
+          <a href="${link}" target="_blank" rel="noopener noreferrer" class="need-auth">
+            ${escapeHtml(it.titulo_oficial||'Sin título')}
+          </a>
+        </h5>
         <div class="badges">${tipo}${year}${inst}</div>
         <p class="desc">${desc}</p>
         <div class="mt-auto d-flex gap-2 flex-wrap align-items-center">${cta} ${adminEdit} ${adminDelete}</div>
