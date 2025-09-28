@@ -23,27 +23,6 @@ def _build_where_and_params(q: str, tema: str, institucion: str, tipo: str):
         where.append("tipo = :tipo"); params["tipo"] = tipo
     return ("WHERE " + " AND ".join(where)) if where else "", params
 
-def _slugify(s: str) -> str:
-    import re, unicodedata
-    s = unicodedata.normalize("NFKD", s).encode("ascii","ignore").decode("ascii").lower()
-    s = re.sub(r"[^a-z0-9]+","-",s).strip("-"); s = re.sub(r"-{2,}","-",s)
-    return s or "norma"
-
-def _unique_slug(base: str) -> str:
-    slug, i = base, 2
-    while True:
-        if not db.session.execute(text("select 1 from normativa where slug_url = :s limit 1"), {"s": slug}).first():
-            return slug
-        slug = f"{base}-{i}"; i += 1
-
-def _unique_slug_excluding(base: str, exclude_id: int) -> str:
-    slug, i = base, 2
-    while True:
-        row = db.session.execute(text("select id from normativa where slug_url = :s limit 1"), {"s": slug}).first()
-        if not row or (row.id == exclude_id):
-            return slug
-        slug = f"{base}-{i}"; i += 1
-
 def _normalize_url(u: str) -> str:
     u = (u or "").strip()
     if not u: return ""
@@ -90,7 +69,7 @@ def list_json():
 
     # Listado
     sql_list = text(f"""
-        SELECT id, slug_url, titulo_oficial, fecha_publicacion, anio, institucion, tipo, tema, descripcion, enlace_oficial
+        SELECT id, titulo_oficial, fecha_publicacion, anio, institucion, tipo, tema, descripcion, enlace_oficial
         FROM normativa {where_sql} {order_sql} LIMIT :limit OFFSET :offset
     """)
     try:
@@ -136,10 +115,7 @@ def admin_create():
     except ValueError:
         flash("La fecha de publicación debe tener formato YYYY-MM-DD.", "warning"); return redirect(url_for("normativa.list"))
 
-    slug = (request.form.get("slug_url") or "").strip() or _slugify(titulo)
-    slug = _unique_slug(slug)
     params = {
-        "slug_url": slug,
         "titulo_oficial": titulo,
         "fecha_publicacion": fecha_dt,
         "institucion": (request.form.get("institucion") or "").strip() or None,
@@ -149,8 +125,8 @@ def admin_create():
         "enlace_oficial": _normalize_url(request.form.get("enlace_oficial")),
     }
     sql = text("""
-        INSERT INTO normativa (slug_url, titulo_oficial, fecha_publicacion, institucion, tipo, tema, descripcion, enlace_oficial, created_at, updated_at)
-        VALUES (:slug_url, :titulo_oficial, :fecha_publicacion, :institucion, :tipo, :tema, :descripcion, :enlace_oficial, now(), now())
+        INSERT INTO normativa (titulo_oficial, fecha_publicacion, institucion, tipo, tema, descripcion, enlace_oficial, created_at, updated_at)
+        VALUES (:titulo_oficial, :fecha_publicacion, :institucion, :tipo, :tema, :descripcion, :enlace_oficial, now(), now())
         RETURNING id
     """)
     try:
@@ -179,13 +155,8 @@ def admin_edit():
     except ValueError:
         flash("La fecha de publicación debe tener formato YYYY-MM-DD.", "warning"); return redirect(url_for("normativa.list"))
 
-    slug_candidate = (request.form.get("slug_url") or "").strip()
-    base_slug = _slugify(slug_candidate or titulo)
-    slug = _unique_slug_excluding(base_slug, exclude_id=nid)
-
     params = {
         "id": nid,
-        "slug_url": slug,
         "titulo_oficial": titulo,
         "fecha_publicacion": fecha_dt,
         "institucion": (request.form.get("institucion") or "").strip() or None,
@@ -196,7 +167,7 @@ def admin_edit():
     }
     sql = text("""
         UPDATE normativa SET
-          slug_url=:slug_url, titulo_oficial=:titulo_oficial, fecha_publicacion=:fecha_publicacion,
+          titulo_oficial=:titulo_oficial, fecha_publicacion=:fecha_publicacion,
           institucion=:institucion, tipo=:tipo, tema=:tema, descripcion=:descripcion,
           enlace_oficial=:enlace_oficial, updated_at=now()
         WHERE id=:id RETURNING id

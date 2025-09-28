@@ -140,7 +140,6 @@
           </div>
           <div class="col-12"><label class="form-label">Descripción</label><textarea id="fDescripcion" name="descripcion" rows="3" class="form-control"></textarea></div>
           <div class="col-12"><label class="form-label">Enlace oficial (URL)</label><input id="fEnlace" name="enlace_oficial" type="text" class="form-control" placeholder="https://..."></div>
-          <div class="col-12"><label class="form-label">Slug (opcional)</label><input id="fSlug" name="slug_url" class="form-control"><div class="form-text">Debe ser único.</div></div>
         </div>
       </div>
       <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary">Guardar</button></div>
@@ -205,7 +204,7 @@
           data-id="${it.id}" data-titulo="${escapeHtml(it.titulo_oficial||'')}" data-fecha="${it.fecha_publicacion||''}"
           data-institucion="${escapeHtml(it.institucion||'')}" data-tipo="${escapeHtml(it.tipo||'')}"
           data-tema="${escapeHtml(it.tema||'')}" data-descripcion="${escapeHtml(it.descripcion||'')}"
-          data-enlace="${escapeHtml(it.enlace_oficial||'')}" data-slug="${escapeHtml(it.slug_url||'')}">Editar</button>`:'';
+          data-enlace="${escapeHtml(it.enlace_oficial||'')}">Editar</button>
 
       const adminDelete=IS_ADMIN?`
         <form method="post" action="${ADMIN_DELETE_URL}" class="ms-auto" onsubmit="return confirm('¿Eliminar esta normativa?');">
@@ -282,7 +281,7 @@
     // ---- Crear/Editar (admin) ----
     const formUpsert=$('#formUpsert'), modalLabel=$('#modalNormaLabel');
     const f={ id:$('#fId'), titulo:$('#fTitulo'), fecha:$('#fFecha'), institucion:$('#fInstitucion'),
-              tipo:$('#fTipo'), tema:$('#fTemaEdit'), descripcion:$('#fDescripcion'), enlace:$('#fEnlace'), slug:$('#fSlug') };
+           tipo:$('#fTipo'), tema:$('#fTemaEdit'), descripcion:$('#fDescripcion'), enlace:$('#fEnlace') };
 
     document.getElementById('btnOpenCreate')?.addEventListener('click',()=>{
       modalLabel.textContent='Nueva normativa'; formUpsert.action=ADMIN_CREATE_URL;
@@ -294,7 +293,7 @@
       modalLabel.textContent='Editar normativa'; formUpsert.action=ADMIN_EDIT_URL;
       f.id.value=b.dataset.id||''; f.titulo.value=b.dataset.titulo||''; f.fecha.value=b.dataset.fecha||'';
       f.institucion.value=b.dataset.institucion||''; f.tipo.value=b.dataset.tipo||''; f.tema.value=b.dataset.tema||'';
-      f.descripcion.value=b.dataset.descripcion||''; f.enlace.value=b.dataset.enlace||''; f.slug.value=b.dataset.slug||'';
+      f.descripcion.value=b.dataset.descripcion||''; f.enlace.value=b.dataset.enlace||'';
     });
 
     // ---- Protección de enlaces (mensaje + redirección) ----
