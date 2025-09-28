@@ -34,13 +34,40 @@
       {% for err in form.img_fuente.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
     </div>
 
-    {# ⇩⇩ CAMBIO: antes form.tag, ahora form.tags (múltiples etiquetas) #}
-    <div class="mb-3">
-      {{ form.tags.label(class="form-label") }}
-      {{ form.tags(class="form-control", placeholder="python, flask, web") }}
-      <div class="form-text">Escribe varias etiquetas separadas por comas.</div>
-      {% for err in form.tags.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
-    </div>
+{# ⇩⇩ CAMBIO: antes form.tag, ahora form.tags (múltiples etiquetas) #}
+<div class="mb-3">
+  {{ form.tags.label(class="form-label") }}
+  {{ form.tags(class="form-control", placeholder="renovables, mercado, panamá") }}
+  <div class="form-text">
+    El <strong>primer tag</strong> define la <strong>categoría principal</strong> del artículo.
+    Escribe varias etiquetas separadas por comas.
+  </div>
+  {% for err in form.tags.errors %}
+    <div class="text-danger small">{{ err }}</div>
+  {% endfor %}
+</div>
+
+{# Mostrar tags principales como “chips” clicables para autocompletar #}
+<div class="mb-2">
+  <div class="small text-muted mb-1">Tags principales (sugeridos):</div>
+  <div class="d-flex flex-wrap gap-1" id="chips-principales">
+    {% set principales = CATEGORIAS_PRINCIPALES
+                         if CATEGORIAS_PRINCIPALES is defined
+                         else ["Renovables","Combustibles","Sistema Eléctrico",
+                               "Movilidad","Sostenibilidad","Opinión",
+                               "Actualidad","Sociedad y energía"] %}
+    {% for cat in principales %}
+      <button type="button"
+              class="btn btn-sm btn-outline-secondary"
+              data-tag="{{ cat }}">
+        {{ cat }}
+      </button>
+    {% endfor %}
+  </div>
+  <div class="form-text">
+    Púlsalos para añadirlos. Recuerda: el primero en la lista será la categoría principal.
+  </div>
+</div>
 
     <div class="mb-3">
       {{ form.autor.label(class="form-label") }}
@@ -56,4 +83,38 @@
 
     {{ form.submit(class="btn btn-primary mt-3", value=("Guardar cambios" if is_edit else "Publicar")) }}
   </form>
+
+{# JS mínimo para insertar tags sin duplicarlos y manteniendo el orden #}
+<script>
+  (function () {
+    const chips = document.querySelector('#chips-principales');
+    if (!chips) return;
+
+    const input = document.getElementById("{{ form.tags.id }}");
+    function parseTags(value) {
+      return value.split(',')
+                  .map(t => t.trim())
+                  .filter(t => t.length > 0);
+    }
+    function stringifyTags(arr) {
+      return arr.join(', ');
+    }
+    function addTag(tag) {
+      const current = parseTags(input.value);
+      // Evitar duplicados (case-insensitive)
+      const exists = current.some(t => t.toLowerCase() === tag.toLowerCase());
+      if (!exists) {
+        current.push(tag);
+        input.value = stringifyTags(current);
+        input.dispatchEvent(new Event('input')); // por si tienes validación viva
+      }
+    }
+
+    chips.addEventListener('click', function (ev) {
+      const btn = ev.target.closest('button[data-tag]');
+      if (!btn) return;
+      addTag(btn.getAttribute('data-tag'));
+    });
+  })();
+</script>
 {% endblock %}
