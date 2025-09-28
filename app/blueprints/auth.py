@@ -72,18 +72,13 @@ def registrarse():
                 to_email=user.email,
                 subject="Verifica tu correo – Canal Energético",
                 html=html,
-                sender=current_app.config["MAIL_SENDER"],
-                smtp_host=current_app.config["SMTP_HOST"],
-                smtp_port=current_app.config["SMTP_PORT"],
-                username=current_app.config["SMTP_USER"],
-                password=current_app.config["SMTP_PASS"],
-            )
-            flash("Te enviamos un correo para verificar tu cuenta.", "info")
+                            )
+            flash("¡Cuenta registrada correctamente! Revisa tu correo para verificar la cuenta.", "success")
             if current_app.debug:
                 flash(f"Enlace de verificación (solo dev): {verify_url}", "secondary")
         except Exception as e:
             current_app.logger.exception("No se pudo enviar verificación: %s", e)
-            flash("Cuenta creada, pero no pudimos enviar el correo de verificación ahora.", "warning")
+            flash("¡Cuenta registrada correctamente! Luego podrás verificar tu correo para tener acceso a todas las funcionalidades de la web.", "info")
 
         return redirect(url_for("auth.login"))
     return render_template("auth/registrarse.html")
@@ -216,8 +211,6 @@ def resend_verification():
 def test_mail():
     """
     Ruta de prueba de SMTP.
-    Antes: enviaba a tucorreo@ejemplo.com (placeholder) => rebotes.
-    Ahora: usa CONTACT_TO/env y bloquea dominios de ejemplo.
     """
     to_addr = _resolve_contact_to()
     if _is_bad_domain(to_addr):
