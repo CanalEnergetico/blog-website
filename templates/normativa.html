@@ -205,6 +205,7 @@
           data-institucion="${escapeHtml(it.institucion||'')}" data-tipo="${escapeHtml(it.tipo||'')}"
           data-tema="${escapeHtml(it.tema||'')}" data-descripcion="${escapeHtml(it.descripcion||'')}"
           data-enlace="${escapeHtml(it.enlace_oficial||'')}">Editar</button>
+          ` : '';
 
       const adminDelete=IS_ADMIN?`
         <form method="post" action="${ADMIN_DELETE_URL}" class="ms-auto" onsubmit="return confirm('¿Eliminar esta normativa?');">
