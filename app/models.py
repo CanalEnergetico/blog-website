@@ -40,6 +40,14 @@ class Articulos(db.Model):
         lazy="selectin"
     )
 
+    # helper no persistente
+    @property
+    def tag_principal(self) -> str | None:
+        # prioriza legacy .tag; si no, toma el 1º de .tags
+        if self.tag:
+            return self.tag
+        return self.tags[0].nombre if self.tags else None
+
 class Tag(db.Model):
     __tablename__ = "tags"
     id:     Mapped[int]  = mapped_column(primary_key=True)

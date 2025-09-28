@@ -17,32 +17,44 @@ bp = Blueprint("blog", __name__)
 def articulos_todos():
     page = request.args.get("page", 1, type=int)
     qtxt = (request.args.get("q") or "").strip()
-    tag_param = (request.args.get("tag") or "").strip()
+    tag_param = (request.args.get("tag") or "").strip()   # usarás slug o nombre normalizado (ver abajo)
 
     q = Articulos.query
+
+    # --- Búsqueda de texto: incluye título, descripción, contenido y nombres de tags ---
     if qtxt:
         like = f"%{qtxt}%"
-        q = q.filter(or_(
-            Articulos.titulo.ilike(like),
-            Articulos.descripcion.ilike(like),
-            Articulos.contenido.ilike(like),
-            Articulos.tag.ilike(like),
-        ))
+        q = (q.outerjoin(Articulos.tags)
+               .filter(or_(
+                   Articulos.titulo.ilike(like),
+                   Articulos.descripcion.ilike(like),
+                   Articulos.contenido.ilike(like),
+                   Tag.nombre.ilike(like),
+               ))
+               .distinct())
 
+    # --- Filtro por tag: coincide tanto si es principal como secundario ---
     if tag_param:
-        q = q.filter(func.lower(func.btrim(Articulos.tag)) == tag_param.lower())
+        # admitimos que 'tag' venga como nombre humano o como slug
+        tag_slug_val = tag_slug(tag_param)  # reutilizamos util existente
+        q = (q.join(Articulos.tags)
+               .filter(func.lower(Tag.slug) == func.lower(tag_slug_val))
+               .distinct())
 
     q = q.order_by(Articulos.fecha.desc())
     pagination = db.paginate(q, page=page, per_page=12, error_out=False)
 
-    tag_subq = (
-        db.session.query(func.btrim(Articulos.tag).label("tag"))
-        .filter(Articulos.tag.isnot(None), func.btrim(Articulos.tag) != "")
-        .distinct()
-        .subquery()
-    )
-    raw_tags = db.session.query(tag_subq.c.tag).order_by(func.lower(tag_subq.c.tag)).all()
-    tags_main = [row[0] for row in raw_tags]
+    # --- Construir el desplegable de categorías principales ---
+    PRINCIPALES = ["Opinión", "Renovables","Combustibles","Sistema Eléctrico","Movilidad","Sostenibilidad","Actualidad","Sociedad y Energía"]
+
+
+    # Traemos todos los tags existentes y los cruces con esa whitelist
+    existentes = (db.session.query(Tag.nombre)
+                  .order_by(func.lower(Tag.nombre))
+                  .all())
+    nombres_existentes = {n for (n,) in existentes}
+    # Mantén orden definido por tu lista PRINCIPALES
+    tags_main = [n for n in PRINCIPALES if n in nombres_existentes]
 
     return render_template(
         "articulos.html",

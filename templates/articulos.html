@@ -108,7 +108,7 @@
   <div class="row g-3">
     {% for a in restantes %}
       <div class="col-12 col-md-6">
-        <article class="card h-100 shadow-sm border-0 border-start border-4 border-{{ a.tag|tag_color }}">
+        <article class="card h-100 shadow-sm border-0 border-start border-4 border-{{ (a.tag_principal or a.tag)|tag_color }}">
           {% if a.img_url %}
             <img src="{{ a.img_url }}" alt="{{ a.titulo }}"
                  class="card-img-top" style="height:180px;object-fit:cover;">

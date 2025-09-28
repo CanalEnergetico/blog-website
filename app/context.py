@@ -52,6 +52,14 @@ def register_context(app):
         articulos = Articulos.query.order_by(Articulos.id.asc()).all()
         return dict(articulos=articulos)
 
+
+    @app.context_processor
+    def inject_categorias():
+        return dict(CATEGORIAS_PRINCIPALES=[
+            "Renovables", "Combustibles", "Sistema Eléctrico", "Movilidad",
+            "Sostenibilidad", "Opinión", "Actualidad", "Sociedad y energía",
+        ])
+
     # 👉 NUEVO: filtro para colores de tags
     TAG_TO_BADGE = {
         "renovables": "success",  # verde
