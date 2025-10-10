@@ -47,9 +47,9 @@
 </div>
 
 <!--TARJETAS DE ARTÍCULOS DESTACADOS-->
-<div class="row mb-4">
+<div class="row mb-2">
   <div class="col-12">
-    <h3 class="pb-4 mb-2 fst-italic border-bottom">Últimos artículos</h3>
+    <h3 class="pb-2 mb-2 fst-italic border-bottom">Últimos artículos</h3>
   </div>
 </div>
 
@@ -163,14 +163,58 @@
   </div>
 {% endmacro %}
 
+<!-- COLABORACIONES -->
+<h3 class="pb-2 mb-2 fst-italic border-bottom">Colaboraciones</h3>
+<p>
+  ¡Descubre nuestras colaboraciones! Haz clic en los logos para conocer cada proyecto.
+</p>
+<div class="row text-center g-4 mb-4">
+  <!-- HomeBiogas -->
+  <div class="col-6 col-md-4">
+    <a href="https://www.canalenergetico.com/articulos" target="_blank" rel="noopener">
+      <img src="{{ url_for('static', filename='images/Logo_homebiogas.jpg') }}"
+           alt="HomeBiogas"
+           class="img-fluid"
+           style="max-height: 100px; object-fit: contain;">
+    </a>
+  </div>
+  <!-- Radio Nacional de España -->
+  <div class="col-6 col-md-4">
+    <a href="https://www.rtve.es/play/audios/reportajes-5-continentes/reportajes-5-continentes-panama-construira-gasoducto-paralelo-canal/16753761/"
+       target="_blank" rel="noopener">
+      <img src="{{ url_for('static', filename='images/Logo_RNE.png') }}"
+           alt="Radio Nacional de España"
+           class="img-fluid"
+           style="max-height: 100px; object-fit: contain;">
+    </a>
+  </div>
+  <!-- Fundación Down -->
+  <div class="col-6 col-md-4">
+    <a href="https://www.canalenergetico.com/articulos/energia-solar-con-impacto-social-el-modelo-del-centro-de-ninos-down-en-chitre"
+       target="_blank" rel="noopener">
+      <img src="{{ url_for('static', filename='images/Logo_fundaciondown.jpg') }}"
+           alt="Fundación Down Chitré"
+           class="img-fluid"
+           style="max-height: 100px; object-fit: contain;">
+    </a>
+  </div>
+</div>
+
 <!--OPINIÓN DE EXPERTOS-->
-<h3 class="pb-4 mb-4 fst-italic border-bottom">Opinión de expertos</h3>
-<div class="row justify-content-center gx-2 gy-3 mb-5">
+<h3 class="pb-2 mb-4 border-bottom">
+<!--  <i class="bi bi-person-check me-2"></i>-->
+  <span class="fst-italic">Opinión de expertos</span>
+</h3>
+
+<div class="row justify-content-center gx-2 gy-3 mb-4">
   {{ opinion_card('Rafael Jaén Williamson', 'images/rafael-jaen.png', 'https://www.linkedin.com/in/rafael-ja%C3%A9n-williamson-338288b8/') }}
 </div>
 
 <!--ARTÍCULO DE DIRECTO AL VOLTAJE-->
-<h3 class="pb-4 mb-4 fst-italic border-bottom">Directo al voltaje</h3>
+<h3 class="pb-2 mb-4 border-bottom">
+<!--  <i class="bi bi-lightning me-2"></i>-->
+  <span class="fst-italic">Directo al voltaje</span>
+</h3>
 <article class="blog-post px-3">
   {% if destacado %}
     <h1 class="blog-post-title">{{ destacado.titulo }}</h1>
