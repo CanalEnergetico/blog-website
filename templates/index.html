@@ -18,7 +18,7 @@
   <div class="row align-items-center position-relative" style="z-index: 2;">
     <div class="col-md-7">
       <h1 class="display-5 fst-italic">{{ destacado.titulo }}</h1>
-      <p class="lead my-3">
+      <p class="lead my-3 truncate-2">
         {{ destacado.descripcion }}
       </p>
 
@@ -27,12 +27,12 @@
         <!-- Enlace al artículo destacado -->
         <a href="{{ url_for('blog.detalle_articulo', slug=destacado.slug) }}"
            class="btn btn-light fw-bold lead">
-           Leer artículo destacado
+           Artículo completo
         </a>
         <!-- Enlace a todos los artículos -->
         <a href="{{ url_for('blog.articulos_todos') }}"
            class="btn btn-outline-light fw-bold lead">
-           Ver todos los artículos
+           Todos los artículos
         </a>
       </div>
     </div>

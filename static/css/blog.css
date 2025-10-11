@@ -53,14 +53,6 @@ margin-bottom: 4rem;
   overflow: hidden;
 }
 
-/* Limita a 3 líneas, añade “…” al final si sobra texto */
-.truncate-3 {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-}
-
 /* Suaviza los estados vacíos/errores */
 section.text-center .display-5 { letter-spacing: .3px; }
 .opacity-50 { opacity: .5; }
