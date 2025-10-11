@@ -37,6 +37,14 @@ margin-bottom: 4rem;
     color: #727272;
 }
 
+/* Limita a 1 líneas, añade “…” al final si sobra texto */
+.truncate-1 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
 /* Limita a 2 líneas, añade “…” al final si sobra texto */
 .truncate-2 {
   display: -webkit-box;
@@ -45,11 +53,11 @@ margin-bottom: 4rem;
   overflow: hidden;
 }
 
-/* Limita a 1 líneas, añade “…” al final si sobra texto */
-.truncate-1 {
+/* Limita a 3 líneas, añade “…” al final si sobra texto */
+.truncate-3 {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   overflow: hidden;
 }
 
